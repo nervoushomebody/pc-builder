@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>VR Архітектура комп'ютера</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-super-hands-component@3.0.1/dist/aframe-super-hands.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+</head>
+<body>
+    <a-scene physics="debug: false" vr-mode-ui="enabled: true">
+        <!-- Оточення -->
+        <a-entity environment="preset: default; lighting: none"></a-entity>
+        
+        <!-- Освітлення -->
+        <a-entity light="type: ambient; intensity: 0.5"></a-entity>
+        <a-entity light="type: directional; intensity: 0.8" position="-1 1 1"></a-entity>
+        
+        <!-- Камера з контролами Oculus -->
+        <a-entity id="rig" movement-controls="speed: 0.1">
+            <a-entity id="camera" 
+                     camera="active: true" 
+                     position="0 1.6 0"
+                     oculus-touch-controls="hand: left"
+                     super-hands="colliderEvent: collisions; colliderEventProperty: els; colliderEndEvent: collisions-ended; colliderEndEventProperty: els">
+            </a-entity>
+            <a-entity oculus-touch-controls="hand: right"
+                      super-hands="colliderEvent: collisions; colliderEventProperty: els; colliderEndEvent: collisions-ended; colliderEndEventProperty: els">
+            </a-entity>
+        </a-entity>
+        
+        <!-- Моделі компонентів комп'ютера -->
+        <!-- Корпус -->
+        <a-entity id="case" 
+                 gltf-model="#case-model" 
+                 position="0 0.5 -2" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Корпус комп'ютера"
+                 data-description="Захищає компоненти комп'ютера та забезпечує охолодження">
+            <a-text value="Case" position="0 -0.5 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Процесор -->
+        <a-entity id="cpu" 
+                 gltf-model="#cpu-model" 
+                 position="0.3 1.2 -1.5" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Центральний процесор (CPU)"
+                 data-description="Виконує арифметичні, логічні операції та керує іншими компонентами системи">
+            <a-text value="CPU" position="0 -0.2 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Материнська плата -->
+        <a-entity id="motherboard" 
+                 gltf-model="#motherboard-model" 
+                 position="0 0.8 -1.5" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Материнська плата"
+                 data-description="Основна плата, що з'єднує всі компоненти комп'ютера">
+            <a-text value="Motherboard" position="0 -0.3 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Оперативна пам'ять -->
+        <a-entity id="ram" 
+                 gltf-model="#ram-model" 
+                 position="0.5 1.2 -1.5" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Оперативна пам'ять (RAM)"
+                 data-description="Тимчасова пам'ять для зберігання даних, що використовуються процесором">
+            <a-text value="RAM" position="0 -0.2 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Відеокарта -->
+        <a-entity id="gpu" 
+                 gltf-model="#gpu-model" 
+                 position="-0.5 1.2 -1.5" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Графічний процесор (GPU)"
+                 data-description="Обробляє графічні дані та виводить зображення на екран">
+            <a-text value="GPU" position="0 -0.2 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Блок живлення -->
+        <a-entity id="psu" 
+                 gltf-model="#psu-model" 
+                 position="-0.8 0.8 -1.8" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Блок живлення (PSU)"
+                 data-description="Забезпечує електроенергією всі компоненти комп'ютера">
+            <a-text value="PSU" position="0 -0.3 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Вентилятор -->
+        <a-entity id="fan" 
+                 gltf-model="#fan-model" 
+                 position="0.8 0.8 -1.8" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Вентилятор охолодження"
+                 data-description="Забезпечує циркуляцію повітря для охолодження компонентів">
+            <a-text value="Fan" position="0 -0.2 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Жорсткий диск -->
+        <a-entity id="hdd" 
+                 gltf-model="#hdd-model" 
+                 position="0.8 1.2 -1.8" 
+                 scale="0.5 0.5 0.5"
+                 grabbable
+                 stretchable
+                 hoverable
+                 class="clickable"
+                 data-component="Жорсткий диск (HDD)"
+                 data-description="Пристрій для довгострокового зберігання даних">
+            <a-text value="HDD" position="0 -0.2 0" color="black" align="center"></a-text>
+        </a-entity>
+        
+        <!-- Панель інформації -->
+        <a-entity id="info-panel" position="1.5 1.5 -2" visible="false">
+            <a-plane color="#333" width="1.5" height="0.8" position="0 0 0"></a-plane>
+            <a-text id="component-name" value="" color="white" position="-0.7 0.3 0.01" width="1.4"></a-text>
+            <a-text id="component-description" value="" color="white" position="-0.7 0 0.01" width="1.4" wrap-count="30"></a-text>
+        </a-entity>
+        
+        <!-- Індикатор навантаження -->
+        <a-entity id="load-indicator" position="0 2 -1.5">
+            <a-text id="load-text" value="Навантаження: 0%" color="black" align="center"></a-text>
+            <a-plane id="load-bar" color="green" width="2" height="0.2" position="0 -0.2 0">
+                <a-plane id="load-progress" color="lime" width="0" height="0.18" position="-1 0 0.01"></a-plane>
+            </a-plane>
+        </a-entity>
+        
+        <!-- Ассети моделей -->
+        <a-assets>
+            <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
+            <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
+            <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
+            <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
+            <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
+            <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
+            <a-asset-item id="fan-model" src="models/fan.glb"></a-asset-item>
+            <a-asset-item id="hdd-model" src="models/hdd.glb"></a-asset-item>
+        </a-assets>
+        
+        <!-- JavaScript для функціоналу -->
+        <script>
+            // Показуємо інформацію про компонент при взаємодії
+            AFRAME.registerComponent('component-info', {
+                init: function () {
+                    this.el.addEventListener('hover-start', (e) => {
+                        const componentName = this.el.getAttribute('data-component');
+                        const componentDesc = this.el.getAttribute('data-description');
+                        
+                        const infoPanel = document.querySelector('#info-panel');
+                        infoPanel.setAttribute('visible', 'true');
+                        
+                        // Позиціонуємо панель біля компонента
+                        const componentPos = this.el.getAttribute('position');
+                        infoPanel.setAttribute('position', {
+                            x: componentPos.x + 0.5,
+                            y: componentPos.y,
+                            z: componentPos.z
+                        });
+                        
+                        document.querySelector('#component-name').setAttribute('value', componentName);
+                        document.querySelector('#component-description').setAttribute('value', componentDesc);
+                    });
+                    
+                    this.el.addEventListener('hover-end', (e) => {
+                        document.querySelector('#info-panel').setAttribute('visible', 'false');
+                    });
+                }
+            });
+            
+            // Додаємо компонент до всіх клікабельних об'єктів
+            document.querySelectorAll('.clickable').forEach(el => {
+                el.setAttribute('component-info', '');
+            });
+            
+            // Симуляція навантаження системи
+            let load = 0;
+            let loadDirection = 1;
+            
+            setInterval(() => {
+                // Змінюємо навантаження
+                load += loadDirection * Math.random() * 5;
+                
+                // Змінюємо напрямок при досягненні меж
+                if (load > 100) {
+                    load = 100;
+                    loadDirection = -1;
+                } else if (load < 0) {
+                    load = 0;
+                    loadDirection = 1;
+                }
+                
+                // Оновлюємо індикатор
+                document.querySelector('#load-text').setAttribute('value', `Навантаження: ${Math.round(load)}%`);
+                
+                const progress = document.querySelector('#load-progress');
+                const width = (load / 100) * 2;
+                progress.setAttribute('width', width);
+                
+                // Змінюємо колір в залежності від навантаження
+                let color;
+                if (load < 50) {
+                    color = 'lime';
+                } else if (load < 80) {
+                    color = 'yellow';
+                } else {
+                    color = 'red';
+                }
+                progress.setAttribute('color', color);
+            }, 500);
+        </script>
+    </a-scene>
+</body>
+</html>

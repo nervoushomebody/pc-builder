@@ -1,170 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>VR Комп'ютерна Архітектура</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@3.0.1/dist/aframe-super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+  <meta charset="utf-8">
+  <title>VR Комп'ютерна Архітектура</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-super-hands-component@3.0.1/dist/aframe-super-hands.min.js"></script>
+  <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+  <script src="https://unpkg.com/aframe-teleport-controls@0.4.0/dist/aframe-teleport-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/mayognaise/aframe-gridhelper@master/dist/aframe-gridhelper.min.js"></script>
 </head>
 <body>
 <a-scene physics="debug: false" vr-mode-ui="enabled: true" shadow="type: pcfsoft" renderer="colorManagement: true">
+  
+  <!-- Освітлення -->
+  <a-entity light="type: ambient; color: #AAA; intensity: 0.4"></a-entity>
+  <a-entity light="type: directional; color: #FFF; intensity: 0.8; cast-shadow: true"
+            position="-1 3 1" rotation="-45 0 0"></a-entity>
 
-    <!-- Освітлення -->
-    <a-entity light="type: ambient; color: #AAA; intensity: 0.4"></a-entity>
-    <a-entity light="type: directional; color: #FFF; intensity: 0.8; cast-shadow: true"
-              position="-1 3 1" rotation="-45 0 0"></a-entity>
+  <!-- Координатна сітка -->
+  <a-entity gridhelper="size: 100; divisions: 100; colorCenterLine: #888; colorGrid: #ccc"
+            position="0 0.01 0"></a-entity>
 
-    <!-- Камера -->
-    <a-entity id="player" movement-controls="speed: 0.1">
-        <a-entity id="camera" 
-                  camera="active: true" 
-                  position="0 1.6 3"
-                  look-controls="pointerLockEnabled: false">
-        </a-entity>
+  <!-- Земля -->
+  <a-plane id="ground" class="teleportable" rotation="-90 0 0" width="100" height="100"
+           color="#7BC8A4" static-body shadow="receive: true"></a-plane>
+
+  <!-- Камера та пересування -->
+  <a-entity id="player" position="0 0 3">
+    <a-entity id="rig" movement-controls="speed: 0.1">
+      <a-entity id="camera" camera position="0 1.6 0" look-controls wasd-controls></a-entity>
+
+      <!-- Руки з телепортацією -->
+      <a-entity id="left-hand"
+                laser-controls="hand: left"
+                teleport-controls="cameraRig: #rig; teleportOrigin: #camera; button: trigger; collisionEntities: #ground"
+                raycaster="objects: .teleportable"
+                thumbstick-controls
+                super-hands></a-entity>
+
+      <a-entity id="right-hand"
+                laser-controls="hand: right"
+                teleport-controls="cameraRig: #rig; teleportOrigin: #camera; button: trigger; collisionEntities: #ground"
+                raycaster="objects: .teleportable"
+                thumbstick-controls
+                super-hands></a-entity>
     </a-entity>
+  </a-entity>
 
-    <!-- Контролери -->
-    <a-entity hand-controls="hand: left" oculus-touch-controls="hand: left" super-hands></a-entity>
-    <a-entity hand-controls="hand: right" oculus-touch-controls="hand: right" super-hands></a-entity>
+  <!-- Моделі (всі в одному місці: 0 0 -2) -->
+  <a-entity id="case" gltf-model="#case-model" position="0 0 -2" static-body shadow
+            grabbable class="clickable"
+            data-component="Корпус" data-description="Фізичний контейнер для компонентів">
+    <a-text value="Case" align="center" color="black" position="0 0 0"></a-text>
+  </a-entity>
 
-    <!-- МОДЕЛІ КОМПОНЕНТІВ (усі позиції згідно з моделлю корпусу) -->
+  <a-entity id="motherboard" gltf-model="#motherboard-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Материнська плата" data-description="Основа для підключення всіх компонентів">
+    <a-text value="Motherboard" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- CASE -->
-    <a-entity id="case"
-              gltf-model="#case-model"
-              position="0 0 -2"
-              shadow="receive: true; cast: true"
-              static-body
-              data-component="Корпус"
-              data-description="Фізичний контейнер для компонентів">
-        <a-text value="Case" align="center" color="black" position="0 0 0"></a-text>
-    </a-entity>
+  <a-entity id="cpu" gltf-model="#cpu-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Процесор" data-description="Центральний процесор комп'ютера">
+    <a-text value="CPU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- MOTHERBOARD -->
-    <a-entity id="motherboard"
-              gltf-model="#motherboard-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Материнська плата"
-              data-description="Основа для підключення всіх компонентів">
-        <a-text value="Motherboard" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <a-entity id="ram" gltf-model="#ram-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Оперативна пам'ять" data-description="Тимчасове збереження даних">
+    <a-text value="RAM" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- CPU -->
-    <a-entity id="cpu"
-              gltf-model="#cpu-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Процесор"
-              data-description="Центральний процесор комп'ютера">
-        <a-text value="CPU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <a-entity id="gpu" gltf-model="#gpu-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Відеокарта" data-description="Обробка графіки та відео">
+    <a-text value="GPU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- RAM -->
-    <a-entity id="ram"
-              gltf-model="#ram-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Оперативна пам'ять"
-              data-description="Тимчасове збереження даних">
-        <a-text value="RAM" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <a-entity id="psu" gltf-model="#psu-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Блок живлення" data-description="Постачає електроенергію компонентам">
+    <a-text value="PSU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- GPU -->
-    <a-entity id="gpu"
-              gltf-model="#gpu-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Відеокарта"
-              data-description="Обробка графіки та відео">
-        <a-text value="GPU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <a-entity id="hdd" gltf-model="#hdd-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Жорсткий диск" data-description="Довготривале збереження даних">
+    <a-text value="HDD" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- PSU -->
-    <a-entity id="psu"
-              gltf-model="#psu-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Блок живлення"
-              data-description="Постачає електроенергію компонентам">
-        <a-text value="PSU" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <a-entity id="fan" gltf-model="#fan-model" position="0 0 -2" class="clickable"
+            grabbable hoverable stretchable dynamic-body
+            data-component="Вентилятор" data-description="Охолодження системи">
+    <a-text value="Fan" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+  </a-entity>
 
-    <!-- HDD -->
-    <a-entity id="hdd"
-              gltf-model="#hdd-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Жорсткий диск"
-              data-description="Довготривале збереження даних">
-        <a-text value="HDD" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <!-- Інформаційна панель -->
+  <a-entity id="info-panel" position="0 2 -2" visible="false">
+    <a-plane color="#333" width="1.5" height="0.8" position="0 0 0" shadow="receive: true"></a-plane>
+    <a-text id="component-name" value="" color="white" position="-0.7 0.3 0.01" width="1.4"></a-text>
+    <a-text id="component-description" value="" color="white" position="-0.7 0 0.01" width="1.4" wrap-count="30"></a-text>
+  </a-entity>
 
-    <!-- FAN -->
-    <a-entity id="fan"
-              gltf-model="#fan-model"
-              position="0 0 -2"
-              class="clickable"
-              grabbable hoverable stretchable dynamic-body
-              data-component="Вентилятор"
-              data-description="Охолодження системи">
-        <a-text value="Fan" align="center" color="black" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
-    </a-entity>
+  <!-- Ассети -->
+  <a-assets>
+    <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
+    <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
+    <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
+    <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
+    <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
+    <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
+    <a-asset-item id="fan-model" src="models/fan.glb"></a-asset-item>
+    <a-asset-item id="hdd-model" src="models/hdd.glb"></a-asset-item>
+  </a-assets>
 
-    <!-- Інформаційна панель -->
-    <a-entity id="info-panel" position="0 2 -2" visible="false">
-        <a-plane color="#333" width="1.5" height="0.8" position="0 0 0" shadow="receive: true"></a-plane>
-        <a-text id="component-name" value="" color="white" position="-0.7 0.3 0.01" width="1.4"></a-text>
-        <a-text id="component-description" value="" color="white" position="-0.7 0 0.01" width="1.4" wrap-count="30"></a-text>
-    </a-entity>
-
-    <!-- Ассети -->
-    <a-assets>
-        <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
-        <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
-        <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
-        <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
-        <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
-        <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
-        <a-asset-item id="fan-model" src="models/fan.glb"></a-asset-item>
-        <a-asset-item id="hdd-model" src="models/hdd.glb"></a-asset-item>
-    </a-assets>
-
-    <!-- JS логіка -->
-    <script>
-        AFRAME.registerComponent('component-info', {
-            init: function () {
-                this.el.addEventListener('hover-start', () => {
-                    const panel = document.querySelector('#info-panel');
-                    panel.setAttribute('visible', true);
-                    panel.setAttribute('position', {
-                        x: this.el.object3D.position.x + 0.5,
-                        y: this.el.object3D.position.y,
-                        z: this.el.object3D.position.z
-                    });
-                    document.querySelector('#component-name').setAttribute('value',
-                        this.el.getAttribute('data-component'));
-                    document.querySelector('#component-description').setAttribute('value',
-                        this.el.getAttribute('data-description'));
-                });
-                this.el.addEventListener('hover-end', () => {
-                    document.querySelector('#info-panel').setAttribute('visible', false);
-                });
-            }
+  <!-- JS логіка -->
+  <script>
+    AFRAME.registerComponent('component-info', {
+      init: function () {
+        this.el.addEventListener('hover-start', () => {
+          const panel = document.querySelector('#info-panel');
+          panel.setAttribute('visible', true);
+          panel.setAttribute('position', {
+            x: this.el.object3D.position.x + 0.5,
+            y: this.el.object3D.position.y,
+            z: this.el.object3D.position.z
+          });
+          document.querySelector('#component-name').setAttribute('value',
+            this.el.getAttribute('data-component'));
+          document.querySelector('#component-description').setAttribute('value',
+            this.el.getAttribute('data-description'));
         });
-
-        // Призначити info-компонент всім об'єктам
-        document.querySelectorAll('.clickable').forEach(el => {
-            el.setAttribute('component-info', '');
+        this.el.addEventListener('hover-end', () => {
+          document.querySelector('#info-panel').setAttribute('visible', false);
         });
-    </script>
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.clickable').forEach(el => {
+        el.setAttribute('component-info', '');
+      });
+    });
+  </script>
 </a-scene>
 </body>
 </html>

@@ -29,64 +29,127 @@
     </a-entity>
 
     <!-- Контролери -->
-    <a-entity hand-controls="hand: left; handModelStyle: lowPoly; color: #ffaaaa" super-hands></a-entity>
-    <a-entity hand-controls="hand: right; handModelStyle: lowPoly; color: #aaaaff" super-hands></a-entity>
+    <a-entity hand-controls="hand: left" oculus-touch-controls="hand: left" super-hands></a-entity>
+    <a-entity hand-controls="hand: right" oculus-touch-controls="hand: right" super-hands></a-entity>
 
-    <!-- МОДЕЛІ КОМПОНЕНТІВ З НАПИСАМИ -->
-
+    <!-- МОДЕЛІ КОМПОНЕНТІВ -->
     <!-- CPU -->
-    <a-entity gltf-model="#cpu-model" position="-2 1 -2" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Процесор" data-description="Центральний процесор комп’ютера.">
+    <a-entity id="cpu" 
+              gltf-model="#cpu-model" 
+              position="-2 1 -2" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Процесор" 
+              data-description="Центральний процесор комп'ютера">
         <a-text value="CPU" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- Материнська плата -->
-    <a-entity gltf-model="#motherboard-model" position="-1 1 -2" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Материнська плата" data-description="Основа для підключення всіх компонентів.">
+    <a-entity id="motherboard" 
+              gltf-model="#motherboard-model" 
+              position="-1 1 -2" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Материнська плата" 
+              data-description="Основа для підключення всіх компонентів">
         <a-text value="Motherboard" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- RAM -->
-    <a-entity gltf-model="#ram-model" position="0 1 -2" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Оперативна пам’ять" data-description="Тимчасове збереження даних.">
+    <a-entity id="ram" 
+              gltf-model="#ram-model" 
+              position="0 1 -2" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Оперативна пам'ять" 
+              data-description="Тимчасове збереження даних">
         <a-text value="RAM" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- GPU -->
-    <a-entity gltf-model="#gpu-model" position="1 1 -2" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Відеокарта" data-description="Обробка графіки та відео.">
+    <a-entity id="gpu" 
+              gltf-model="#gpu-model" 
+              position="1 1 -2" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Відеокарта" 
+              data-description="Обробка графіки та відео">
         <a-text value="GPU" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- PSU -->
-    <a-entity gltf-model="#psu-model" position="2 1 -2" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Блок живлення" data-description="Постачає електроенергію компонентам.">
+    <a-entity id="psu" 
+              gltf-model="#psu-model" 
+              position="2 1 -2" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Блок живлення" 
+              data-description="Постачає електроенергію компонентам">
         <a-text value="PSU" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- HDD -->
-    <a-entity gltf-model="#hdd-model" position="-1 1 -3" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Жорсткий диск" data-description="Довготривале збереження даних.">
+    <a-entity id="hdd" 
+              gltf-model="#hdd-model" 
+              position="-1 1 -3" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Жорсткий диск" 
+              data-description="Довготривале збереження даних">
         <a-text value="HDD" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- FAN -->
-    <a-entity gltf-model="#fan-model" position="0 1 -3" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Вентилятор" data-description="Охолодження системи.">
+    <a-entity id="fan" 
+              gltf-model="#fan-model" 
+              position="0 1 -3" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Вентилятор" 
+              data-description="Охолодження системи">
         <a-text value="Fan" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
     <!-- CASE -->
-    <a-entity gltf-model="#case-model" position="1 1 -3" scale="0.5 0.5 0.5"
-              class="clickable" grabbable hoverable stretchable
-              data-component="Корпус" data-description="Фізичний контейнер для компонентів.">
+    <a-entity id="case" 
+              gltf-model="#case-model" 
+              position="1 1 -3" 
+              scale="0.5 0.5 0.5"
+              class="clickable" 
+              grabbable 
+              hoverable 
+              stretchable
+              shadow="receive: true; cast: true"
+              data-component="Корпус" 
+              data-description="Фізичний контейнер для компонентів">
         <a-text value="Case" align="center" color="black" position="0 0.6 0"></a-text>
     </a-entity>
 
@@ -138,7 +201,6 @@
             el.setAttribute('component-info', '');
         });
     </script>
-
 </a-scene>
 </body>
 </html>

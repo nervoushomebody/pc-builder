@@ -6,24 +6,20 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-super-hands-component@3.0.1/dist/aframe-super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
 </head>
 <body>
 <a-scene physics="debug: false" vr-mode-ui="enabled: true" shadow="type: pcfsoft" renderer="colorManagement: true">
 
     <!-- Освітлення -->
-    <a-entity light="type: ambient; color: #AAA; intensity: 0.3"></a-entity>
+    <a-entity light="type: ambient; color: #AAA; intensity: 0.4"></a-entity>
     <a-entity light="type: directional; color: #FFF; intensity: 0.8; cast-shadow: true"
               position="-1 3 1" rotation="-45 0 0"></a-entity>
-
-    <!-- Оточення -->
-    <a-sky color="#ECECEC"></a-sky>
 
     <!-- Камера -->
     <a-entity id="player" movement-controls="speed: 0.1">
         <a-entity id="camera" 
                   camera="active: true" 
-                  position="0 1.6 0"
+                  position="0 1.6 3"
                   look-controls="pointerLockEnabled: false">
         </a-entity>
     </a-entity>
@@ -32,60 +28,94 @@
     <a-entity hand-controls="hand: left" oculus-touch-controls="hand: left" super-hands></a-entity>
     <a-entity hand-controls="hand: right" oculus-touch-controls="hand: right" super-hands></a-entity>
 
+    <!-- МОДЕЛІ КОМПОНЕНТІВ (усі позиції згідно з моделлю корпусу) -->
+
     <!-- CASE -->
-    <a-entity id="case" gltf-model="#case-model" position="0 1 -3" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Корпус" data-description="Фізичний контейнер для компонентів.">
-        <a-text value="Case" align="center" color="black" position="0 1.3 0.5"></a-text>
+    <a-entity id="case"
+              gltf-model="#case-model"
+              position="0 0 -2"
+              shadow="receive: true; cast: true"
+              static-body
+              data-component="Корпус"
+              data-description="Фізичний контейнер для компонентів">
+        <a-text value="Case" align="center" color="black" position="0 1.2 0.5"></a-text>
     </a-entity>
 
-    <!-- Материнська плата -->
-    <a-entity id="motherboard" gltf-model="#motherboard-model" position="0 1.4 -3.05" rotation="0 0 0" scale="0.8 1.2 0.05"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Материнська плата" data-description="Основа для підключення всіх компонентів.">
-        <a-text value="Motherboard" align="center" color="black" position="0 0.6 0.1"></a-text>
+    <!-- MOTHERBOARD -->
+    <a-entity id="motherboard"
+              gltf-model="#motherboard-model"
+              position="-0.4 0.5 -2.05"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Материнська плата"
+              data-description="Основа для підключення всіх компонентів">
+        <a-text value="Motherboard" align="center" color="black" position="0 0.6 0.1" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- CPU -->
-    <a-entity id="cpu" gltf-model="#cpu-model" position="0 1.4 -2.9" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Процесор" data-description="Центральний процесор комп’ютера.">
-        <a-text value="CPU" align="center" color="black" position="0 0.25 0.1"></a-text>
-    </a-entity>
-
-    <!-- GPU -->
-    <a-entity id="gpu" gltf-model="#gpu-model" position="0 1.1 -2.8" scale="1 1 1" rotation="0 0 0"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Відеокарта" data-description="Обробка графіки та відео.">
-        <a-text value="GPU" align="center" color="black" position="0 0.3 0"></a-text>
+    <a-entity id="cpu"
+              gltf-model="#cpu-model"
+              position="-0.1 0.6 -2.05"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Процесор"
+              data-description="Центральний процесор комп'ютера">
+        <a-text value="CPU" align="center" color="black" position="0 0.2 0.1" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- RAM -->
-    <a-entity id="ram" gltf-model="#ram-model" position="0.4 1.4 -2.9" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Оперативна пам’ять" data-description="Тимчасове збереження даних.">
-        <a-text value="RAM" align="center" color="black" position="0 0.5 0.1"></a-text>
+    <a-entity id="ram"
+              gltf-model="#ram-model"
+              position="0.2 0.6 -2.05"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Оперативна пам'ять"
+              data-description="Тимчасове збереження даних">
+        <a-text value="RAM" align="center" color="black" position="0 0.5 0.1" scale="0.5 0.5 0.5"></a-text>
+    </a-entity>
+
+    <!-- GPU -->
+    <a-entity id="gpu"
+              gltf-model="#gpu-model"
+              position="-0.1 0.3 -1.85"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Відеокарта"
+              data-description="Обробка графіки та відео">
+        <a-text value="GPU" align="center" color="black" position="0 0.4 0.2" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- PSU -->
-    <a-entity id="psu" gltf-model="#psu-model" position="-0.4 0.5 -3" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Блок живлення" data-description="Постачає електроенергію компонентам.">
-        <a-text value="PSU" align="center" color="black" position="0 0.6 0"></a-text>
+    <a-entity id="psu"
+              gltf-model="#psu-model"
+              position="-0.5 0.15 -2"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Блок живлення"
+              data-description="Постачає електроенергію компонентам">
+        <a-text value="PSU" align="center" color="black" position="0 0.4 0.2" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- HDD -->
-    <a-entity id="hdd" gltf-model="#hdd-model" position="0.5 0.3 -3" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Жорсткий диск" data-description="Довготривале збереження даних.">
-        <a-text value="HDD" align="center" color="black" position="0 0.3 0"></a-text>
+    <a-entity id="hdd"
+              gltf-model="#hdd-model"
+              position="0.5 0.1 -2"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Жорсткий диск"
+              data-description="Довготривале збереження даних">
+        <a-text value="HDD" align="center" color="black" position="0 0.3 0.2" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- FAN -->
-    <a-entity id="fan" gltf-model="#fan-model" position="-0.5 2.0 -3" scale="1 1 1"
-              class="clickable" grabbable hoverable stretchable shadow="receive: true; cast: true"
-              data-component="Вентилятор" data-description="Охолодження системи.">
-        <a-text value="Fan" align="center" color="black" position="0 0.3 0"></a-text>
+    <a-entity id="fan"
+              gltf-model="#fan-model"
+              position="-0.8 0.8 -2.05"
+              class="clickable"
+              grabbable hoverable stretchable dynamic-body
+              data-component="Вентилятор"
+              data-description="Охолодження системи">
+        <a-text value="Fan" align="center" color="black" position="0 0.4 0.2" scale="0.5 0.5 0.5"></a-text>
     </a-entity>
 
     <!-- Інформаційна панель -->
@@ -95,7 +125,7 @@
         <a-text id="component-description" value="" color="white" position="-0.7 0 0.01" width="1.4" wrap-count="30"></a-text>
     </a-entity>
 
-    <!-- Ассети моделей -->
+    <!-- Ассети -->
     <a-assets>
         <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
         <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
@@ -130,6 +160,7 @@
             }
         });
 
+        // Призначити info-компонент всім об'єктам
         document.querySelectorAll('.clickable').forEach(el => {
             el.setAttribute('component-info', '');
         });

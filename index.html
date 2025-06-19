@@ -2,10 +2,8 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>VR Збирач ПК - Фінальна версія</title>
+    <title>VR Збирач ПК - Стабільна версія</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
-    
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
@@ -43,8 +41,7 @@
 
             <a-mixin id="hand-setup"
                      super-hands
-                     static-body="shape: sphere; sphereRadius: 0.02;"
-                     hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc">
+                     static-body="shape: sphere; sphereRadius: 0.02; emitCollisionEvents: true;">
             </a-mixin>
 
         </a-assets>
@@ -77,16 +74,20 @@
         <a-light type="ambient" color="#888"></a-light>
         <a-light type="directional" position="-1 4 2" intensity="1"></a-light>
 
-        <a-entity id="rig" 
-                  wasd-controls="acceleration: 25; fly: true;" 
-                  kinematic-body> <a-entity camera position="0 1.6 2" look-controls></a-entity>
+        <a-entity id="rig"
+                  movement-controls="camera: #camera; speed: 0.15; fly: true;"
+                  look-controls="pointerLockEnabled: true">
             
-            <a-entity id="leftHand" mixin="hand-setup" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
-
-            <a-entity id="rightHand" 
+            <a-entity id="camera" camera position="0 1.6 2"></a-entity>
+            
+            <a-entity id="leftHand" 
                       mixin="hand-setup" 
-                      hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
-                      oculus-thumbstick-controls>
+                      hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc">
+            </a-entity>
+
+            <a-entity id="rightHand"
+                      mixin="hand-setup" 
+                      hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc">
             </a-entity>
         </a-entity>
 
@@ -169,9 +170,10 @@
 
     <div class="info">
         <strong>Керування:</strong><br>
-        - **Політ:** Використовуйте **стік (thumbstick) на правому контролері**, щоб літати у напрямку погляду.<br>
-        - **Хапання:** Наведіть руку на компонент та стисніть контролер (Grip/Trigger), щоб взяти.<br><br>
-        <strong>Мета:</strong> Зібрати ПК, встановлюючи компоненти в правильному порядку!
+        - **Політ (VR):** Лівий стік (thumbstick).<br>
+        - **Поворот (VR):** Правий стік (thumbstick).<br>
+        - **Хапання:** Наведіть руку та стисніть Trigger/Grip.<br>
+        - **Рух (Desktop):** Клавіші WASD.<br>
     </div>
 </body>
 </html>

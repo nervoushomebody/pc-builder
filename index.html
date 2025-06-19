@@ -2,12 +2,13 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>VR PC Builder - Fixed Collisions</title>
+    <title>VR PC Builder - Super Hands Edition</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
     <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
     
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -35,18 +36,36 @@
             font-size: 14px;
             z-index: 10000;
         }
-        .physics-debug {
+        .progress-bar {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.8);
-            color: #ffff00;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
             z-index: 10000;
-            max-width: 300px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .completion-message {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            background: rgba(0,128,0,0.9);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            display: none;
         }
     </style>
 </head>
@@ -56,237 +75,318 @@
         Right Hand: x: 0.00, y: 0.00, z: 0.00
     </div>
     
-    <div class="physics-debug" id="physics-debug">
-        Physics Debug Info:<br>
-        Gravity: -9.8<br>
-        Selected Object: None
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
     </div>
+    <div class="completion-message" id="completion-message">🎉 ПК успішно зібрано!</div>
 
-    <a-scene physics="driver: local; debug: false; gravity: -9.8; iterations: 10">
+    <a-scene physics="driver: local; debug: false; gravity: -9.8; iterations: 15">
         <a-assets>
-            <!-- Define reusable mixins for physics objects -->
-            <a-mixin id="cube-physics"
-                     dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                     hoverable grabbable stretchable draggable
-                     smooth-grabbing
-                     event-set__hoveron="_event: hover-start; material.opacity: 0.7"
-                     event-set__hoveroff="_event: hover-end; material.opacity: 1"
-                     event-set__dragon="_event: dragover-start; material.color: #00ff00"
-                     event-set__dragoff="_event: dragover-end; material.color: #666">
+            <!-- Materials -->
+            <a-mixin id="hover-material"
+                     event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
+                     event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0">
             </a-mixin>
-
-            <a-mixin id="hand-physics"
-                     super-hands="colliderEvent: collisions;
-                                  colliderEventProperty: els;
-                                  colliderEndEvent: collisions;
-                                  colliderEndEventProperty: clearedEls"
-                     sphere-collider="objects: [dynamic-body]"
-                     hand-tracking-physics>
+            
+            <a-mixin id="grab-material"
+                     event-set__grabon="_event: grab-start; material.emissive: #ffff22; material.emissiveIntensity: 0.3"
+                     event-set__graboff="_event: grab-end; material.emissive: #000000; material.emissiveIntensity: 0">
+            </a-mixin>
+            
+            <a-mixin id="pc-component"
+                     hoverable 
+                     grabbable="usePhysics: ifavailable"
+                     stretchable="usePhysics: never"
+                     draggable
+                     dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                     mixin="hover-material grab-material">
             </a-mixin>
         </a-assets>
 
         <!-- Environment -->
-        <a-sky color="#222"></a-sky>
+        <a-sky color="#1a1a2e"></a-sky>
+        
+        <!-- Ground with grid -->
         <a-plane position="0 0 0" 
                  rotation="-90 0 0" 
-                 width="10" 
-                 height="10" 
-                 color="#444"
+                 width="12" 
+                 height="12" 
+                 color="#16213e"
                  static-body
-                 grid="width: 10; height: 10">
+                 grid="width: 12; height: 12; color: #0f3460">
         </a-plane>
 
-        <!-- Walls for containing objects -->
-        <a-box position="0 1 -5" width="10" height="2" depth="0.1" color="#333" static-body></a-box>
-        <a-box position="-5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
-        <a-box position="5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
+        <!-- Work table -->
+        <a-box position="0 0.4 -2" 
+               width="3" 
+               height="0.8" 
+               depth="1.5" 
+               color="#2c3e50"
+               static-body>
+            <a-text value="Стіл для збірки" 
+                    position="0 0.5 0" 
+                    align="center" 
+                    color="#ecf0f1">
+            </a-text>
+        </a-box>
 
-        <!-- Test Components with Grab Proxies -->
+        <!-- PC Components -->
         
-        <!-- Motherboard with grab proxy -->
-        <a-entity id="motherboard-group" position="-2 1.2 -1">
-            <!-- Visual component with physics -->
-            <a-box id="motherboard"
-                   width="0.4"
-                   height="0.02"
-                   depth="0.4"
-                   color="#2a7f2a"
-                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                   data-component-type="motherboard">
-                <a-text value="Motherboard" 
-                        position="0 0.05 0" 
+        <!-- Motherboard -->
+        <a-entity id="motherboard" 
+                  position="-1.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: motherboard"
+                  geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4"
+                  material="color: #2a7f2a; metalness: 0.6">
+            <a-text value="Материнська плата" 
+                    position="0 0.1 0" 
+                    align="center" 
+                    scale="0.3 0.3 0.3"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- CPU -->
+        <a-entity id="cpu" 
+                  position="-0.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: cpu"
+                  geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08"
+                  material="color: #4169e1; metalness: 0.8">
+            <a-text value="CPU" 
+                    position="0 0.08 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- GPU -->
+        <a-entity id="gpu" 
+                  position="0.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: gpu"
+                  geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05"
+                  material="color: #ff4500; metalness: 0.7">
+            <a-text value="Відеокарта" 
+                    position="0 0.12 0" 
+                    align="center" 
+                    scale="0.3 0.3 0.3"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- RAM -->
+        <a-entity id="ram" 
+                  position="1.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: ram"
+                  geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02"
+                  material="color: #32cd32; metalness: 0.5">
+            <a-text value="RAM" 
+                    position="0 0.08 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- PSU -->
+        <a-entity id="psu" 
+                  position="-1 1.2 0.5"
+                  mixin="pc-component"
+                  pc-component="type: psu"
+                  geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2"
+                  material="color: #696969; metalness: 0.9">
+            <a-text value="Блок живлення" 
+                    position="0 0.15 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- SSD -->
+        <a-entity id="ssd" 
+                  position="1 1.2 0.5"
+                  mixin="pc-component"
+                  pc-component="type: ssd"
+                  geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1"
+                  material="color: #ff69b4; metalness: 0.4">
+            <a-text value="SSD" 
+                    position="0 0.05 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25"
+                    billboard>
+            </a-text>
+        </a-entity>
+
+        <!-- PC Case (Drop Target) -->
+        <a-entity id="pc-case-group" position="0 0.8 -2">
+            <!-- Visual case -->
+            <a-box id="pc-case"
+                   width="0.6"
+                   height="0.8"
+                   depth="0.6"
+                   color="#1a1a1a"
+                   opacity="0.9"
+                   static-body>
+                <a-text value="PC CASE" 
+                        position="0 0.5 0" 
                         align="center" 
-                        scale="0.3 0.3 0.3">
+                        scale="0.4 0.4 0.4"
+                        color="#fff">
                 </a-text>
             </a-box>
-            <!-- Grab proxy - larger invisible box -->
-            <a-box class="grab-proxy"
+            
+            <!-- Droppable zones for each component -->
+            <a-box id="motherboard-slot"
+                   position="0 -0.3 0"
                    width="0.5"
                    height="0.1"
                    depth="0.5"
-                   opacity="0.3"
-                   color="#00ff00"
-                   hoverable grabbable stretchable draggable
-                   proxy-controller="target: #motherboard">
-            </a-box>
-        </a-entity>
-
-        <!-- CPU with grab proxy -->
-        <a-entity id="cpu-group" position="-1 1.2 -1">
-            <a-box id="cpu"
-                   width="0.1"
-                   height="0.05"
-                   depth="0.1"
-                   color="#4169e1"
-                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                   data-component-type="cpu">
-                <a-text value="CPU" 
-                        position="0 0.05 0" 
+                   color="#2a7f2a"
+                   opacity="0.2"
+                   droppable="accepts: [pc-component='type: motherboard']"
+                   event-set__dragenter="_event: dragenter; opacity: 0.6"
+                   event-set__dragleave="_event: dragleave; opacity: 0.2"
+                   event-set__drop="_event: drag-drop; opacity: 0.8"
+                   pc-slot="type: motherboard">
+                <a-text value="Motherboard Slot" 
+                        position="0 0 0.3" 
                         align="center" 
                         scale="0.2 0.2 0.2">
                 </a-text>
             </a-box>
-            <a-box class="grab-proxy"
+            
+            <!-- Other component slots -->
+            <a-box id="cpu-slot"
+                   position="0 -0.15 0"
                    width="0.15"
-                   height="0.1"
+                   height="0.08"
                    depth="0.15"
-                   opacity="0.3"
-                   color="#00ff00"
-                   hoverable grabbable stretchable draggable
-                   proxy-controller="target: #cpu">
+                   color="#4169e1"
+                   opacity="0"
+                   visible="false"
+                   droppable="accepts: [pc-component='type: cpu']"
+                   pc-slot="type: cpu">
             </a-box>
-        </a-entity>
-
-        <!-- GPU with grab proxy -->
-        <a-entity id="gpu-group" position="0 1.2 -1">
-            <a-box id="gpu"
-                   width="0.3"
-                   height="0.15"
-                   depth="0.5"
+            
+            <a-box id="gpu-slot"
+                   position="0.15 0 0"
+                   width="0.05"
+                   height="0.3"
+                   depth="0.15"
                    color="#ff4500"
-                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                   data-component-type="gpu">
-                <a-text value="GPU" 
-                        position="0 0.1 0" 
-                        align="center" 
-                        scale="0.3 0.3 0.3">
-                </a-text>
+                   opacity="0"
+                   visible="false"
+                   droppable="accepts: [pc-component='type: gpu']"
+                   pc-slot="type: gpu">
             </a-box>
-            <a-box class="grab-proxy"
-                   width="0.35"
-                   height="0.2"
-                   depth="0.55"
-                   opacity="0.3"
-                   color="#00ff00"
-                   hoverable grabbable stretchable draggable
-                   proxy-controller="target: #gpu">
-            </a-box>
-        </a-entity>
-
-        <!-- RAM with grab proxy -->
-        <a-entity id="ram-group" position="1 1.2 -1">
-            <a-box id="ram"
-                   width="0.3"
+            
+            <a-box id="ram-slot"
+                   position="-0.1 -0.1 0"
+                   width="0.25"
                    height="0.05"
-                   depth="0.02"
+                   depth="0.05"
                    color="#32cd32"
-                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                   data-component-type="ram">
-                <a-text value="RAM" 
-                        position="0 0.05 0" 
-                        align="center" 
-                        scale="0.2 0.2 0.2">
-                </a-text>
+                   opacity="0"
+                   visible="false"
+                   droppable="accepts: [pc-component='type: ram']"
+                   pc-slot="type: ram">
             </a-box>
-            <a-box class="grab-proxy"
-                   width="0.35"
-                   height="0.1"
-                   depth="0.08"
-                   opacity="0.3"
-                   color="#00ff00"
-                   hoverable grabbable stretchable draggable
-                   proxy-controller="target: #ram">
-            </a-box>
-        </a-entity>
-
-        <!-- PSU with grab proxy -->
-        <a-entity id="psu-group" position="2 1.2 -1">
-            <a-box id="psu"
+            
+            <a-box id="psu-slot"
+                   position="0 0.2 -0.2"
                    width="0.25"
                    height="0.25"
                    depth="0.25"
                    color="#696969"
-                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
-                   data-component-type="psu">
-                <a-text value="PSU" 
-                        position="0 0.15 0" 
-                        align="center" 
-                        scale="0.3 0.3 0.3">
-                </a-text>
+                   opacity="0"
+                   visible="false"
+                   droppable="accepts: [pc-component='type: psu']"
+                   pc-slot="type: psu">
             </a-box>
-            <a-box class="grab-proxy"
-                   width="0.3"
-                   height="0.3"
-                   depth="0.3"
-                   opacity="0.3"
-                   color="#00ff00"
-                   hoverable grabbable stretchable draggable
-                   proxy-controller="target: #psu">
+            
+            <a-box id="ssd-slot"
+                   position="-0.2 -0.35 0.2"
+                   width="0.15"
+                   height="0.05"
+                   depth="0.1"
+                   color="#ff69b4"
+                   opacity="0"
+                   visible="false"
+                   droppable="accepts: [pc-component='type: ssd']"
+                   pc-slot="type: ssd">
             </a-box>
         </a-entity>
 
-        <!-- PC Case (Target) -->
-        <a-box id="pc-case"
-               position="0 0.5 -3"
-               width="0.8"
-               height="1"
-               depth="0.8"
-               color="#1a1a1a"
-               opacity="0.7"
-               static-body>
-            <a-text value="PC CASE" 
-                    position="0 0.6 0" 
-                    align="center" 
-                    scale="0.5 0.5 0.5"
-                    color="#fff">
-            </a-text>
-        </a-box>
-
         <!-- Lighting -->
-        <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.5"></a-light>
-        <a-light type="point" position="0 2 0" color="#ffffff" intensity="0.5"></a-light>
+        <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
+        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6"></a-light>
+        <a-light type="point" position="0 2.5 0" color="#ffffff" intensity="0.4"></a-light>
 
         <!-- Camera Rig -->
-        <a-entity id="rig" position="0 0 0">
+        <a-entity id="rig" position="0 0 1.5">
             <a-camera id="camera" 
-                      position="0 1.6 1" 
+                      position="0 1.6 0" 
                       look-controls 
                       wasd-controls="fly: true">
-                <a-cursor raycaster="objects: .grab-proxy, #pc-case"></a-cursor>
+                <!-- For desktop cursor interaction -->
+                <a-entity cursor="rayOrigin: mouse"
+                          raycaster="objects: [hoverable]"
+                          super-hands="colliderEvent: raycaster-intersection;
+                                       colliderEventProperty: els;
+                                       colliderEndEvent: raycaster-intersection-cleared;
+                                       colliderEndEventProperty: clearedEls">
+                </a-entity>
             </a-camera>
             
-            <!-- VR Controllers -->
+            <!-- VR Controllers with sphere-collider for close interaction -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
                       oculus-touch-controls="hand: left"
-                      mixin="hand-physics"
-                      hand-coordinates="hand: left"
-                      smooth-controller>
+                      sphere-collider="objects: [hoverable]"
+                      super-hands
+                      hand-coordinates="hand: left">
+                <!-- Visual feedback sphere -->
+                <a-sphere radius="0.03" 
+                          color="#44ff44" 
+                          opacity="0.5"
+                          visible="false"
+                          event-set__grabon="_event: grab-start; visible: true"
+                          event-set__graboff="_event: grab-end; visible: false">
+                </a-sphere>
             </a-entity>
             
             <a-entity id="rightHand"
                       hand-controls="hand: right"
                       oculus-touch-controls="hand: right"
                       oculus-thumbstick-controls="fly: true"
-                      mixin="hand-physics"
-                      hand-coordinates="hand: right"
-                      smooth-controller>
+                      sphere-collider="objects: [hoverable]"
+                      super-hands
+                      hand-coordinates="hand: right">
+                <!-- Visual feedback sphere -->
+                <a-sphere radius="0.03" 
+                          color="#44ff44" 
+                          opacity="0.5"
+                          visible="false"
+                          event-set__grabon="_event: grab-start; visible: true"
+                          event-set__graboff="_event: grab-end; visible: false">
+                </a-sphere>
             </a-entity>
         </a-entity>
 
         <script>
-            // Component to track and display hand coordinates
+            // Billboard component - makes text always face camera
+            AFRAME.registerComponent('billboard', {
+                tick: function() {
+                    this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position);
+                }
+            });
+
+            // Component to track hand coordinates
             AFRAME.registerComponent('hand-coordinates', {
                 schema: {
                     hand: {type: 'string', default: 'left'}
@@ -312,255 +412,129 @@
                 }
             });
 
-            // Enhanced physics shape component
-            AFRAME.registerComponent('physics-shape', {
+            // PC Component tracking
+            AFRAME.registerComponent('pc-component', {
                 schema: {
-                    shape: {type: 'string', default: 'auto'}
+                    type: {type: 'string'}
                 },
                 
                 init: function() {
-                    const el = this.el;
+                    // Store initial position for reset
+                    this.initialPosition = this.el.object3D.position.clone();
+                    this.isInstalled = false;
                     
-                    // Wait for physics to be ready
-                    el.addEventListener('body-loaded', () => {
-                        // Apply proper physics settings
-                        if (el.body) {
-                            // Set proper mass distribution
-                            el.body.updateMassProperties();
-                            
-                            // Ensure proper collision detection
-                            el.body.setCcdMotionThreshold(0.001);
-                            el.body.setCcdSweptSphereRadius(0.01);
-                        }
-                    });
-                    
-                    // Debug info on grab
-                    el.addEventListener('grab-start', (evt) => {
-                        const debugInfo = document.getElementById('physics-debug');
-                        const componentType = el.getAttribute('data-component-type') || 'Unknown';
-                        debugInfo.innerHTML = `
-                            Physics Debug Info:<br>
-                            Gravity: -9.8<br>
-                            Selected Object: ${componentType}<br>
-                            Mass: ${el.body ? el.body.mass.toFixed(2) : 'N/A'}<br>
-                            Shape: ${this.data.shape}
-                        `;
-                    });
-                }
-            });
-
-            // Hand tracking physics for better collision
-            AFRAME.registerComponent('hand-tracking-physics', {
-                init: function() {
-                    const el = this.el;
-                    
-                    // Create a physics body for the hand
-                    el.addEventListener('loaded', () => {
-                        // Add a small sphere collider for the hand
-                        const handCollider = document.createElement('a-sphere');
-                        handCollider.setAttribute('radius', '0.05');
-                        handCollider.setAttribute('visible', 'false');
-                        handCollider.setAttribute('static-body', 'shape: sphere');
-                        el.appendChild(handCollider);
-                    });
-                }
-            });
-
-            // Better collision detection system
-            AFRAME.registerSystem('collision-detection', {
-                init: function() {
-                    this.collisions = new Map();
-                },
-                
-                registerCollision: function(bodyA, bodyB) {
-                    const key = `${bodyA.id}-${bodyB.id}`;
-                    this.collisions.set(key, {bodyA, bodyB, time: Date.now()});
-                },
-                
-                tick: function() {
-                    // Clean up old collisions
-                    const now = Date.now();
-                    for (const [key, collision] of this.collisions) {
-                        if (now - collision.time > 100) {
-                            this.collisions.delete(key);
-                        }
-                    }
-                }
-            });
-
-            // Proxy controller - controls target object through grab proxy
-            AFRAME.registerComponent('proxy-controller', {
-                schema: {
-                    target: {type: 'selector'}
-                },
-                
-                init: function() {
-                    const el = this.el;
-                    const target = this.data.target;
-                    const parentGroup = el.parentElement;
-                    
-                    // Hide proxy on load (set to 0.2 to see it)
-                    el.setAttribute('opacity', '0');
-                    
-                    // Show proxy on hover
-                    el.addEventListener('hover-start', () => {
-                        el.setAttribute('opacity', '0.3');
-                        el.setAttribute('color', '#00ff00');
-                    });
-                    
-                    el.addEventListener('hover-end', () => {
-                        if (!el.is('grabbed')) {
-                            el.setAttribute('opacity', '0');
-                        }
-                    });
-                    
-                    // Handle grabbing
-                    el.addEventListener('grab-start', (evt) => {
-                        el.setAttribute('opacity', '0.5');
-                        el.setAttribute('color', '#ffff00');
-                        
-                        // Disable physics on target
-                        if (target.hasAttribute('dynamic-body')) {
-                            this.originalPhysics = target.getAttribute('dynamic-body');
-                            target.removeAttribute('dynamic-body');
-                        }
-                    });
-                    
-                    el.addEventListener('grab-end', (evt) => {
-                        el.setAttribute('opacity', '0');
-                        
-                        // Re-enable physics on target
-                        if (this.originalPhysics) {
-                            setTimeout(() => {
-                                target.setAttribute('dynamic-body', this.originalPhysics);
-                                // Reset velocities
-                                if (target.body) {
-                                    target.body.velocity.set(0, 0, 0);
-                                    target.body.angularVelocity.set(0, 0, 0);
-                                }
-                            }, 100);
-                        }
-                    });
-                },
-                
-                tick: function() {
-                    // Make target follow the proxy position
-                    if (this.el.is('grabbed') && this.data.target) {
-                        const proxyPos = this.el.object3D.position;
-                        const proxyRot = this.el.object3D.rotation;
-                        
-                        this.data.target.object3D.position.copy(proxyPos);
-                        this.data.target.object3D.rotation.copy(proxyRot);
-                    }
-                }
-            });
-
-            // Smooth grabbing component
-            AFRAME.registerComponent('smooth-grabbing', {
-                init: function() {
-                    const el = this.el;
-                    this.originalDynamicBody = null;
-                    this.isGrabbed = false;
-                    
-                    el.addEventListener('grab-start', (evt) => {
-                        this.isGrabbed = true;
-                        // Store original physics settings
-                        if (el.hasAttribute('dynamic-body')) {
-                            this.originalDynamicBody = el.getAttribute('dynamic-body');
-                            // Remove physics while grabbed
-                            el.removeAttribute('dynamic-body');
-                        }
-                        
-                        // Make object kinematic
-                        el.setAttribute('kinematic-body', '');
-                    });
-                    
-                    el.addEventListener('grab-end', (evt) => {
-                        this.isGrabbed = false;
-                        // Remove kinematic
-                        el.removeAttribute('kinematic-body');
-                        
-                        // Restore physics after a small delay
-                        setTimeout(() => {
-                            if (this.originalDynamicBody && !this.isGrabbed) {
-                                el.setAttribute('dynamic-body', this.originalDynamicBody);
-                                
-                                // Reset velocities to prevent flying
-                                setTimeout(() => {
-                                    if (el.body) {
-                                        el.body.velocity.set(0, 0, 0);
-                                        el.body.angularVelocity.set(0, 0, 0);
-                                    }
-                                }, 50);
+                    // Listen for drag-drop events
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        const dropTarget = evt.detail.on;
+                        if (dropTarget && dropTarget.components['pc-slot']) {
+                            const slotType = dropTarget.components['pc-slot'].data.type;
+                            if (slotType === this.data.type && !this.isInstalled) {
+                                this.installComponent(dropTarget);
                             }
-                        }, 100);
+                        }
                     });
+                },
+                
+                installComponent: function(slot) {
+                    this.isInstalled = true;
+                    
+                    // Snap to slot position
+                    const slotPos = new THREE.Vector3();
+                    slot.object3D.getWorldPosition(slotPos);
+                    this.el.object3D.position.copy(slotPos);
+                    
+                    // Remove physics and make static
+                    this.el.removeAttribute('dynamic-body');
+                    this.el.setAttribute('static-body', '');
+                    
+                    // Remove interactivity
+                    this.el.removeAttribute('hoverable');
+                    this.el.removeAttribute('grabbable');
+                    this.el.removeAttribute('draggable');
+                    
+                    // Visual feedback
+                    this.el.setAttribute('material', 'emissive', '#00ff00');
+                    this.el.setAttribute('material', 'emissiveIntensity', '0.3');
+                    
+                    // Update progress
+                    this.el.sceneEl.emit('component-installed', {type: this.data.type});
+                    
+                    // Make next slot visible
+                    this.showNextSlot();
                 }
             });
 
-            // Smooth controller for better grabbing
-            AFRAME.registerComponent('smooth-controller', {
+            // PC Slot management
+            AFRAME.registerComponent('pc-slot', {
+                schema: {
+                    type: {type: 'string'}
+                },
+                
                 init: function() {
-                    // Add visual feedback
-                    const el = this.el;
-                    const highlight = document.createElement('a-sphere');
-                    highlight.setAttribute('radius', '0.03');
-                    highlight.setAttribute('color', '#00ff00');
-                    highlight.setAttribute('opacity', '0.5');
-                    highlight.setAttribute('visible', 'false');
-                    el.appendChild(highlight);
-                    
-                    el.addEventListener('gripdown', () => {
-                        highlight.setAttribute('visible', 'true');
-                    });
-                    
-                    el.addEventListener('gripup', () => {
-                        highlight.setAttribute('visible', 'false');
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        if (evt.detail.dropped && evt.detail.dropped.components['pc-component']) {
+                            const componentType = evt.detail.dropped.components['pc-component'].data.type;
+                            if (componentType === this.data.type) {
+                                this.el.setAttribute('material', 'color', '#00ff00');
+                            }
+                        }
                     });
                 }
             });
 
-            // Initialize physics world settings
-            document.querySelector('a-scene').addEventListener('loaded', () => {
-                const sceneEl = document.querySelector('a-scene');
+            // Progress tracking
+            let installedComponents = new Set();
+            const totalComponents = 6;
+            const slotOrder = ['motherboard', 'cpu', 'gpu', 'ram', 'psu', 'ssd'];
+            
+            document.querySelector('a-scene').addEventListener('component-installed', (evt) => {
+                installedComponents.add(evt.detail.type);
+                updateProgress();
                 
-                // Apply global physics settings
-                if (sceneEl.systems.physics && sceneEl.systems.physics.driver) {
-                    const world = sceneEl.systems.physics.driver.world;
-                    
-                    // Set solver iterations for better stability
-                    world.solver.iterations = 10;
-                    world.solver.tolerance = 0.001;
-                    
-                    // Set default contact material
-                    world.defaultContactMaterial.friction = 0.4;
-                    world.defaultContactMaterial.restitution = 0.3;
-                    world.defaultContactMaterial.contactEquationStiffness = 1e8;
-                    world.defaultContactMaterial.contactEquationRelaxation = 3;
-                    world.defaultContactMaterial.frictionEquationStiffness = 1e8;
-                    world.defaultContactMaterial.frictionEquationRelaxation = 3;
+                // Show next slot
+                const currentIndex = slotOrder.indexOf(evt.detail.type);
+                if (currentIndex < slotOrder.length - 1) {
+                    const nextSlotType = slotOrder[currentIndex + 1];
+                    const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`);
+                    if (nextSlot) {
+                        nextSlot.setAttribute('visible', true);
+                        nextSlot.setAttribute('opacity', 0.3);
+                        nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6');
+                        nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3');
+                    }
                 }
-                
-                console.log('Physics system initialized with improved settings');
             });
+            
+            function updateProgress() {
+                const progress = (installedComponents.size / totalComponents) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                
+                if (installedComponents.size === totalComponents) {
+                    setTimeout(() => {
+                        document.getElementById('completion-message').style.display = 'block';
+                        // Celebration effect
+                        document.querySelector('#pc-case').setAttribute('animation', 
+                            'property: material.emissive; to: #00ff00; dur: 1000; easing: easeInOutQuad; loop: 3');
+                    }, 500);
+                }
+            }
         </script>
     </a-scene>
 
     <div class="info">
-        <strong>Fixed Physics Demo</strong><br><br>
-        <strong>VR Movement:</strong><br>
-        • Right thumbstick - move/fly<br>
-        • Left thumbstick - rotate<br>
-        • Grip/Trigger - grab objects<br><br>
+        <strong>VR PC Builder - Super Hands</strong><br><br>
+        <strong>Як грати:</strong><br>
+        1. Візьміть компонент (trigger/grip)<br>
+        2. Перетягніть його до корпусу ПК<br>
+        3. Відпустіть над відповідним слотом<br>
+        4. Слоти з'являються по черзі<br><br>
+        <strong>VR Controls:</strong><br>
+        • Правий стік - рух/політ<br>
+        • Trigger/Grip - взяти/відпустити<br>
+        • Компоненти підсвічуються при наведенні<br><br>
         <strong>Desktop:</strong><br>
-        • WASD - move (Shift to fly up/down)<br>
-        • Mouse - look around<br>
-        • Click - grab objects<br><br>
-        <strong>Improvements:</strong><br>
-        • Proper collision shapes<br>
-        • Better physics damping<br>
-        • Hand coordinate tracking<br>
-        • Physics debug info
+        • WASD - рух, мишка - огляд<br>
+        • Клік - взяти/відпустити
     </div>
 </body>
 </html>

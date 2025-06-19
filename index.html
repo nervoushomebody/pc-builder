@@ -105,213 +105,45 @@
 
         <a-sky color="#1a1a2e"></a-sky>
         
-        <a-plane position="0 0 0" 
-                 rotation="-90 0 0" 
-                 width="12" 
-                 height="12" 
-                 color="#16213e"
-                 static-body
-                 collision-filter="group: default; collidesWith: objects"
-                 grid="width: 12; height: 12; color: #0f3460">
-        </a-plane>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="12" height="12" color="#16213e"
+                 static-body collision-filter="group: default; collidesWith: objects"
+                 grid="width: 12; height: 12; color: #0f3460"></a-plane>
 
-        <a-box position="0 0.4 -2" 
-               width="3" 
-               height="0.8" 
-               depth="1.5" 
-               color="#2c3e50"
-               static-body>
-            <a-text value="Стіл для збірки" 
-                    position="0 0.5 0" 
-                    align="center" 
-                    color="#ecf0f1">
-            </a-text>
+        <a-box position="0 0.4 -2" width="3" height="0.8" depth="1.5" color="#2c3e50" static-body>
+            <a-text value="Стіл для збірки" position="0 0.5 0" align="center" color="#ecf0f1"></a-text>
         </a-box>
 
-        <a-entity id="motherboard" 
-                  class="grabbable"
-                  position="-1.5 1.2 -0.5"
-                  mixin="pc-component"
-                  pc-component="type: motherboard"
-                  geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4"
-                  material="color: #2a7f2a; metalness: 0.6">
-            <a-text value="Материнська плата" 
-                    position="0 0.1 0" 
-                    align="center" 
-                    scale="0.3 0.3 0.3"
-                    billboard>
-            </a-text>
+        <a-entity id="motherboard" class="grabbable" position="-1.5 1.2 -0.5" mixin="pc-component" pc-component="type: motherboard" geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4" material="color: #2a7f2a; metalness: 0.6">
+            <a-text value="Материнська плата" position="0 0.1 0" align="center" scale="0.3 0.3 0.3" billboard></a-text>
         </a-entity>
-
-        <a-entity id="cpu" 
-                  class="grabbable"
-                  position="-0.5 1.2 -0.5"
-                  mixin="pc-component"
-                  pc-component="type: cpu"
-                  geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08"
-                  material="color: #4169e1; metalness: 0.8">
-            <a-text value="CPU" 
-                    position="0 0.08 0" 
-                    align="center" 
-                    scale="0.25 0.25 0.25"
-                    billboard>
-            </a-text>
+        <a-entity id="cpu" class="grabbable" position="-0.5 1.2 -0.5" mixin="pc-component" pc-component="type: cpu" geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08" material="color: #4169e1; metalness: 0.8">
+            <a-text value="CPU" position="0 0.08 0" align="center" scale="0.25 0.25 0.25" billboard></a-text>
         </a-entity>
-
-        <a-entity id="gpu" 
-                  class="grabbable"
-                  position="0.5 1.2 -0.5"
-                  mixin="pc-component"
-                  pc-component="type: gpu"
-                  geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05"
-                  material="color: #ff4500; metalness: 0.7">
-            <a-text value="Відеокарта" 
-                    position="0 0.12 0" 
-                    align="center" 
-                    scale="0.3 0.3 0.3"
-                    billboard>
-            </a-text>
+        <a-entity id="gpu" class="grabbable" position="0.5 1.2 -0.5" mixin="pc-component" pc-component="type: gpu" geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05" material="color: #ff4500; metalness: 0.7">
+            <a-text value="Відеокарта" position="0 0.12 0" align="center" scale="0.3 0.3 0.3" billboard></a-text>
         </a-entity>
-
-        <a-entity id="ram" 
-                  class="grabbable"
-                  position="1.5 1.2 -0.5"
-                  mixin="pc-component"
-                  pc-component="type: ram"
-                  geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02"
-                  material="color: #32cd32; metalness: 0.5">
-            <a-text value="RAM" 
-                    position="0 0.08 0" 
-                    align="center" 
-                    scale="0.25 0.25 0.25"
-                    billboard>
-            </a-text>
+        <a-entity id="ram" class="grabbable" position="1.5 1.2 -0.5" mixin="pc-component" pc-component="type: ram" geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02" material="color: #32cd32; metalness: 0.5">
+            <a-text value="RAM" position="0 0.08 0" align="center" scale="0.25 0.25 0.25" billboard></a-text>
         </a-entity>
-
-        <a-entity id="psu" 
-                  class="grabbable"
-                  position="-1 1.2 0.5"
-                  mixin="pc-component"
-                  pc-component="type: psu"
-                  geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2"
-                  material="color: #696969; metalness: 0.9">
-            <a-text value="Блок живлення" 
-                    position="0 0.15 0" 
-                    align="center" 
-                    scale="0.25 0.25 0.25"
-                    billboard>
-            </a-text>
+        <a-entity id="psu" class="grabbable" position="-1 1.2 0.5" mixin="pc-component" pc-component="type: psu" geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2" material="color: #696969; metalness: 0.9">
+            <a-text value="Блок живлення" position="0 0.15 0" align="center" scale="0.25 0.25 0.25" billboard></a-text>
         </a-entity>
-
-        <a-entity id="ssd" 
-                  class="grabbable"
-                  position="1 1.2 0.5"
-                  mixin="pc-component"
-                  pc-component="type: ssd"
-                  geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1"
-                  material="color: #ff69b4; metalness: 0.4">
-            <a-text value="SSD" 
-                    position="0 0.05 0" 
-                    align="center" 
-                    scale="0.25 0.25 0.25"
-                    billboard>
-            </a-text>
+        <a-entity id="ssd" class="grabbable" position="1 1.2 0.5" mixin="pc-component" pc-component="type: ssd" geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1" material="color: #ff69b4; metalness: 0.4">
+            <a-text value="SSD" position="0 0.05 0" align="center" scale="0.25 0.25 0.25" billboard></a-text>
         </a-entity>
 
         <a-entity id="pc-case-group" position="0 0.8 -2">
-            <a-box id="pc-case"
-                   width="0.6"
-                   height="0.8"
-                   depth="0.6"
-                   color="#1a1a1a"
-                   opacity="0.9"
-                   static-body>
-                <a-text value="PC CASE" 
-                        position="0 0.5 0" 
-                        align="center" 
-                        scale="0.4 0.4 0.4"
-                        color="#fff">
-                </a-text>
+            <a-box id="pc-case" width="0.6" height="0.8" depth="0.6" color="#1a1a1a" opacity="0.9" static-body>
+                <a-text value="PC CASE" position="0 0.5 0" align="center" scale="0.4 0.4 0.4" color="#fff"></a-text>
             </a-box>
-            
-            <a-box id="motherboard-slot"
-                   position="0 -0.3 0"
-                   width="0.5"
-                   height="0.1"
-                   depth="0.5"
-                   color="#2a7f2a"
-                   opacity="0.2"
-                   droppable="accepts: [pc-component='type: motherboard']"
-                   event-set__dragenter="_event: dragenter; opacity: 0.6"
-                   event-set__dragleave="_event: dragleave; opacity: 0.2"
-                   event-set__drop="_event: drag-drop; opacity: 0.8"
-                   pc-slot="type: motherboard">
-                <a-text value="Motherboard Slot" 
-                        position="0 0 0.3" 
-                        align="center" 
-                        scale="0.2 0.2 0.2">
-                </a-text>
+            <a-box id="motherboard-slot" position="0 -0.3 0" width="0.5" height="0.1" depth="0.5" color="#2a7f2a" opacity="0.2" droppable="accepts: [pc-component='type: motherboard']" event-set__dragenter="_event: dragenter; opacity: 0.6" event-set__dragleave="_event: dragleave; opacity: 0.2" event-set__drop="_event: drag-drop; opacity: 0.8" pc-slot="type: motherboard">
+                <a-text value="Motherboard Slot" position="0 0 0.3" align="center" scale="0.2 0.2 0.2"></a-text>
             </a-box>
-            
-            <a-box id="cpu-slot"
-                   position="0 -0.15 0"
-                   width="0.15"
-                   height="0.08"
-                   depth="0.15"
-                   color="#4169e1"
-                   opacity="0"
-                   visible="false"
-                   droppable="accepts: [pc-component='type: cpu']"
-                   pc-slot="type: cpu">
-            </a-box>
-            
-            <a-box id="gpu-slot"
-                   position="0.15 0 0"
-                   width="0.05"
-                   height="0.3"
-                   depth="0.15"
-                   color="#ff4500"
-                   opacity="0"
-                   visible="false"
-                   droppable="accepts: [pc-component='type: gpu']"
-                   pc-slot="type: gpu">
-            </a-box>
-            
-            <a-box id="ram-slot"
-                   position="-0.1 -0.1 0"
-                   width="0.25"
-                   height="0.05"
-                   depth="0.05"
-                   color="#32cd32"
-                   opacity="0"
-                   visible="false"
-                   droppable="accepts: [pc-component='type: ram']"
-                   pc-slot="type: ram">
-            </a-box>
-            
-            <a-box id="psu-slot"
-                   position="0 0.2 -0.2"
-                   width="0.25"
-                   height="0.25"
-                   depth="0.25"
-                   color="#696969"
-                   opacity="0"
-                   visible="false"
-                   droppable="accepts: [pc-component='type: psu']"
-                   pc-slot="type: psu">
-            </a-box>
-            
-            <a-box id="ssd-slot"
-                   position="-0.2 -0.35 0.2"
-                   width="0.15"
-                   height="0.05"
-                   depth="0.1"
-                   color="#ff69b4"
-                   opacity="0"
-                   visible="false"
-                   droppable="accepts: [pc-component='type: ssd']"
-                   pc-slot="type: ssd">
-            </a-box>
+            <a-box id="cpu-slot" position="0 -0.15 0" width="0.15" height="0.08" depth="0.15" color="#4169e1" opacity="0" visible="false" droppable="accepts: [pc-component='type: cpu']" pc-slot="type: cpu"></a-box>
+            <a-box id="gpu-slot" position="0.15 0 0" width="0.05" height="0.3" depth="0.15" color="#ff4500" opacity="0" visible="false" droppable="accepts: [pc-component='type: gpu']" pc-slot="type: gpu"></a-box>
+            <a-box id="ram-slot" position="-0.1 -0.1 0" width="0.25" height="0.05" depth="0.05" color="#32cd32" opacity="0" visible="false" droppable="accepts: [pc-component='type: ram']" pc-slot="type: ram"></a-box>
+            <a-box id="psu-slot" position="0 0.2 -0.2" width="0.25" height="0.25" depth="0.25" color="#696969" opacity="0" visible="false" droppable="accepts: [pc-component='type: psu']" pc-slot="type: psu"></a-box>
+            <a-box id="ssd-slot" position="-0.2 -0.35 0.2" width="0.15" height="0.05" depth="0.1" color="#ff69b4" opacity="0" visible="false" droppable="accepts: [pc-component='type: ssd']" pc-slot="type: ssd"></a-box>
         </a-entity>
 
         <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
@@ -319,243 +151,97 @@
         <a-light type="point" position="0 2.5 0" color="#ffffff" intensity="0.4"></a-light>
 
         <a-entity id="rig" position="0 0 1.5">
-            <a-camera id="camera" 
-                      position="0 1.6 0" 
-                      look-controls 
-                      wasd-controls="fly: true">
-                <a-entity cursor="rayOrigin: mouse"
-                          raycaster="objects: [hoverable]"
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="fly: true">
+                <a-entity cursor="rayOrigin: mouse" raycaster="objects: [hoverable]"
                           super-hands="colliderEvent: raycaster-intersection;
                                        colliderEventProperty: els;
                                        colliderEndEvent: raycaster-intersection-cleared;
-                                       colliderEndEventProperty: clearedEls">
-                </a-entity>
+                                       colliderEndEventProperty: clearedEls"></a-entity>
             </a-camera>
-            
-            <a-entity id="leftHand"
-                      hand-controls="hand: left"
-                      sphere-collider="objects: .grabbable; radius: 0.1"
-                      super-hands
-                      hand-coordinates="hand: left">
-                <a-sphere radius="0.04" 
-                          color="#44ff44" 
-                          opacity="0.6"
-                          visible="false"
+            <a-entity id="leftHand" hand-controls="hand: left" sphere-collider="objects: .grabbable; radius: 0.1" super-hands hand-coordinates="hand: left">
+                <a-sphere radius="0.04" color="#44ff44" opacity="0.6" visible="false"
                           event-set__grabon="_event: grab-start; visible: true; color: #ffff00"
-                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44">
-                </a-sphere>
+                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44"></a-sphere>
             </a-entity>
-            
-            <a-entity id="rightHand"
-                      hand-controls="hand: right"
-                      oculus-thumbstick-controls="fly: true"
-                      sphere-collider="objects: .grabbable; radius: 0.1"
-                      super-hands
-                      hand-coordinates="hand: right">
-                <a-sphere radius="0.04" 
-                          color="#44ff44" 
-                          opacity="0.6"
-                          visible="false"
+            <a-entity id="rightHand" hand-controls="hand: right" oculus-thumbstick-controls="fly: true" sphere-collider="objects: .grabbable; radius: 0.1" super-hands hand-coordinates="hand: right">
+                <a-sphere radius="0.04" color="#44ff44" opacity="0.6" visible="false"
                           event-set__grabon="_event: grab-start; visible: true; color: #ffff00"
-                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44">
-                </a-sphere>
+                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44"></a-sphere>
             </a-entity>
         </a-entity>
 
         <script>
-            // Billboard component - makes text always face camera
-            AFRAME.registerComponent('billboard', {
-                tick: function() {
-                    this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position);
-                }
-            });
-
-            // Component to track hand coordinates
-            AFRAME.registerComponent('hand-coordinates', {
-                schema: {
-                    hand: {type: 'string', default: 'left'}
-                },
-                
-                init: function() {
-                    this.coordsDisplay = document.getElementById('hand-coords');
-                },
-                
-                tick: function() {
-                    const position = this.el.object3D.position;
-                    const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`;
-                    
-                    if (this.coordsDisplay) {
-                        const lines = this.coordsDisplay.innerHTML.split('<br>');
-                        if (this.data.hand === 'left') {
-                            lines[0] = `Left Hand: x: ${coords}`;
-                        } else {
-                            lines[1] = `Right Hand: x: ${coords}`;
-                        }
-                        this.coordsDisplay.innerHTML = lines.join('<br>');
-                    }
-                }
-            });
-
-            // PC Component tracking
-            AFRAME.registerComponent('pc-component', {
-                schema: {
-                    type: {type: 'string'}
-                },
-                
-                init: function() {
-                    this.initialPosition = this.el.object3D.position.clone();
-                    this.isInstalled = false;
-                    
-                    this.el.addEventListener('drag-drop', (evt) => {
-                        const dropTarget = evt.detail.on;
-                        if (dropTarget && dropTarget.components['pc-slot']) {
-                            const slotType = dropTarget.components['pc-slot'].data.type;
-                            if (slotType === this.data.type && !this.isInstalled) {
-                                this.installComponent(dropTarget);
-                            }
-                        }
-                    });
-                },
-                
-                // CORRECTED installComponent function
-                installComponent: function(slot) {
-                    this.isInstalled = true;
-                    
-                    // Snap to slot position
-                    const slotPos = new THREE.Vector3();
-                    slot.object3D.getWorldPosition(slotPos);
-                    this.el.object3D.position.copy(slotPos);
-                    
-                    // Remove the component from the physics simulation by removing its body.
-                    // DO NOT make it a new static-body.
-                    this.el.removeAttribute('dynamic-body');
-                    
-                    // Remove interactivity
-                    this.el.removeAttribute('hoverable');
-                    this.el.removeAttribute('grabbable');
-                    this.el.removeAttribute('draggable');
-                    
-                    // Visual feedback
-                    this.el.setAttribute('material', 'emissive', '#00ff00');
-                    this.el.setAttribute('material', 'emissiveIntensity', '0.3');
-                    
-                    // Update progress
-                    this.el.sceneEl.emit('component-installed', {type: this.data.type});
-                }
-            });
-
-            // PC Slot management
-            AFRAME.registerComponent('pc-slot', {
-                schema: {
-                    type: {type: 'string'}
-                },
-                
-                init: function() {
-                    this.el.addEventListener('drag-drop', (evt) => {
-                        if (evt.detail.dropped && evt.detail.dropped.components['pc-component']) {
-                            const componentType = evt.detail.dropped.components['pc-component'].data.type;
-                            if (componentType === this.data.type) {
-                                this.el.setAttribute('material', 'color', '#00ff00');
-                            }
-                        }
-                    });
-                }
-            });
-
-            // Progress tracking
+            AFRAME.registerComponent('billboard', { tick: function() { this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position); } });
+            AFRAME.registerComponent('hand-coordinates', { schema: { hand: {type: 'string', default: 'left'} }, init: function() { this.coordsDisplay = document.getElementById('hand-coords'); }, tick: function() { const position = this.el.object3D.position; const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`; if (this.coordsDisplay) { const lines = this.coordsDisplay.innerHTML.split('<br>'); if (this.data.hand === 'left') { lines[0] = `Left Hand: x: ${coords}`; } else { lines[1] = `Right Hand: x: ${coords}`; } this.coordsDisplay.innerHTML = lines.join('<br>'); } } });
+            AFRAME.registerComponent('pc-component', { schema: { type: {type: 'string'} }, init: function() { this.initialPosition = this.el.object3D.position.clone(); this.isInstalled = false; this.el.addEventListener('drag-drop', (evt) => { const dropTarget = evt.detail.on; if (dropTarget && dropTarget.components['pc-slot']) { const slotType = dropTarget.components['pc-slot'].data.type; if (slotType === this.data.type && !this.isInstalled) { this.installComponent(dropTarget); } } }); }, installComponent: function(slot) { this.isInstalled = true; const slotPos = new THREE.Vector3(); slot.object3D.getWorldPosition(slotPos); this.el.object3D.position.copy(slotPos); this.el.removeAttribute('dynamic-body'); this.el.removeAttribute('hoverable'); this.el.removeAttribute('grabbable'); this.el.setAttribute('material', 'emissive', '#00ff00'); this.el.setAttribute('material', 'emissiveIntensity', '0.3'); this.el.sceneEl.emit('component-installed', {type: this.data.type}); } });
+            AFRAME.registerComponent('pc-slot', { schema: { type: {type: 'string'} }, init: function() { this.el.addEventListener('drag-drop', (evt) => { if (evt.detail.dropped && evt.detail.dropped.components['pc-component']) { const componentType = evt.detail.dropped.components['pc-component'].data.type; if (componentType === this.data.type) { this.el.setAttribute('material', 'color', '#00ff00'); } } }); } });
+            
             let installedComponents = new Set();
             const totalComponents = 6;
             const slotOrder = ['motherboard', 'cpu', 'gpu', 'ram', 'psu', 'ssd'];
-            
-            document.querySelector('a-scene').addEventListener('component-installed', (evt) => {
-                installedComponents.add(evt.detail.type);
-                updateProgress();
-                
-                // Show next slot
-                const currentIndex = slotOrder.indexOf(evt.detail.type);
-                if (currentIndex < slotOrder.length - 1) {
-                    const nextSlotType = slotOrder[currentIndex + 1];
-                    const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`);
-                    if (nextSlot) {
-                        nextSlot.setAttribute('visible', true);
-                        nextSlot.setAttribute('opacity', 0.3);
-                        nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6');
-                        nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3');
-                    }
-                }
-            });
-            
-            function updateProgress() {
-                const progress = (installedComponents.size / totalComponents) * 100;
-                document.getElementById('progress-fill').style.width = `${progress}%`;
-                
-                if (installedComponents.size === totalComponents) {
-                    setTimeout(() => {
-                        document.getElementById('completion-message').style.display = 'block';
-                        // Celebration effect
-                        document.querySelector('#pc-case').setAttribute('animation', 
-                            'property: material.emissive; to: #00ff00; dur: 1000; easing: easeInOutQuad; loop: 3');
-                    }, 500);
-                }
-            }
+            document.querySelector('a-scene').addEventListener('component-installed', (evt) => { installedComponents.add(evt.detail.type); updateProgress(); const currentIndex = slotOrder.indexOf(evt.detail.type); if (currentIndex < slotOrder.length - 1) { const nextSlotType = slotOrder[currentIndex + 1]; const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`); if (nextSlot) { nextSlot.setAttribute('visible', true); nextSlot.setAttribute('opacity', 0.3); nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6'); nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3'); } } });
+            function updateProgress() { const progress = (installedComponents.size / totalComponents) * 100; document.getElementById('progress-fill').style.width = `${progress}%`; if (installedComponents.size === totalComponents) { setTimeout(() => { document.getElementById('completion-message').style.display = 'block'; document.querySelector('#pc-case').setAttribute('animation', 'property: material.emissive; to: #00ff00; dur: 1000; easing: easeInOutQuad; loop: 3'); }, 500); } }
         </script>
         
         <script>
             AFRAME.registerComponent('grab-actions', {
               init: function () {
                 this.isGrabbed = false;
-                this.rightHand = document.getElementById('rightHand');
-                this.flyControls = null; // Will be assigned when hand is ready
+                this.rightHand = null;
+                this.flyControls = null;
 
-                // Function to handle grabbing
-                this.onGrabStart = () => {
-                  this.isGrabbed = true;
-                  // Disable flying when an object is held
-                  if (this.flyControls) {
-                    this.flyControls.data.fly = false;
-                  }
-                };
-
-                // Function to handle releasing
-                this.onGrabEnd = () => {
-                  this.isGrabbed = false;
-                  // Re-enable flying when the object is released
-                  if (this.flyControls) {
-                    this.flyControls.data.fly = true;
-                  }
-                };
+                // Bind 'this' to ensure the correct context inside the event handlers
+                this.onGrabStart = this.onGrabStart.bind(this);
+                this.onGrabEnd = this.onGrabEnd.bind(this);
+                this.onThumbstickMoved = this.onThumbstickMoved.bind(this);
                 
-                // Function to handle rotation with thumbstick
-                this.onThumbstickMoved = (evt) => {
-                  if (!this.isGrabbed) return;
-                  // Use thumbstick X movement to rotate the object around its Y axis
-                  // The 0.05 value is the rotation speed, you can adjust it
-                  this.el.object3D.rotateY(-evt.detail.x * 0.05); 
-                };
-
-                // Wait for the hand to be ready before getting the component
-                // This handles cases where the hand and its components initialize after this one
-                if (this.rightHand.components['oculus-thumbstick-controls']) {
-                    this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
-                } else {
-                    this.rightHand.addEventListener('controllerconnected', () => {
-                        this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
-                    });
-                }
-
-                // Add the event listeners
+                // Add listeners to this component's entity
                 this.el.addEventListener('grab-start', this.onGrabStart);
                 this.el.addEventListener('grab-end', this.onGrabEnd);
-                this.rightHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
+              },
+            
+              // Use the play() handler to safely access other entities
+              // after the scene has loaded.
+              play: function() {
+                this.rightHand = this.el.sceneEl.querySelector('#rightHand');
+                if (this.rightHand) {
+                    this.rightHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
+                    this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
+                    if (!this.flyControls) {
+                        this.rightHand.addEventListener('controllerconnected', () => {
+                             this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
+                        }, { once: true });
+                    }
+                } else {
+                    console.error('grab-actions: Could not find #rightHand entity.');
+                }
               },
 
-              remove: function () {
-                // Clean up the event listeners when the component is removed
-                this.el.removeEventListener('grab-start', this.onGrabStart);
-                this.el.removeEventListener('grab-end', this.onGrabEnd);
-                if(this.rightHand) {
+              // Clean up listeners from external entities
+              pause: function() {
+                if (this.rightHand) {
                     this.rightHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
                 }
+              },
+
+              onGrabStart: function() {
+                this.isGrabbed = true;
+                if (this.flyControls) {
+                  this.flyControls.data.fly = false;
+                }
+              },
+
+              onGrabEnd: function() {
+                this.isGrabbed = false;
+                if (this.flyControls) {
+                  this.flyControls.data.fly = true;
+                }
+              },
+              
+              onThumbstickMoved: function(evt) {
+                if (!this.isGrabbed) return;
+                // Use thumbstick X movement to rotate the object around its Y axis
+                this.el.object3D.rotateY(-evt.detail.x * 0.05); // Adjust 0.05 for rotation speed
               }
             });
         </script>

@@ -1,157 +1,199 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>VR Physics Sandbox</title>
+    <meta charset="utf-8">
+    <title>A-Frame VR Scene with Physics and Interactions</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@3.0.4/dist/aframe-super-hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@v7.5.0/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/super-hands@3.0.3/dist/super-hands.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
 </head>
 <body>
-<a-scene physics="driver: cannon; gravity: -9.8;">
+    <a-scene physics="gravity: -9.8; debug: false">
+        <!-- Assets -->
+        <a-assets>
+            <a-mixin id="grabbable"
+                     hoverable grabbable stretchable draggable
+                     event-set__hoveron="_event: hover-start; material.opacity: 0.7"
+                     event-set__hoveroff="_event: hover-end; material.opacity: 1"
+                     event-set__dragstart="_event: drag-start; material.emissive: #2f2f2f"
+                     event-set__dragend="_event: drag-end; material.emissive: #000000">
+            </a-mixin>
+        </a-assets>
 
-    <a-entity light="type: ambient; color: #CCC; intensity: 0.8"></a-entity>
-    <a-entity light="type: directional; color: #FFF; intensity: 0.6; cast: true" position="-1 5 3"></a-entity>
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#7BC8A4"
-             static-body shadow="receive: true"></a-plane>
-    <a-sky color="#87CEEB"></a-sky>
+        <!-- Environment -->
+        <a-sky color="#ECECEC"></a-sky>
+        
+        <!-- Ground -->
+        <a-plane 
+            position="0 0 0" 
+            rotation="-90 0 0" 
+            width="20" 
+            height="20" 
+            color="#7BC8A4"
+            static-body
+            shadow="receive: true">
+        </a-plane>
 
-    <a-entity id="player"
-              kinematic-body="mass: 75; shape: capsule;"
-              physics-movement>
-        <a-entity id="camera" camera position="0 1.6 0" look-controls></a-entity>
+        <!-- Table -->
+        <a-box 
+            id="table"
+            position="0 0.75 -3" 
+            width="3" 
+            height="0.1" 
+            depth="2"
+            color="#8B4513"
+            static-body
+            shadow>
+        </a-box>
+        <!-- Table legs -->
+        <a-box position="-1.3 0.375 -2.3" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
+        <a-box position="1.3 0.375 -2.3" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
+        <a-box position="-1.3 0.375 -3.7" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
+        <a-box position="1.3 0.375 -3.7" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
+
+        <!-- Grabbable Boxes on table -->
+        <a-box 
+            mixin="grabbable"
+            position="-0.5 1.2 -3" 
+            width="0.3" 
+            height="0.3" 
+            depth="0.3"
+            color="#FF6B6B"
+            dynamic-body
+            shadow>
+        </a-box>
         
-        <a-entity id="leftHand"
-                  hand-controls="hand: left; handModelStyle: lowPoly; color: #1565C0"
-                  super-hands
-                  kinematic-body="shape: sphere; radius: 0.05;">
-        </a-entity>
+        <a-box 
+            mixin="grabbable"
+            position="0.5 1.2 -3" 
+            width="0.4" 
+            height="0.4" 
+            depth="0.4"
+            color="#4ECDC4"
+            dynamic-body
+            shadow>
+        </a-box>
         
-        <a-entity id="rightHand"
-                  hand-controls="hand: right; handModelStyle: lowPoly; color: #1565C0"
-                  super-hands
-                  kinematic-body="shape: sphere; radius: 0.05;">
-            <a-entity id="info-panel" position="0 0.15 -0.4" rotation="-25 0 0" visible="false">
-                <a-plane color="#212121" width="0.6" height="0.4" opacity="0.95" rounded="radius: 0.02"></a-plane>
-                <a-text id="component-name" value="" color="white" position="0 0.15 0.01" align="center" width="1"></a-text>
-                <a-text id="component-description" value="" color="white" position="0 0 0.01" align="center" wrap-count="35" width="0.5"></a-text>
+        <a-box 
+            mixin="grabbable"
+            position="0 1.5 -3.5" 
+            width="0.35" 
+            height="0.35" 
+            depth="0.35"
+            color="#FFE66D"
+            dynamic-body
+            shadow>
+        </a-box>
+
+        <!-- Grabbable Spheres -->
+        <a-sphere 
+            mixin="grabbable"
+            position="-1.5 0.3 -2" 
+            radius="0.3" 
+            color="#95E1D3"
+            dynamic-body
+            shadow>
+        </a-sphere>
+        
+        <a-sphere 
+            mixin="grabbable"
+            position="1.5 0.25 -2.5" 
+            radius="0.25" 
+            color="#F3B8F3"
+            dynamic-body
+            shadow>
+        </a-sphere>
+        
+        <a-sphere 
+            mixin="grabbable"
+            position="0 0.4 -1" 
+            radius="0.4" 
+            color="#FFB6C1"
+            dynamic-body
+            shadow>
+        </a-sphere>
+
+        <!-- Additional scattered objects -->
+        <a-box 
+            mixin="grabbable"
+            position="-2.5 0.2 -4" 
+            width="0.4" 
+            height="0.4" 
+            depth="0.4"
+            color="#DDA0DD"
+            dynamic-body
+            shadow>
+        </a-box>
+        
+        <a-sphere 
+            mixin="grabbable"
+            position="2.5 0.3 -4.5" 
+            radius="0.3" 
+            color="#98FB98"
+            dynamic-body
+            shadow>
+        </a-sphere>
+
+        <!-- Player rig with movement and hand controls -->
+        <a-entity id="rig" movement-controls position="0 0 2">
+            <!-- Camera -->
+            <a-entity 
+                id="camera"
+                camera
+                position="0 1.6 0"
+                look-controls>
+                <!-- Desktop cursor -->
+                <a-entity
+                    cursor="rayOrigin: mouse"
+                    raycaster="objects: [mixin='grabbable'], [clickable]"
+                    super-hands="colliderEvent: raycaster-intersection;
+                               colliderEventProperty: els;
+                               colliderEndEvent: raycaster-intersection-cleared;
+                               colliderEndEventProperty: clearedEls">
+                </a-entity>
+            </a-entity>
+            
+            <!-- VR Controllers -->
+            <a-entity 
+                id="leftHand"
+                hand-controls="hand: left"
+                super-hands="colliderEvent: collisions;
+                           colliderEventProperty: els;
+                           colliderEndEvent: collisions-cleared;
+                           colliderEndEventProperty: clearedEls">
+            </a-entity>
+            
+            <a-entity 
+                id="rightHand"
+                hand-controls="hand: right"
+                super-hands="colliderEvent: collisions;
+                           colliderEventProperty: els;
+                           colliderEndEvent: collisions-cleared;
+                           colliderEndEventProperty: clearedEls">
             </a-entity>
         </a-entity>
-    </a-entity>
 
-    <a-box id="cpu" position="-1.5 0.5 -2" color="#FFC107" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 5"
-           data-component="CPU" data-description="The brain of the computer.">
-    </a-box>
-
-    <a-box id="gpu" position="-0.5 0.5 -2" color="#F44336" height="0.4" width="1.0" depth="0.6" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 15"
-           data-component="GPU" data-description="Processes all visual output.">
-    </a-box>
-
-    <a-cylinder id="ram" position="0.5 0.5 -2" color="#4CAF50" radius="0.1" height="0.8" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 2"
-           data-component="RAM" data-description="Temporary data storage.">
-    </a-cylinder>
-
-    <a-sphere id="hdd" position="1.5 0.5 -2" color="#9E9E9E" radius="0.3" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 10"
-           data-component="HDD" data-description="Long-term data storage.">
-    </a-sphere>
+        <!-- Lighting -->
+        <a-light type="ambient" color="#BBB"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.6" position="-0.5 1 1" shadow></a-light>
+    </a-scene>
 
     <script>
-        // НОВИЙ КОМПОНЕНТ ДЛЯ КЕРОВАНОГО ФІЗИЧНОГО РУХУ
-        AFRAME.registerComponent('physics-movement', {
-            schema: {
-                speed: { default: 3.5 },
-                leftHand: { type: 'selector', default: '#leftHand' }
-            },
-            init: function () {
-                this.thumbstick = { x: 0, y: 0 };
-                this.camera = document.querySelector('#camera');
-                
-                // Зберігаємо посилання на функції, щоб правильно видалити слухачі
-                this.onThumbstickMoved = (e) => { this.thumbstick = e.detail; };
-                this.onThumbstickUp = (e) => { this.thumbstick = { x: 0, y: 0 }; };
-
-                this.data.leftHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
-                this.data.leftHand.addEventListener('thumbstickup', this.onThumbstickUp);
-            },
-            tick: function(time, timeDelta) {
-                const playerBody = this.el.body;
-                if (!playerBody) return;
-
-                const stick = this.thumbstick;
-                // Зупиняємо рух, якщо джойстик неактивний
-                if (stick.x === 0 && stick.y === 0) {
-                    playerBody.velocity.set(0, 0, 0);
-                    return;
-                }
-
-                // Отримуємо напрямок камери
-                const direction = new THREE.Vector3();
-                this.camera.object3D.getWorldDirection(direction);
-                direction.y = 0; // Рухаємось тільки по горизонталі
-                direction.normalize();
-
-                // Розраховуємо вектори руху вперед/назад та вліво/вправо
-                const forward = direction;
-                const strafe = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), forward);
-                
-                // Комбінуємо рух
-                const finalMovement = new THREE.Vector3()
-                    .add(forward.multiplyScalar(-stick.y))
-                    .add(strafe.multiplyScalar(stick.x))
-                    .normalize()
-                    .multiplyScalar(this.data.speed);
-
-                // Застосовуємо силу до фізичного тіла гравця
-                playerBody.velocity.set(finalMovement.x, 0, finalMovement.z);
-            },
-            remove: function() {
-                // Очищуємо слухачі подій, коли компонент видаляється
-                this.data.leftHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
-                this.data.leftHand.removeEventListener('thumbstickup', this.onThumbstickUp);
-            }
-        });
-
-        // Старий код для інфо-панелі та підсвітки, він працює коректно
-        document.addEventListener('DOMContentLoaded', function () {
-            const infoPanel = document.getElementById('info-panel');
-            const nameText = document.getElementById('component-name');
-            const descText = document.getElementById('component-description');
-
-            const showInfo = (evt) => {
-                const grabbedEl = evt.target;
-                nameText.setAttribute('value', grabbedEl.getAttribute('data-component'));
-                descText.setAttribute('value', grabbedEl.getAttribute('data-description'));
-                infoPanel.setAttribute('visible', true);
-            };
-
-            const hideInfo = (evt) => {
-                infoPanel.setAttribute('visible', false);
-            };
-            
-            const highlight = (evt) => {
-                evt.target.setAttribute('material', 'emissive', '#FFFF00');
-                evt.target.setAttribute('material', 'emissiveIntensity', 0.3);
-            };
-
-            const unhighlight = (evt) => {
-                evt.target.setAttribute('material', 'emissive', '#000000');
-                evt.target.setAttribute('material', 'emissiveIntensity', 0);
-            };
-
-            const items = document.querySelectorAll('.clickable');
-            items.forEach(item => {
-                item.addEventListener('grab-start', showInfo);
-                item.addEventListener('grab-end', hideInfo);
-                item.addEventListener('hover-start', highlight);
-                item.addEventListener('hover-end', unhighlight);
+        // Add some interactivity feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            // Log when objects are grabbed/released
+            const grabbables = document.querySelectorAll('[mixin="grabbable"]');
+            grabbables.forEach(el => {
+                el.addEventListener('grab-start', function(evt) {
+                    console.log('Grabbed:', el);
+                });
+                el.addEventListener('grab-end', function(evt) {
+                    console.log('Released:', el);
+                });
             });
         });
     </script>
-</a-scene>
 </body>
 </html>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VR Симулятор Збірки ПК - Виправлення контролерів</title>
+    <title>Simple VR PC Builder - Combined Experience</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -21,6 +21,7 @@
             padding: 10px;
             border-radius: 5px;
             font-size: 14px;
+            width: 250px; /* Adjusted for new text */
         }
     </style>
 </head>
@@ -47,62 +48,60 @@
         </a-assets>
 
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body nav-mesh></a-plane>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
 
-        <a-entity id="pc-case" position="0 0.5 -1">
+        <a-box id="table" position="0 0.5 -1.2" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
+        
+        <a-entity id="pc-case" position="-1 0.6 -1.2">
             <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
         </a-entity>
 
-        <a-box id="motherboard" mixin="interactive" position="-0.8 0.7 0" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
-               show-description-on-grab="description: Материнська плата - поєднує всі компоненти.">
+        <a-box id="motherboard" mixin="interactive" position="1 0.7 -1.2" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
+               show-description-on-grab="description: Motherboard - connects all components.">
             <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
         </a-box>
-        <a-box id="cpu" mixin="interactive" position="-0.5 0.7 -0.6" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
-               show-description-on-grab="description: CPU (Процесор) - мозок комп'ютера.">
+        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -1.2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
+               show-description-on-grab="description: CPU (Processor) - the brain of the computer.">
             <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ram" mixin="interactive" position="0.8 0.7 0" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
-               show-description-on-grab="description: RAM (Оперативна пам'ять) - короткочасна пам'ять.">
+        <a-box id="ram" mixin="interactive" position="1 0.7 -0.7" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
+               show-description-on-grab="description: RAM (Random Access Memory) - short-term memory.">
             <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="gpu" mixin="interactive" position="0.5 0.7 -0.6" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
-               show-description-on-grab="description: GPU (Відеокарта) - обробляє графіку.">
+        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -0.7" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
+               show-description-on-grab="description: GPU (Graphics Card) - processes graphics.">
             <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
         </a-box>
-        <a-box id="psu" mixin="interactive" position="-1.0 0.7 0.4" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
-               show-description-on-grab="description: Блок живлення - забезпечує енергією.">
+        <a-box id="psu" mixin="interactive" position="1 0.7 -1.7" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
+               show-description-on-grab="description: Power Supply Unit - provides power.">
             <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ssd" mixin="interactive" position="1.0 0.7 0.4" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
-               show-description-on-grab="description: SSD (Накопичувач) - довготривала пам'ять.">
+        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -1.7" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
+               show-description-on-grab="description: SSD (Solid State Drive) - long-term storage.">
             <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
         </a-box>
 
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
 
-        <a-entity id="rig" position="0 0 0" teleport-controls="hand: left; button: trigger; collisionEntities: #ground-plane;">
+        <a-entity id="rig" position="0 0 0" movement-controls="speed: 0.3; controls: left" thumbstick-turn="hand: right">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls>
                 <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
             </a-camera>
 
-            <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right;">
-                 <a-sphere radius="0.02" color="#FFFFFF" material="opacity: 0.5"></a-sphere>
-            </a-entity>
-            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left;">
-                 <a-sphere radius="0.02" color="#FFFFFF" material="opacity: 0.5"></a-sphere>
-            </a-entity>
+            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left"></a-entity>
+            <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right"></a-entity>
         </a-entity>
 
         <script>
-            // Показує опис над об'єктом, коли його взяли
+            // NEW COMPONENT: Shows a description above an entity when it is grabbed
             AFRAME.registerComponent('show-description-on-grab', {
               schema: {
-                description: {type: 'string', default: 'Опис предмета.'},
-                yOffset: {type: 'number', default: 0.25}
+                description: {type: 'string', default: 'Item description.'},
+                yOffset: {type: 'number', default: 0.3} // Increased offset slightly
               },
               init: function () {
                 const el = this.el;
@@ -111,7 +110,7 @@
                 this.descriptionText.setAttribute('value', data.description);
                 this.descriptionText.setAttribute('align', 'center');
                 this.descriptionText.setAttribute('position', `0 ${data.yOffset} 0`);
-                this.descriptionText.setAttribute('width', '1.5');
+                this.descriptionText.setAttribute('width', '2'); // Made width slightly larger
                 this.descriptionText.setAttribute('look-at', '#camera');
                 this.descriptionText.setAttribute('visible', false);
                 el.appendChild(this.descriptionText);
@@ -121,15 +120,24 @@
               }
             });
 
-            // Повертає об'єкт на місце, якщо він впав
+            // Respawns an entity if it falls through the floor
             AFRAME.registerComponent('respawnable', {
-              init: function () { this.initialPosition = this.el.object3D.position.clone(); },
+              init: function () {
+                this.initialPosition = this.el.object3D.position.clone();
+              },
               tick: function () {
-                if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) { this.resetEntity(); }
+                const el = this.el;
+                const currentPosition = el.object3D.position;
+                // Respawn if it falls below the world and is not being held
+                if (currentPosition.y < -5 && !el.is('grabbed')) {
+                  console.log('Respawning ' + el.id);
+                  this.resetEntity();
+                }
               },
               resetEntity: function() {
                 const el = this.el;
                 el.object3D.position.copy(this.initialPosition);
+                // Also reset the physics body to stop all movement
                 if (el.body) {
                   el.body.position.copy(this.initialPosition);
                   el.body.velocity.set(0, 0, 0);
@@ -138,42 +146,48 @@
               }
             });
 
-            // Запобігає відштовхуванню об'єктів руками
+            // Prevents hands from knocking things away before grabbing
             AFRAME.registerComponent('phase-shift', {
               init: function () {
-                var el = this.el;
-                el.addEventListener('gripdown', () => el.setAttribute('collision-filter', {collisionForces: true}));
-                el.addEventListener('gripup', () => el.setAttribute('collision-filter', {collisionForces: false}));
+                  var el = this.el;
+                  el.addEventListener('gripdown', function () {
+                      el.setAttribute('collision-filter', {collisionForces: true});
+                  });
+                  el.addEventListener('gripup', function () {
+                      el.setAttribute('collision-filter', {collisionForces: false});
+                  });
               }
             });
 
-            // Підсвічування об'єктів
+            // Updated hoverable component
             AFRAME.registerComponent('hoverable', {
               init: function () {
-                var el = this.el;
-                el.originalColor = el.getAttribute('material').color;
-                el.addEventListener('hover-start', () => el.setAttribute('color', '#ffff00'));
-                el.addEventListener('hover-end', () => { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
-                el.addEventListener('grab-start', () => el.setAttribute('color', '#ff0000'));
-                el.addEventListener('grab-end', () => {
-                    if (el.is('hovered')) { el.setAttribute('color', '#ffff00'); } 
-                    else { el.setAttribute('color', el.originalColor); }
-                });
+                  var el = this.el;
+                  // Store original color using a new property to avoid conflicts
+                  el.originalColor = el.getAttribute('material').color;
+                  el.addEventListener('hover-start', function () { el.setAttribute('color', '#ffff00'); });
+                  el.addEventListener('hover-end', function () { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
+                  el.addEventListener('grab-start', function () { el.setAttribute('color', '#ff0000'); });
+                  el.addEventListener('grab-end', function () {
+                      if (el.is('hovered')) { el.setAttribute('color', '#ffff00'); } 
+                      else { el.setAttribute('color', el.originalColor); }
+                  });
               }
             });
         </script>
     </a-scene>
 
     <div class="info">
-        <strong>Керування:</strong><br>
-        Компоненти розташовані навколо вас, корпус - прямо перед вами.<br><br>
+        <strong>Controls:</strong><br>
+        The workstation is directly in front of you.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Телепортація:</strong> Наведіть ліву руку та натисніть тригер, щоб переміститись.<br>
-         - <strong>Взяти предмет:</strong> Простягніть будь-яку руку та натисніть тригер/grip.<br>
-         - <strong>Інформація:</strong> Коли ви берете предмет, над ним з'являється опис.<br><br>
-        <strong>Desktop:</strong> WASD для руху, миша для огляду.
+         - <strong>Grab:</strong> Reach out and use Trigger/Grip buttons.<br>
+         - <strong>Move:</strong> Use the Left Thumbstick.<br>
+         - <strong>Turn:</strong> Use the Right Thumbstick.<br>
+         - <strong>Info:</strong> When you grab an item, a description will appear above it.<br><br>
+        <strong>Desktop:</strong> WASD to move, Mouse to look.
         <br><br>
-        <strong>Мета:</strong> Зібрати ПК! Якщо впустите деталь, вона повернеться на місце.
+        <strong>Goal:</strong> Pick up components and place them in the PC case! Dropped parts will respawn.
     </div>
 </body>
 </html>

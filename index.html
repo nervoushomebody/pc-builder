@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple VR PC Builder - Combined Experience</title>
+    <title>VR PC Builder - Immersive Layout</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -21,7 +21,7 @@
             padding: 10px;
             border-radius: 5px;
             font-size: 14px;
-            width: 250px; /* Adjusted for new text */
+            width: 250px;
         }
     </style>
 </head>
@@ -49,40 +49,48 @@
 
         <a-sky src="#sky"></a-sky>
         <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
-
-        <a-box id="table" position="0 0.5 -1.2" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
         
-        <a-entity id="pc-case" position="-1 0.6 -1.2">
-            <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
-            <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
-            <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
-            <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
+        <a-entity id="pc-case-station" position="0 0.8 -1.5">
+             <a-box position="0 0.5 0" width="0.6" height="0.1" depth="0.7" color="#4d4d4d" static-body></a-box>
+             <a-entity id="pc-case">
+                <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
+                <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
+                <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
+                <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
+            </a-entity>
         </a-entity>
 
-        <a-box id="motherboard" mixin="interactive" position="1 0.7 -1.2" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
-               show-description-on-grab="description: Motherboard - connects all components.">
-            <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
+
+        <a-box id="motherboard" mixin="interactive" position="-1.5 1.2 -1.5" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
+               side-description="description: Motherboard - connects all components.; offset: 0.25 0.1 0">
+            <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3" rotation="-90 0 0"></a-text>
         </a-box>
-        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -1.2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
-               show-description-on-grab="description: CPU (Processor) - the brain of the computer.">
-            <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
+        
+        <a-box id="cpu" mixin="interactive" position="-1 1.2 -2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
+               side-description="description: CPU (Processor) - the brain of the computer.; offset: 0.15 0 0">
+            <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
-        <a-box id="ram" mixin="interactive" position="1 0.7 -0.7" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
-               show-description-on-grab="description: RAM (Random Access Memory) - short-term memory.">
-            <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
+
+        <a-box id="ram" mixin="interactive" position="-0.5 1.2 -2.2" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
+               side-description="description: RAM (Random Access Memory) - short-term memory.; offset: 0.16 0 0">
+            <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
-        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -0.7" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
-               show-description-on-grab="description: GPU (Graphics Card) - processes graphics.">
-            <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
+        
+        <a-box id="gpu" mixin="interactive" position="0.5 1.2 -2.2" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
+               side-description="description: GPU (Graphics Card) - processes graphics.; offset: 0.22 0.05 0">
+            <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25" rotation="-90 0 0"></a-text>
         </a-box>
-        <a-box id="psu" mixin="interactive" position="1 0.7 -1.7" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
-               show-description-on-grab="description: Power Supply Unit - provides power.">
-            <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
+
+        <a-box id="psu" mixin="interactive" position="1 1.2 -2" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
+               side-description="description: Power Supply Unit - provides power.; offset: 0.18 0.05 0">
+            <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
-        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -1.7" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
-               show-description-on-grab="description: SSD (Solid State Drive) - long-term storage.">
-            <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
+
+        <a-box id="ssd" mixin="interactive" position="1.5 1.2 -1.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
+               side-description="description: SSD (Solid State Drive) - long-term storage.; offset: 0.15 0 0">
+            <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15" rotation="-90 0 0"></a-text>
         </a-box>
+
 
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
@@ -97,47 +105,43 @@
         </a-entity>
 
         <script>
-            // NEW COMPONENT: Shows a description above an entity when it is grabbed
-            AFRAME.registerComponent('show-description-on-grab', {
+            // NEW COMPONENT: Shows a description on the side of an entity when it is grabbed
+            AFRAME.registerComponent('side-description', {
               schema: {
                 description: {type: 'string', default: 'Item description.'},
-                yOffset: {type: 'number', default: 0.3} // Increased offset slightly
+                offset: {type: 'vec3', default: {x: 0.3, y: 0, z: 0}}
               },
               init: function () {
                 const el = this.el;
                 const data = this.data;
                 this.descriptionText = document.createElement('a-text');
                 this.descriptionText.setAttribute('value', data.description);
-                this.descriptionText.setAttribute('align', 'center');
-                this.descriptionText.setAttribute('position', `0 ${data.yOffset} 0`);
-                this.descriptionText.setAttribute('width', '2'); // Made width slightly larger
-                this.descriptionText.setAttribute('look-at', '#camera');
+                this.descriptionText.setAttribute('align', 'left');
+                this.descriptionText.setAttribute('position', data.offset);
+                this.descriptionText.setAttribute('width', '2');
+                this.descriptionText.setAttribute('look-at', '#camera'); // This makes it always face the user
                 this.descriptionText.setAttribute('visible', false);
-                el.appendChild(this.descriptionText);
+                el.appendChild(this.descriptionText); // Attach text to the component
 
                 el.addEventListener('grab-start', () => { this.descriptionText.setAttribute('visible', true); });
                 el.addEventListener('grab-end', () => { this.descriptionText.setAttribute('visible', false); });
               }
             });
 
-            // Respawns an entity if it falls through the floor
+            // Respawns an entity if it falls
             AFRAME.registerComponent('respawnable', {
               init: function () {
                 this.initialPosition = this.el.object3D.position.clone();
               },
               tick: function () {
                 const el = this.el;
-                const currentPosition = el.object3D.position;
-                // Respawn if it falls below the world and is not being held
-                if (currentPosition.y < -5 && !el.is('grabbed')) {
-                  console.log('Respawning ' + el.id);
+                if (el.object3D.position.y < -5 && !el.is('grabbed')) {
                   this.resetEntity();
                 }
               },
               resetEntity: function() {
                 const el = this.el;
                 el.object3D.position.copy(this.initialPosition);
-                // Also reset the physics body to stop all movement
                 if (el.body) {
                   el.body.position.copy(this.initialPosition);
                   el.body.velocity.set(0, 0, 0);
@@ -146,7 +150,7 @@
               }
             });
 
-            // Prevents hands from knocking things away before grabbing
+            // Prevents hands from knocking things away
             AFRAME.registerComponent('phase-shift', {
               init: function () {
                   var el = this.el;
@@ -159,11 +163,10 @@
               }
             });
 
-            // Updated hoverable component
+            // Visual feedback on hover and grab
             AFRAME.registerComponent('hoverable', {
               init: function () {
                   var el = this.el;
-                  // Store original color using a new property to avoid conflicts
                   el.originalColor = el.getAttribute('material').color;
                   el.addEventListener('hover-start', function () { el.setAttribute('color', '#ffff00'); });
                   el.addEventListener('hover-end', function () { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
@@ -179,12 +182,12 @@
 
     <div class="info">
         <strong>Controls:</strong><br>
-        The workstation is directly in front of you.<br><br>
+        The PC Case is in front of you. Components are placed around you.<br><br>
         <strong>VR:</strong><br>
          - <strong>Grab:</strong> Reach out and use Trigger/Grip buttons.<br>
          - <strong>Move:</strong> Use the Left Thumbstick.<br>
          - <strong>Turn:</strong> Use the Right Thumbstick.<br>
-         - <strong>Info:</strong> When you grab an item, a description will appear above it.<br><br>
+         - <strong>Info:</strong> When you grab an item, a description appears at its side.<br><br>
         <strong>Desktop:</strong> WASD to move, Mouse to look.
         <br><br>
         <strong>Goal:</strong> Pick up components and place them in the PC case! Dropped parts will respawn.

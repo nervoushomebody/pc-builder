@@ -2,129 +2,99 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>VR Computer Architecture Explorer</title>
+    <title>VR Computer Architecture - Working Demo</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@3.0.4/dist/aframe-super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/aframe-outline@1.3.0/build/aframe-outline.min.js"></script>
+    <script src="https://unpkg.com/aframe-super-hands-component@3.0.4/dist/aframe-super-hands.min.js"></script>
 </head>
 <body>
-<a-scene physics="debug: false" vr-mode-ui="enabled: true">
+<a-scene background="color: #5280E2" physics="debug: false">
 
-    <a-assets>
-        <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
-        <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
-        <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
-        <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
-        <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
-        <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
-        <a-asset-item id="fan-model" src="models/fan.glb"></a-asset-item>
-        <a-asset-item id="hdd-model" src="models/hdd.glb"></a-asset-item>
-    </a-assets>
+    <a-entity light="type: ambient; color: #BBB; intensity: 1.0"></a-entity>
+    <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+    <a-plane rotation="-90 0 0" width="20" height="20" color="#7BC8A4" static-body></a-plane>
 
-    <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
-    <a-entity light="type: directional; color: #FFF; intensity: 0.6; castShadow: true" position="-1 3 1"></a-entity>
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#808080" static-body shadow="receive: true"></a-plane>
-    <a-sky color="#ECECEC"></a-sky>
-
-    <a-entity id="player" movement-controls="fly: false; speed: 0.15">
-        <a-entity id="camera" camera position="0 1.6 0" look-controls="pointerLockEnabled: false"></a-entity>
+    <a-entity id="player" movement-controls="fly: false; speed: 0.2">
+        <a-entity id="camera" camera position="0 1.6 0" look-controls></a-entity>
         
-        <a-entity id="leftHand" hand-controls="hand: left" meta-touch-controls="hand: left" super-hands>
-             <a-entity class="info-panel" position="0 0.1 -0.3" rotation="-25 0 0" visible="false">
-                <a-plane color="#333" width="0.5" height="0.3" opacity="0.8"></a-plane>
-                <a-text value="" color="white" position="-0.23 0.1 0.01" scale="0.1 0.1 0.1" class="component-name"></a-text>
-                <a-text value="" color="white" position="-0.23 0.05 0.01" scale="0.08 0.08 0.08" wrap-count="45" class="component-description"></a-text>
-            </a-entity>
-        </a-entity>
-
-        <a-entity id="rightHand" hand-controls="hand: right" meta-touch-controls="hand: right" super-hands>
-            <a-entity class="info-panel" position="0 0.1 -0.3" rotation="-25 0 0" visible="false">
-                <a-plane color="#333" width="0.5" height="0.3" opacity="0.8"></a-plane>
-                <a-text value="" color="white" position="-0.23 0.1 0.01" scale="0.1 0.1 0.1" class="component-name"></a-text>
-                <a-text value="" color="white" position="-0.23 0.05 0.01" scale="0.08 0.08 0.08" wrap-count="45" class="component-description"></a-text>
+        <a-entity id="leftHand" super-hands hand-controls="hand: left; handModelStyle: lowPoly; color: #1565C0"></a-entity>
+        <a-entity id="rightHand" super-hands hand-controls="hand: right; handModelStyle: lowPoly; color: #1565C0">
+             <a-entity id="info-panel" position="0 0.15 -0.4" rotation="-25 0 0" visible="false">
+                <a-plane color="#333" width="0.6" height="0.4" opacity="0.9" rounded="radius: 0.02"></a-plane>
+                <a-text id="component-name" value="Component Name" color="white" position="0 0.15 0.01" align="center" width="1"></a-text>
+                <a-text id="component-description" value="Description text goes here..." color="white" position="0 0 0.01" align="center" wrap-count="35" width="0.5"></a-text>
             </a-entity>
         </a-entity>
     </a-entity>
 
-    <a-entity gltf-model="#motherboard-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="Motherboard" data-description="The main printed circuit board that connects all components.">
-    </a-entity>
-    <a-entity gltf-model="#cpu-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="CPU" data-description="The brain of the computer, performs calculations.">
-    </a-entity>
-    <a-entity gltf-model="#ram-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="RAM" data-description="Temporary data storage for running applications.">
-    </a-entity>
-    <a-entity gltf-model="#gpu-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="GPU" data-description="Processes and renders graphics and video output.">
-    </a-entity>
-    <a-entity gltf-model="#psu-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="PSU" data-description="Supplies power to all computer components.">
-    </a-entity>
-    <a-entity gltf-model="#hdd-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="HDD" data-description="Long-term data storage for files and the OS.">
-    </a-entity>
-    <a-entity gltf-model="#fan-model" position="0 1 -1.5" class="clickable" grabbable dynamic-body
-              outline="color: yellow; thickness: 0.015; opacity: 0.7; enabled: false"
-              event-set__hoveron="_event: hover-start; outline.enabled: true"
-              event-set__hoveroff="_event: hover-end; outline.enabled: false"
-              data-component="Cooling Fan" data-description="Cools down the system to prevent overheating.">
-    </a-entity>
+    <a-box id="cpu" position="-1.5 1 -2" color="#FFC107"
+           class="clickable" hoverable grabbable dynamic-body
+           data-component="CPU (Processor)"
+           data-description="The brain of the computer that performs calculations.">
+    </a-box>
 
+    <a-box id="gpu" position="-0.5 1 -2" color="#F44336" height="0.5" width="1.5" depth="0.7"
+           class="clickable" hoverable grabbable dynamic-body
+           data-component="GPU (Graphics Card)"
+           data-description="Processes and renders all visual output to your monitor.">
+    </a-box>
+
+    <a-cylinder id="ram" position="0.5 1 -2" color="#4CAF50" radius="0.1" height="0.8"
+           class="clickable" hoverable grabbable dynamic-body
+           data-component="RAM (Memory)"
+           data-description="Temporary storage for data that the CPU needs to access quickly.">
+    </a-cylinder>
+
+    <a-sphere id="hdd" position="1.5 1 -2" color="#9E9E9E" radius="0.3"
+           class="clickable" hoverable grabbable dynamic-body
+           data-component="HDD (Storage)"
+           data-description="Long-term storage for your operating system, applications, and files.">
+    </a-sphere>
 
     <script>
-        AFRAME.registerComponent('grab-info-handler', {
-            init: function () {
-                this.showInfo = this.showInfo.bind(this);
-                this.hideInfo = this.hideInfo.bind(this);
-                this.el.addEventListener('grab-start', this.showInfo);
-                this.el.addEventListener('grab-end', this.hideInfo);
-            },
-            showInfo: function (evt) {
-                const hand = evt.detail.hand;
-                const infoPanel = hand.querySelector('.info-panel');
-                if (infoPanel) {
-                    const name = this.el.getAttribute('data-component');
-                    const description = this.el.getAttribute('data-description');
-                    infoPanel.querySelector('.component-name').setAttribute('value', name);
-                    infoPanel.querySelector('.component-description').setAttribute('value', description);
-                    infoPanel.setAttribute('visible', true);
-                }
-            },
-            hideInfo: function (evt) {
-                const hand = evt.detail.hand;
-                const infoPanel = hand.querySelector('.info-panel');
-                if (infoPanel) {
-                    infoPanel.setAttribute('visible', false);
-                }
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const infoPanel = document.getElementById('info-panel');
+            const nameText = document.getElementById('component-name');
+            const descText = document.getElementById('component-description');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const grabbableItems = document.querySelectorAll('.clickable');
-            grabbableItems.forEach(item => {
-                item.setAttribute('grab-info-handler', '');
+            // Функція для показу інформації
+            const showInfo = (evt) => {
+                const grabbedEl = evt.target; // Об'єкт, який взяли
+                const name = grabbedEl.getAttribute('data-component');
+                const description = grabbedEl.getAttribute('data-description');
+                
+                nameText.setAttribute('value', name);
+                descText.setAttribute('value', description);
+                infoPanel.setAttribute('visible', true);
+            };
+
+            // Функція для приховування інформації
+            const hideInfo = (evt) => {
+                infoPanel.setAttribute('visible', false);
+            };
+            
+            // Функція для візуальної підсвітки
+            const highlight = (evt) => {
+                // evt.target - це об'єкт, на який навели курсор
+                evt.target.setAttribute('scale', '1.2 1.2 1.2');
+            };
+
+            const unhighlight = (evt) => {
+                evt.target.setAttribute('scale', '1 1 1');
+            };
+
+            // Знаходимо всі інтерактивні об'єкти
+            const items = document.querySelectorAll('.clickable');
+
+            // Навішуємо на кожен об'єкт слухачі подій від super-hands
+            items.forEach(item => {
+                item.addEventListener('grab-start', showInfo);
+                item.addEventListener('grab-end', hideInfo);
+                
+                item.addEventListener('hover-start', highlight);
+                item.addEventListener('hover-end', unhighlight);
             });
         });
     </script>

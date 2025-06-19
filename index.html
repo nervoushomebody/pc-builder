@@ -100,12 +100,12 @@
             </a-entity>
             
             <a-entity id="slots">
-                <a-entity class="slot" data-accepts="motherboard" position="0 0.1 0" rotation="0 0 0" scale="0.075 0.005 0.0875" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="cpu" position="0.1 0.15 -0.1" rotation="0 0 0" scale="0.02 0.005 0.02" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="ram" position="-0.05 0.15 0.1" rotation="0 0 0" scale="0.03 0.005 0.0075" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="gpu" position="0 0.1 -0.2" rotation="0 0 0" scale="0.0625 0.0075 0.0375" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="psu" position="-0.2 0.1 -0.1" rotation="0 0 0" scale="0.0375 0.02 0.0375" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="ssd" position="0.15 0.1 0.1" rotation="0 0 0" scale="0.025 0.0025 0.0175" visible="false"></a-entity>
+                <a-entity class="slot" data-accepts="motherboard" position="0 0.1 0" rotation="0 0 0" scale="0.2 0.2 0.2" visible="true"></a-entity>
+                <a-entity class="slot" data-accepts="cpu" position="0.1 0.15 -0.1" rotation="0 0 0" scale="0.2 0.05 0.2" visible="false"></a-entity>
+                <a-entity class="slot" data-accepts="ram" position="-0.05 0.15 0.1" rotation="0 0 0" scale="0.3 0.05 0.075" visible="false"></a-entity>
+                <a-entity class="slot" data-accepts="gpu" position="0 0.1 -0.2" rotation="0 0 0" scale="0.25 0.075 0.175" visible="false"></a-entity>
+                <a-entity class="slot" data-accepts="psu" position="-0.2 0.1 -0.1" rotation="0 0 0" scale="0.375 0.2 0.375" visible="false"></a-entity>
+                <a-entity class="slot" data-accepts="ssd" position="0.15 0.1 0.1" rotation="0 0 0" scale="0.225 0.0925 0.175" visible="false"></a-entity>
             </a-entity>
             
             <!-- Виправлена невидима платформа -->
@@ -116,8 +116,7 @@
         </a-entity>
 
         <!-- Виправлення для материнської плати: змінено тип фізичного тіла -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: box; mass: 2; angularDamping: 0.8; linearDamping: 0.5"
-  toggle-physics-on-grab side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: box; mass: 2" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
         

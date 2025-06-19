@@ -6,8 +6,6 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-super-hands-component@3.0.1/dist/aframe-super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
-    <!-- Підключення aframe-extras для gamepad-controls -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.controls.min.js"></script>
 </head>
 <body>
 <a-scene physics="debug: false" vr-mode-ui="enabled: true" shadow="type: pcfsoft" renderer="colorManagement: true">
@@ -20,14 +18,14 @@
     <!-- Координатна сітка (plane) -->
     <a-plane rotation="-90 0 0" width="10" height="10" color="#ddd" position="0 0 0" static-body></a-plane>
 
-    <!-- Камера + рух лише на стик контролера -->
-    <a-entity id="player"
-              movement-controls="enabled: true; controls: gamepad; fly: false; speed: 0.1">
-        <a-entity id="camera"
-                  camera="active: true"
-                  position="0 1.6 0"
-                  look-controls="pointerLockEnabled: false">
-        </a-entity>
+    <!-- Камера + рух на стик контролера -->
+    <a-entity id="player" position="0 0 0">
+        <a-camera
+            position="0 1.6 0"
+            look-controls="pointerLockEnabled: false"
+            wasd-controls="enabled: false"
+            gamepad-controls="enabled: true; controller: 0; deadzone: 0.2; acceleration: 20">
+        </a-camera>
     </a-entity>
 
     <!-- Контролери з можливістю брати предмети -->

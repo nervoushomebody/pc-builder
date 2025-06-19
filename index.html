@@ -1,362 +1,91 @@
-<!DOCTYPE html><html lang="uk"><head>
-    <meta charset="UTF-8">
-    <title>VR Збирач ПК - Фінальна версія</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
-    <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
-    
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        .info {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            width: 250px;
-            z-index: 10000;
-        }
-        .progress-bar {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 20px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
-            z-index: 10000;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #4CAF50;
-            border-radius: 10px;
-            transition: width 0.3s;
-        }
-        .completion-message {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 24px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 10000;
-            display: none;
-        }
-    </style></head><body>
-    <a-scene physics="gravity: -9.8">
-        <a-assets>
-            <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
-            <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
-            <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
-            <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
-            <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
-            <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
-            <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
-            <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
-            <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
-            
-            <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable>
-            </a-mixin>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>VR Збирач ПК - Фінал</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.min.js"></script>
+  <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
+  <style>body { margin: 0; }</style>
+</head>
 
-            <a-mixin id="physics-hands"
-                     physics-collider phase-shift
-                     collision-filter="collisionForces: false"
-                     static-body="shape: sphere; sphereRadius: 0.02"
-                     super-hands="colliderEvent: collisions;
-                                  colliderEventProperty: els;
-                                  colliderEndEvent: collisions;
-                                  colliderEndEventProperty: clearedEls;">
-            </a-mixin>
-        </a-assets>
+<body>
+<a-scene physics="gravity: -5">
+  <a-assets>
+    <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
+  </a-assets>
 
-        <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
-        
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <div class="completion-message" id="completion-message">ПК успішно зібрано!</div>
-        
-        <a-entity id="pc-case-station" position="0 0.8 -1.5" pc-builder>
-            <a-box position="0 0.5 0" width="0.6" height="0.1" depth="0.7" color="#4d4d4d" static-body></a-box>
-            <a-entity id="pc-case" static-body>
-                <a-gltf-model src="#case-model" scale="0.5 0.5 0.5" position="0 0 0"></a-gltf-model>
-            </a-entity>
-            
-            <a-entity id="slots">
-                <a-entity class="slot" data-accepts="motherboard" position="0 0.1 0" rotation="0 0 0" scale="0.075 0.005 0.0875" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="cpu" position="0.1 0.15 -0.1" rotation="0 0 0" scale="0.02 0.005 0.02" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="ram" position="-0.05 0.15 0.1" rotation="0 0 0" scale="0.03 0.005 0.0075" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="gpu" position="0 0.1 -0.2" rotation="0 0 0" scale="0.0625 0.0075 0.0375" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="psu" position="-0.2 0.1 -0.1" rotation="0 0 0" scale="0.0375 0.02 0.0375" visible="false"></a-entity>
-                <a-entity class="slot" data-accepts="ssd" position="0.15 0.1 0.1" rotation="0 0 0" scale="0.025 0.0025 0.0175" visible="false"></a-entity>
-            </a-entity>
-        </a-entity>
+  <a-plane rotation="-90 0 0" width="20" height="20" color="#777" static-body></a-plane>
 
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: hull; mass: 2; angularDamping: 0.8; linearDamping: 0.5"
-  toggle-physics-on-grab side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
-            <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
-            <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
-            <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 3" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
-            <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 2" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
-            <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
-            <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
-        </a-entity>
+  <!-- Корпус без static-body -->
+  <a-entity id="pc-case-station" position="0 0.8 -1.5">
+    <a-entity id="pc-case">
+      <a-gltf-model src="#case-model" scale="0.5 0.5 0.5"></a-gltf-model>
+    </a-entity>
 
-        <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
+    <!-- Невидима платформа всередині -->
+    <a-box position="0 0.1 0" width="0.6" height="0.01" depth="0.7" static-body visible="false"></a-box>
+  </a-entity>
 
-        <a-entity id="rig">
-            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="fly: true">
-                <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
-            </a-camera>
-            <a-entity id="leftHand" 
-                      mixin="physics-hands" 
-                      hand-controls="hand: left"
-                      laser-controls="hand: left"
-                      teleport-controls="teleportOrigin: #camera; button: trigger; type: parabolic"
-                      oculus-thumbstick-controls="fly: true">
-            </a-entity>
-            <a-entity id="rightHand" 
-                      mixin="physics-hands" 
-                      hand-controls="hand: right"
-                      laser-controls="hand: right"
-                      teleport-controls="teleportOrigin: #camera; button: trigger; type: parabolic">
-            </a-entity>
-        </a-entity>
+  <!-- Камера -->
+  <a-entity id="rig">
+    <a-camera position="0 1.6 0">
+      <a-cursor></a-cursor>
+    </a-camera>
+  </a-entity>
 
-        <script>
-            // Покажчик прогресу та повідомлення
-            const progressFill = document.getElementById('progress-fill');
-            const completionMessage = document.getElementById('completion-message');
-            let installedComponents = 0;
-            const totalComponents = 6;
-
-            // Компонент для магнітного притягування (оновлена версія)
-            AFRAME.registerComponent('magnet-attraction', {
-                schema: {
-                    hand: {type: 'string', default: 'left'},
-                    strength: {type: 'number', default: 8},
-                    maxDistance: {type: 'number', default: 2}
-                },
-                
-                init: function () {
-                    this.attractedObjects = [];
-                    this.raycaster = new THREE.Raycaster();
-                    this.direction = new THREE.Vector3();
-                    this.triggerPressed = false;
-                    
-                    this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
-                    this.el.addEventListener('triggerup', () => {
-                        this.triggerPressed = false;
-                        this.attractedObjects = [];
-                    });
-                },
-                
-                tick: function () {
-                    if (!this.triggerPressed) return;
-                    
-                    const handPosition = new THREE.Vector3();
-                    this.el.object3D.getWorldPosition(handPosition);
-                    this.el.object3D.getWorldDirection(this.direction);
-                    this.raycaster.set(handPosition, this.direction);
-                    
-                    const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
-                    const interactiveObjects = interactiveEls.map(el => el.object3D);
-                    const intersects = this.raycaster.intersectObjects(interactiveObjects, true);
-                    
-                    if (intersects.length > 0) {
-                        const target = intersects[0].object.el;
-                        if (!this.attractedObjects.includes(target) && 
-                            target.components['dynamic-body'] && 
-                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
-                            
-                            this.attractedObjects.push(target);
-                        }
-                    }
-                    
-                    this.attractedObjects.forEach(target => {
-                        if (!target || !target.body || target.is('grabbed')) return;
-                        
-                        const targetPos = new THREE.Vector3();
-                        target.object3D.getWorldPosition(targetPos);
-                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
-                        
-                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
-                    });
-                }
-            });
-
-            // Компонент для збірки ПК
-            AFRAME.registerComponent('pc-builder', {
-                init: function () {
-                    this.installedComponents = new Set();
-                    this.slots = Array.from(this.el.querySelectorAll('.slot'));
-                    this.el.sceneEl.addEventListener('component-installed', this.updateProgress.bind(this));
-                    this.tick = AFRAME.utils.throttleTick(this.checkCollisions, 100, this);
-                },
-
-                checkCollisions: function () {
-                    this.slots.forEach(slot => {
-                        const slotType = slot.getAttribute('data-accepts');
-                        const component = document.querySelector(`[data-type="${slotType}"]:not(.installed)`);
-                        if (!component || component.is('grabbed')) return;
-
-                        const slotPos = new THREE.Vector3();
-                        slot.object3D.getWorldPosition(slotPos);
-                        const componentPos = new THREE.Vector3();
-                        component.object3D.getWorldPosition(componentPos);
-
-                        if (componentPos.distanceTo(slotPos) < 0.1) {
-                            this.installComponent(component, slot, slotPos);
-                        }
-                    });
-                },
-                
-                installComponent: function (component, slot, position) {
-                    component.classList.add('installed');
-                    component.removeAttribute('dynamic-body');
-                    component.setAttribute('static-body', '');
-                    component.object3D.position.copy(position);
-                    component.object3D.rotation.set(0,0,0);
-                    
-                    this.installedComponents.add(component.id);
-                    this.el.sceneEl.emit('component-installed');
-                },
-
-                updateProgress: function () {
-                    installedComponents = this.installedComponents.size;
-                    progressFill.style.width = `${(installedComponents / totalComponents) * 100}%`;
-
-                    if (installedComponents >= totalComponents) {
-                        setTimeout(() => {
-                            completionMessage.style.display = 'block';
-                        }, 1000);
-                    }
-                }
-            });
-
-            AFRAME.registerComponent('side-description', {
-                schema: { description: {type: 'string'}, offset: {type: 'vec3'}},
-                init: function () {
-                    this.descriptionText = document.createElement('a-text');
-                    this.descriptionText.setAttribute('value', this.data.description);
-                    this.descriptionText.setAttribute('align', 'left');
-                    this.descriptionText.setAttribute('position', this.data.offset);
-                    this.descriptionText.setAttribute('width', '2');
-                    this.descriptionText.setAttribute('look-at', '#camera');
-                    this.descriptionText.setAttribute('visible', false);
-                    this.el.appendChild(this.descriptionText);
-
-                    this.el.addEventListener('grab-start', () => this.descriptionText.setAttribute('visible', true));
-                    this.el.addEventListener('grab-end', () => this.descriptionText.setAttribute('visible', false));
-                }
-            });
-
-            AFRAME.registerComponent('respawnable', {
-                init: function () { this.initialPosition = this.el.object3D.position.clone(); },
-                tick: function () { if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) this.resetEntity(); },
-                resetEntity: function() {
-                    const el = this.el;
-                    if (el.body) {
-                        el.body.position.copy(this.initialPosition);
-                        el.body.velocity.set(0, 0, 0);
-                        el.body.angularVelocity.set(0, 0, 0);
-                    } else {
-                        el.object3D.position.copy(this.initialPosition);
-                    }
-                }
-            });
-
-            AFRAME.registerComponent('phase-shift', {
-                init: function () {
-                    this.el.addEventListener('grab-start', () => this.el.setAttribute('collision-filter', {collisionForces: false}));
-                    this.el.addEventListener('grab-end', () => this.el.setAttribute('collision-filter', {collisionForces: true}));
-                }
-            });
-            
-            AFRAME.registerComponent('hoverable', {
-              init: function () {
-                this.el.addEventListener('hover-start', (evt) => {
-                  evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', {color: '#ffff00'}));
-                });
-                this.el.addEventListener('hover-end', (evt) => {
-                  if (!this.el.is('grabbed')) {
-                    evt.target.querySelectorAll('a-gltf-model').forEach(model => model.removeAttribute('material'));
-                  }
-                });
-                this.el.addEventListener('grab-start', (evt) => {
-                  evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', {color: '#ff0000'}));
-                });
-                this.el.addEventListener('grab-end', (evt) => {
-                  evt.target.querySelectorAll('a-gltf-model').forEach(model => model.removeAttribute('material'));
-                });
-              }
-            });
-
-            document.querySelector('a-scene').addEventListener('loaded', () => {
-                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
-                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
-            });
-        AFRAME.registerComponent('toggle-physics-on-grab', {
-            schema: {
-                shape: {type: 'string', default: 'hull'},
-                mass: {type: 'number', default: 2},
-                angularDamping: {type: 'number', default: 0.8},
-                linearDamping: {type: 'number', default: 0.5}
-            },
-            init: function () {
-                const data = this.data;
-                const el = this.el;
-        
-                el.addEventListener('grab-start', () => {
-                    el.removeAttribute('dynamic-body');
-                });
-        
-                el.addEventListener('grab-end', () => {
-                    const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
-                    el.setAttribute('dynamic-body', dyn);
-                });
-            }
+  <!-- Магнітне притягування з силою 5 -->
+  <script>
+    AFRAME.registerComponent('magnet-attraction', {
+      schema: {
+        hand: {type: 'string', default: 'left'},
+        strength: {type: 'number', default: 5},
+        maxDistance: {type: 'number', default: 2}
+      },
+      init: function () {
+        this.attractedObjects = [];
+        this.raycaster = new THREE.Raycaster();
+        this.direction = new THREE.Vector3();
+        this.triggerPressed = false;
+        this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
+        this.el.addEventListener('triggerup', () => {
+          this.triggerPressed = false;
+          this.attractedObjects = [];
         });
+      },
+      tick: function () {
+        if (!this.triggerPressed) return;
+        const handPos = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(handPos);
+        this.el.object3D.getWorldDirection(this.direction);
+        this.raycaster.set(handPos, this.direction);
+        const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
+        const interactiveObjs = interactiveEls.map(el => el.object3D);
+        const intersects = this.raycaster.intersectObjects(interactiveObjs, true);
+        if (intersects.length > 0) {
+          const target = intersects[0].object.el;
+          if (!this.attractedObjects.includes(target) &&
+              target.components['dynamic-body'] &&
+              target.object3D.position.distanceTo(handPos) < this.data.maxDistance) {
+            this.attractedObjects.push(target);
+          }
+        }
+        this.attractedObjects.forEach(target => {
+          if (!target || !target.body || target.is('grabbed')) return;
+          const targetPos = new THREE.Vector3();
+          target.object3D.getWorldPosition(targetPos);
+          const forceDir = new THREE.Vector3().subVectors(handPos, targetPos)
+              .normalize().multiplyScalar(this.data.strength);
+          target.body.velocity.set(forceDir.x, forceDir.y, forceDir.z);
+        });
+      }
+    });
 
-        </script>
-    </a-scene>
+    document.querySelector('a-scene').addEventListener('loaded', () => {
+      document.querySelector('#rig').setAttribute('magnet-attraction', '');
+    });
+  </script>
 
-    <div class="info">
-        <strong>Керування:</strong><br>
-        Корпус ПК перед вами. Компоненти розташовані навколо вас.<br><br>
-        <strong>VR:</strong><br>
-         - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
-         - <strong>Політ/Рух:</strong> Лівий джойстик для плавного пересування в напрямку погляду.<br>
-         - <strong>Телепортація:</strong> Натисніть тригер на лазерному контролері.<br>
-         - <strong>Притягування:</strong> Натисніть тригер на вільній руці у бік предмета.<br>
-         - <strong>Поворот:</strong> Правий джойстик.<br>
-         - <strong>Інфо:</strong> При захопленні предмета збоку з'явиться опис.<br><br>
-        <strong>Desktop:</strong> WASD для руху, миша для огляду.
-        <br><br>
-        <strong>Мета:</strong> Зібрати ПК, перетягуючи компоненти в корпус!
-    </div></body></html>
+</a-scene>
+</body>
+</html>

@@ -101,91 +101,139 @@
         <a-box position="-5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
         <a-box position="5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
 
-        <!-- Test Components with Different Shapes - Spread out more for better access -->
-        <!-- Motherboard (Box shape) -->
-        <a-box id="motherboard"
-               position="-2 1.2 -1"
-               width="0.4"
-               height="0.02"
-               depth="0.4"
-               color="#2a7f2a"
-               mixin="cube-physics"
-               data-component-type="motherboard"
-               physics-shape="shape: box">
-            <a-text value="Motherboard" 
-                    position="0 0.05 0" 
-                    align="center" 
-                    scale="0.3 0.3 0.3">
-            </a-text>
-        </a-box>
+        <!-- Test Components with Grab Proxies -->
+        
+        <!-- Motherboard with grab proxy -->
+        <a-entity id="motherboard-group" position="-2 1.2 -1">
+            <!-- Visual component with physics -->
+            <a-box id="motherboard"
+                   width="0.4"
+                   height="0.02"
+                   depth="0.4"
+                   color="#2a7f2a"
+                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                   data-component-type="motherboard">
+                <a-text value="Motherboard" 
+                        position="0 0.05 0" 
+                        align="center" 
+                        scale="0.3 0.3 0.3">
+                </a-text>
+            </a-box>
+            <!-- Grab proxy - larger invisible box -->
+            <a-box class="grab-proxy"
+                   width="0.5"
+                   height="0.1"
+                   depth="0.5"
+                   opacity="0.3"
+                   color="#00ff00"
+                   hoverable grabbable stretchable draggable
+                   proxy-controller="target: #motherboard">
+            </a-box>
+        </a-entity>
 
-        <!-- CPU (Small box) -->
-        <a-box id="cpu"
-               position="-1 1.2 -1"
-               width="0.1"
-               height="0.05"
-               depth="0.1"
-               color="#4169e1"
-               mixin="cube-physics"
-               data-component-type="cpu"
-               physics-shape="shape: box">
-            <a-text value="CPU" 
-                    position="0 0.05 0" 
-                    align="center" 
-                    scale="0.2 0.2 0.2">
-            </a-text>
-        </a-box>
+        <!-- CPU with grab proxy -->
+        <a-entity id="cpu-group" position="-1 1.2 -1">
+            <a-box id="cpu"
+                   width="0.1"
+                   height="0.05"
+                   depth="0.1"
+                   color="#4169e1"
+                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                   data-component-type="cpu">
+                <a-text value="CPU" 
+                        position="0 0.05 0" 
+                        align="center" 
+                        scale="0.2 0.2 0.2">
+                </a-text>
+            </a-box>
+            <a-box class="grab-proxy"
+                   width="0.15"
+                   height="0.1"
+                   depth="0.15"
+                   opacity="0.3"
+                   color="#00ff00"
+                   hoverable grabbable stretchable draggable
+                   proxy-controller="target: #cpu">
+            </a-box>
+        </a-entity>
 
-        <!-- GPU (Larger box) -->
-        <a-box id="gpu"
-               position="0 1.2 -1"
-               width="0.3"
-               height="0.15"
-               depth="0.5"
-               color="#ff4500"
-               mixin="cube-physics"
-               data-component-type="gpu"
-               physics-shape="shape: box">
-            <a-text value="GPU" 
-                    position="0 0.1 0" 
-                    align="center" 
-                    scale="0.3 0.3 0.3">
-            </a-text>
-        </a-box>
+        <!-- GPU with grab proxy -->
+        <a-entity id="gpu-group" position="0 1.2 -1">
+            <a-box id="gpu"
+                   width="0.3"
+                   height="0.15"
+                   depth="0.5"
+                   color="#ff4500"
+                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                   data-component-type="gpu">
+                <a-text value="GPU" 
+                        position="0 0.1 0" 
+                        align="center" 
+                        scale="0.3 0.3 0.3">
+                </a-text>
+            </a-box>
+            <a-box class="grab-proxy"
+                   width="0.35"
+                   height="0.2"
+                   depth="0.55"
+                   opacity="0.3"
+                   color="#00ff00"
+                   hoverable grabbable stretchable draggable
+                   proxy-controller="target: #gpu">
+            </a-box>
+        </a-entity>
 
-        <!-- RAM (Thin box) -->
-        <a-box id="ram"
-               position="1 1.2 -1"
-               width="0.3"
-               height="0.05"
-               depth="0.02"
-               color="#32cd32"
-               mixin="cube-physics"
-               data-component-type="ram"
-               physics-shape="shape: box">
-            <a-text value="RAM" 
-                    position="0 0.05 0" 
-                    align="center" 
-                    scale="0.2 0.2 0.2">
-            </a-text>
-        </a-box>
+        <!-- RAM with grab proxy -->
+        <a-entity id="ram-group" position="1 1.2 -1">
+            <a-box id="ram"
+                   width="0.3"
+                   height="0.05"
+                   depth="0.02"
+                   color="#32cd32"
+                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                   data-component-type="ram">
+                <a-text value="RAM" 
+                        position="0 0.05 0" 
+                        align="center" 
+                        scale="0.2 0.2 0.2">
+                </a-text>
+            </a-box>
+            <a-box class="grab-proxy"
+                   width="0.35"
+                   height="0.1"
+                   depth="0.08"
+                   opacity="0.3"
+                   color="#00ff00"
+                   hoverable grabbable stretchable draggable
+                   proxy-controller="target: #ram">
+            </a-box>
+        </a-entity>
 
-        <!-- PSU (Cube) -->
-        <a-box id="psu"
-               position="2 1.2 -1"
-               width="0.25"
-               height="0.25"
-               depth="0.25"
-               color="#696969"
-               mixin="cube-physics"
-               data-component-type="psu"
-               physics-shape="shape: box">
-            <a-text value="PSU" 
-                    position="0 0.15 0" 
-                    align="center" 
-                    scale="0.3 0.3 0.3">
-            </a-text>
-        </a-box>
+        <!-- PSU with grab proxy -->
+        <a-entity id="psu-group" position="2 1.2 -1">
+            <a-box id="psu"
+                   width="0.25"
+                   height="0.25"
+                   depth="0.25"
+                   color="#696969"
+                   dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                   data-component-type="psu">
+                <a-text value="PSU" 
+                        position="0 0.15 0" 
+                        align="center" 
+                        scale="0.3 0.3 0.3">
+                </a-text>
+            </a-box>
+            <a-box class="grab-proxy"
+                   width="0.3"
+                   height="0.3"
+                   depth="0.3"
+                   opacity="0.3"
+                   color="#00ff00"
+                   hoverable grabbable stretchable draggable
+                   proxy-controller="target: #psu">
+            </a-box>
+        </a-entity>
 
         <!-- PC Case (Target) -->
         <a-box id="pc-case"
@@ -215,7 +263,7 @@
                       position="0 1.6 1" 
                       look-controls 
                       wasd-controls="fly: true">
-                <a-cursor raycaster="objects: [mixin='cube-physics']"></a-cursor>
+                <a-cursor raycaster="objects: .grab-proxy, #pc-case"></a-cursor>
             </a-camera>
             
             <!-- VR Controllers -->
@@ -336,6 +384,73 @@
                         if (now - collision.time > 100) {
                             this.collisions.delete(key);
                         }
+                    }
+                }
+            });
+
+            // Proxy controller - controls target object through grab proxy
+            AFRAME.registerComponent('proxy-controller', {
+                schema: {
+                    target: {type: 'selector'}
+                },
+                
+                init: function() {
+                    const el = this.el;
+                    const target = this.data.target;
+                    const parentGroup = el.parentElement;
+                    
+                    // Hide proxy on load (set to 0.2 to see it)
+                    el.setAttribute('opacity', '0');
+                    
+                    // Show proxy on hover
+                    el.addEventListener('hover-start', () => {
+                        el.setAttribute('opacity', '0.3');
+                        el.setAttribute('color', '#00ff00');
+                    });
+                    
+                    el.addEventListener('hover-end', () => {
+                        if (!el.is('grabbed')) {
+                            el.setAttribute('opacity', '0');
+                        }
+                    });
+                    
+                    // Handle grabbing
+                    el.addEventListener('grab-start', (evt) => {
+                        el.setAttribute('opacity', '0.5');
+                        el.setAttribute('color', '#ffff00');
+                        
+                        // Disable physics on target
+                        if (target.hasAttribute('dynamic-body')) {
+                            this.originalPhysics = target.getAttribute('dynamic-body');
+                            target.removeAttribute('dynamic-body');
+                        }
+                    });
+                    
+                    el.addEventListener('grab-end', (evt) => {
+                        el.setAttribute('opacity', '0');
+                        
+                        // Re-enable physics on target
+                        if (this.originalPhysics) {
+                            setTimeout(() => {
+                                target.setAttribute('dynamic-body', this.originalPhysics);
+                                // Reset velocities
+                                if (target.body) {
+                                    target.body.velocity.set(0, 0, 0);
+                                    target.body.angularVelocity.set(0, 0, 0);
+                                }
+                            }, 100);
+                        }
+                    });
+                },
+                
+                tick: function() {
+                    // Make target follow the proxy position
+                    if (this.el.is('grabbed') && this.data.target) {
+                        const proxyPos = this.el.object3D.position;
+                        const proxyRot = this.el.object3D.rotation;
+                        
+                        this.data.target.object3D.position.copy(proxyPos);
+                        this.data.target.object3D.rotation.copy(proxyRot);
                     }
                 }
             });

@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>VR Збирач ПК - Режим польоту</title>
+    <title>VR Збирач ПК - Фінальна версія</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
     
@@ -21,7 +21,8 @@
     </style>
 </head>
 <body>
-    <a-scene physics="gravity: 0;" renderer="colorManagement: true;"> <a-assets>
+    <a-scene physics="gravity: -9.8" renderer="colorManagement: true;">
+        <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
             <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
@@ -40,43 +41,57 @@
                      event-set__graboff="_event: grab-end; attribute: material.emissive; value: #ffff00">
             </a-mixin>
 
+            <a-mixin id="hand-setup"
+                     super-hands
+                     static-body="shape: sphere; sphereRadius: 0.02;"
+                     hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc">
+            </a-mixin>
+
         </a-assets>
 
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20"></a-plane>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
         
         <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
         <div class="completion-message" id="completion-message">ПК успішно зібрано!</div>
         
         <a-entity id="pc-case-station" position="0 0.8 -1.5" snap-handler="partTypes: motherboard, psu, ssd;">
-             <a-entity gltf-model="#case-model" scale="0.5 0.5 0.5"></a-entity>
+             <a-entity gltf-model="#case-model" scale="0.5 0.5 0.5" static-body></a-entity>
              <a-entity class="slot" data-part="motherboard" position="0.01 0.28 0" visible="false"><a-box color="green" scale="0.3 0.01 0.35" wireframe="true"></a-box></a-entity>
              <a-entity class="slot" data-part="psu" position="0 0.08 -0.2" visible="false"><a-box color="green" scale="0.15 0.08 0.15" wireframe="true"></a-box></a-entity>
              <a-entity class="slot" data-part="ssd" position="0.15 0.15 0.15" visible="false"><a-box color="green" scale="0.1 0.01 0.07" wireframe="true"></a-box></a-entity>
         </a-entity>
         
-        <a-entity id="motherboard" position="-0.5 1.2 -1" snap-handler="partTypes: cpu, ram, gpu;" data-part="motherboard">
+        <a-entity id="motherboard" dynamic-body="shape: box; mass: 2" position="-0.5 1.2 -1" snap-handler="partTypes: cpu, ram, gpu;" data-part="motherboard">
             <a-gltf-model src="#motherboard-model" scale="0.25 0.25 0.25"></a-gltf-model>
              <a-entity class="slot" data-part="cpu" position="0.045 0.01 -0.01" visible="false"><a-box color="yellow" scale="0.04 0.01 0.04" wireframe="true"></a-box></a-entity>
              <a-entity class="slot" data-part="ram" position="0.045 0.01 0.06" visible="false"><a-box color="yellow" scale="0.01 0.03 0.08" wireframe="true"></a-box></a-entity>
              <a-entity class="slot" data-part="gpu" position="-0.04 0.015 -0.08" visible="false"><a-box color="yellow" scale="0.12 0.04 0.2" wireframe="true"></a-box></a-entity>
         </a-entity>
-        <a-entity id="cpu" mixin="interactive" position="-0.8 1.2 -1.5" data-part="cpu"><a-gltf-model src="#cpu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
-        <a-entity id="ram" mixin="interactive" position="-0.6 1.2 -1.5" data-part="ram"><a-gltf-model src="#ram-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
-        <a-entity id="gpu" mixin="interactive" position="-0.2 1.2 -1.5" data-part="gpu"><a-gltf-model src="#gpu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
-        <a-entity id="psu" mixin="interactive" position="0.2 1.2 -1.5" data-part="psu"><a-gltf-model src="#psu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
-        <a-entity id="ssd" mixin="interactive" position="0.5 1.2 -1.5" data-part="ssd"><a-gltf-model src="#ssd-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
+        <a-entity id="cpu" mixin="interactive" dynamic-body="shape: box; mass: 0.2" position="-0.8 1.2 -1.5" data-part="cpu"><a-gltf-model src="#cpu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
+        <a-entity id="ram" mixin="interactive" dynamic-body="shape: box; mass: 0.3" position="-0.6 1.2 -1.5" data-part="ram"><a-gltf-model src="#ram-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
+        <a-entity id="gpu" mixin="interactive" dynamic-body="shape: box; mass: 1.5" position="-0.2 1.2 -1.5" data-part="gpu"><a-gltf-model src="#gpu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
+        <a-entity id="psu" mixin="interactive" dynamic-body="shape: box; mass: 2.5" position="0.2 1.2 -1.5" data-part="psu"><a-gltf-model src="#psu-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
+        <a-entity id="ssd" mixin="interactive" dynamic-body="shape: box; mass: 0.4" position="0.5 1.2 -1.5" data-part="ssd"><a-gltf-model src="#ssd-model" scale="0.25 0.25 0.25"></a-gltf-model></a-entity>
 
         <a-light type="ambient" color="#888"></a-light>
         <a-light type="directional" position="-1 4 2" intensity="1"></a-light>
 
-        <a-entity id="rig" wasd-controls="acceleration: 25; fly: true;">
-            <a-entity camera position="0 1.6 2" look-controls></a-entity>
-            <a-entity id="leftHand" super-hands oculus-touch-controls="hand: left; model: false"></a-entity>
-            <a-entity id="rightHand" super-hands oculus-touch-controls="hand: right; model: false" oculus-thumbstick-controls></a-entity>
+        <a-entity id="rig" 
+                  wasd-controls="acceleration: 25; fly: true;" 
+                  kinematic-body> <a-entity camera position="0 1.6 2" look-controls></a-entity>
+            
+            <a-entity id="leftHand" mixin="hand-setup" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"></a-entity>
+
+            <a-entity id="rightHand" 
+                      mixin="hand-setup" 
+                      hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
+                      oculus-thumbstick-controls>
+            </a-entity>
         </a-entity>
 
         <script>
+            // JS-ЛОГІКА ЗАЛИШАЄТЬСЯ БЕЗ ЗМІН
             const progressFill = document.getElementById('progress-fill');
             const completionMessage = document.getElementById('completion-message');
             const totalComponents = 6;
@@ -105,21 +120,16 @@
                         }
                     });
                     this.partsToCheck = [];
-                    // Використовуємо 'scene-loaded' для більшої надійності
                     this.el.sceneEl.addEventListener('sceneloaded', () => {
                         this.data.partTypes.forEach(partType => {
                            const partEl = document.getElementById(partType);
                            if(partEl) this.partsToCheck.push(partEl);
                         });
                     });
-                     // Вектор для тимчасових обчислень, щоб не створювати його в циклі
                     this.partWorldPos = new THREE.Vector3();
                 },
-
                 tick: function (time, timeDelta) {
-                    if (!this.el.sceneEl.hasLoaded) return; // Не виконувати, поки сцена не завантажена
-
-                    // Оновлюємо позиції слотів
+                    if (!this.el.sceneEl.hasLoaded) return;
                     for (const partType in this.slots) {
                        if (this.slots.hasOwnProperty(partType) && this.slots[partType].el.object3D.visible) {
                            this.slots[partType].el.object3D.getWorldPosition(this.slots[partType].worldPos);
@@ -127,43 +137,29 @@
                     }
                     this.checkParts();
                 },
-
                 checkParts: function() {
                     this.partsToCheck.forEach(partEl => {
                         if (partEl.isInstalled || partEl.is('grabbed')) return;
-
                         const partType = partEl.dataset.part;
                         const slot = this.slots[partType];
-
                         if (slot && !slot.isOccupied) {
-                            // === ОСНОВНЕ ВИПРАВЛЕННЯ ТУТ ===
-                            // Отримуємо світову позицію частини перед порівнянням
                             partEl.object3D.getWorldPosition(this.partWorldPos);
                             const distance = this.partWorldPos.distanceTo(slot.worldPos);
-                            
                             if (distance < this.data.snapDistance) {
                                 this.installPart(partEl, slot);
                             }
                         }
                     });
                 },
-
                 installPart: function(partEl, slot) {
                     partEl.isInstalled = true;
                     slot.isOccupied = true;
-                    
-                    // Видаляємо фізику, якщо вона є
-                    if (partEl.hasAttribute('dynamic-body')) {
-                        partEl.removeAttribute('dynamic-body');
-                    }
-                    
+                    if (partEl.hasAttribute('dynamic-body')) partEl.removeAttribute('dynamic-body');
                     slot.el.object3D.attach(partEl.object3D);
                     partEl.object3D.position.set(0, 0, 0);
                     partEl.object3D.rotation.set(0, 0, 0);
-                    
                     if (partEl.hasAttribute('super-hands')) partEl.removeAttribute('super-hands');
                     if (partEl.hasAttribute('mixin')) partEl.removeAttribute('mixin');
-                    
                     updateProgress();
                     console.log(`Installed ${partEl.id} into ${this.el.id}`);
                 }

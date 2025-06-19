@@ -106,7 +106,8 @@
             </a-entity>
         </a-entity>
 
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="shape: box; mass: 2" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: hull; mass: 2; angularDamping: 0.8; linearDamping: 0.5"
+  toggle-physics-on-grab side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
         <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
@@ -320,6 +321,28 @@
                 document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
                 document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
             });
+        AFRAME.registerComponent('toggle-physics-on-grab', {
+            schema: {
+                shape: {type: 'string', default: 'hull'},
+                mass: {type: 'number', default: 2},
+                angularDamping: {type: 'number', default: 0.8},
+                linearDamping: {type: 'number', default: 0.5}
+            },
+            init: function () {
+                const data = this.data;
+                const el = this.el;
+        
+                el.addEventListener('grab-start', () => {
+                    el.removeAttribute('dynamic-body');
+                });
+        
+                el.addEventListener('grab-end', () => {
+                    const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
+                    el.setAttribute('dynamic-body', dyn);
+                });
+            }
+        });
+
         </script>
     </a-scene>
 

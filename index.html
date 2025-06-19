@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <title>Simple VR PC Builder</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; }
         .info {
             position: absolute;
             bottom: 10px;
@@ -28,7 +25,7 @@
     </style>
 </head>
 <body>
-    <a-scene physics="gravity: -9.8" desktop-cursor-fix>
+    <a-scene physics="debug: false; gravity: -9.8">
         <!-- Assets -->
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
@@ -51,9 +48,9 @@
                height="0.1" 
                depth="2" 
                color="#8B4513" 
-               static-body></a-box>
+               static-body="shape: box"></a-box>
         
-        <!-- PC Case Frame -->
+        <!-- PC Case (simplified) -->
         <a-entity id="pc-case" position="-1 0.6 -3">
             <!-- Bottom -->
             <a-box position="0 0 0" 
@@ -61,217 +58,113 @@
                    height="0.02" 
                    depth="0.5" 
                    color="#2a2a2a" 
-                   static-body></a-box>
-            <!-- Back -->
+                   static-body="shape: box"></a-box>
+            <!-- Back wall -->
             <a-box position="-0.19 0.2 0" 
                    width="0.02" 
                    height="0.4" 
                    depth="0.5" 
                    color="#2a2a2a" 
-                   static-body></a-box>
-            <!-- Left Side -->
-            <a-box position="0 0.2 -0.24" 
-                   width="0.4" 
-                   height="0.4" 
-                   depth="0.02" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
-            <!-- Right Side -->
-            <a-box position="0 0.2 0.24" 
-                   width="0.4" 
-                   height="0.4" 
-                   depth="0.02" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
+                   static-body="shape: box"></a-box>
         </a-entity>
 
-        <!-- PC Components (can be grabbed) -->
+        <!-- PC Components -->
         <!-- Motherboard -->
         <a-box id="motherboard" 
-               class="grabbable"
-               position="1 0.7 -3" 
+               class="interactable"
+               position="1 0.65 -3" 
                width="0.3" 
                height="0.02" 
                depth="0.35" 
                color="#1a5f1a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 5; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="Motherboard" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.3 0.3 0.3"></a-text>
+               hoverable grabbable draggable droppable
+               dynamic-body="shape: box">
         </a-box>
 
         <!-- CPU -->
         <a-box id="cpu" 
-               class="grabbable"
-               position="1.5 0.7 -3" 
+               class="interactable"
+               position="1.5 0.65 -3" 
                width="0.08" 
                height="0.02" 
                depth="0.08" 
                color="#4a4a4a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="CPU" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+               hoverable grabbable draggable droppable
+               dynamic-body="shape: box">
         </a-box>
 
         <!-- RAM -->
         <a-box id="ram" 
-               class="grabbable"
-               position="1 0.7 -2.5" 
+               class="interactable"
+               position="1 0.65 -2.5" 
                width="0.12" 
                height="0.02" 
                depth="0.03" 
                color="#2a7a2a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 0.5; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="RAM" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+               hoverable grabbable draggable droppable
+               dynamic-body="shape: box">
         </a-box>
 
         <!-- GPU -->
         <a-box id="gpu" 
-               class="grabbable"
-               position="1.5 0.7 -2.5" 
+               class="interactable"
+               position="1.5 0.65 -2.5" 
                width="0.25" 
                height="0.03" 
                depth="0.15" 
                color="#3a3a8a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 3; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="GPU" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.25 0.25 0.25"></a-text>
+               hoverable grabbable draggable droppable
+               dynamic-body="shape: box">
         </a-box>
 
         <!-- Power Supply -->
         <a-box id="psu" 
-               class="grabbable"
-               position="1 0.7 -3.5" 
+               class="interactable"
+               position="1 0.65 -3.5" 
                width="0.15" 
                height="0.08" 
                depth="0.15" 
                color="#5a5a5a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 2; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="PSU" 
-                       position="0 0.05 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
-        </a-box>
-
-        <!-- SSD -->
-        <a-box id="ssd" 
-               class="grabbable"
-               position="1.5 0.7 -3.5" 
-               width="0.1" 
-               height="0.01" 
-               depth="0.07" 
-               color="#7a7a7a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 0.3; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="SSD" 
-                       position="0 0.01 0" 
-                       align="center" 
-                       scale="0.15 0.15 0.15"></a-text>
-        </a-box>
-
-        <!-- Additional components for stacking demonstration -->
-        <!-- Extra RAM stick -->
-        <a-box id="ram2" 
-               class="grabbable"
-               position="0.7 0.7 -2.5" 
-               width="0.12" 
-               height="0.02" 
-               depth="0.03" 
-               color="#2a7a2a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 0.5; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="RAM 2" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
-        </a-box>
-
-        <!-- HDD -->
-        <a-box id="hdd" 
-               class="grabbable"
-               position="0.7 0.7 -3.5" 
-               width="0.15" 
-               height="0.04" 
-               depth="0.1" 
-               color="#6a6a6a"
-               hoverable grabbable stretchable draggable droppable rotatable
-               dynamic-body="mass: 1.5; linearDamping: 0.4; angularDamping: 0.4">
-               <a-text value="HDD" 
-                       position="0 0.03 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+               hoverable grabbable draggable droppable
+               dynamic-body="shape: box">
         </a-box>
 
         <!-- Lights -->
         <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="directional" 
-                 position="0 5 0" 
-                 rotation="-90 0 0" 
-                 intensity="0.6"></a-light>
+        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
 
-        <!-- Camera Rig for VR with movement controls -->
-        <a-entity id="rig" 
-                  position="0 0 0"
-                  movement-controls="fly: false; constrainToNavMesh: false; speed: 0.2"
-                  vr-teleportation>
-            <!-- Camera with look controls for rotation -->
+        <!-- Camera Rig -->
+        <a-entity id="rig" position="0 0 0">
+            <!-- Camera -->
             <a-camera id="camera" 
                       position="0 1.6 0" 
                       look-controls 
                       wasd-controls>
-                <!-- Cursor for desktop -->
-                <a-cursor id="cursor" 
-                          position="0 0 -1"
+                <a-cursor position="0 0 -1"
                           geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                           material="color: white; shader: flat"
-                          raycaster="objects: .grabbable"
-                          cursor="rayOrigin: mouse">
+                          cursor="rayOrigin: mouse; fuse: false"
+                          raycaster="objects: .interactable">
                 </a-cursor>
             </a-camera>
 
-            <!-- VR Controllers with super-hands -->
+            <!-- VR Controllers -->
             <a-entity id="leftHand" 
                       hand-controls="hand: left"
-                      laser-controls="hand: left"
-                      raycaster="objects: .grabbable; showLine: true"
-                      line="color: #ff0000"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls;
-                                   grabStartButtons: gripdown, triggerdown;
-                                   grabEndButtons: gripup, triggerup">
+                      sphere-collider="objects: .interactable"
+                      super-hands>
             </a-entity>
             
             <a-entity id="rightHand" 
                       hand-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: .grabbable; showLine: true"
-                      line="color: #0000ff"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls;
-                                   grabStartButtons: gripdown, triggerdown;
-                                   grabEndButtons: gripup, triggerup">
+                      sphere-collider="objects: .interactable"
+                      super-hands>
             </a-entity>
         </a-entity>
 
-        <!-- Custom component for highlighting -->
+        <!-- Simple movement and rotation script -->
         <script>
+            // Component for highlighting on hover
             AFRAME.registerComponent('hoverable', {
                 init: function () {
                     var el = this.el;
@@ -284,221 +177,64 @@
                     el.addEventListener('mouseleave', function () {
                         el.setAttribute('color', originalColor);
                     });
-                    
-                    el.addEventListener('grab-start', function () {
-                        el.setAttribute('color', '#ff0000');
-                    });
-                    
-                    el.addEventListener('grab-end', function () {
-                        el.setAttribute('color', originalColor);
-                    });
                 }
             });
 
-            // VR movement and rotation controls
-            AFRAME.registerComponent('vr-teleportation', {
-                init: function () {
-                    var rig = this.el;
-                    var moving = false;
+            // Simple VR movement
+            AFRAME.registerComponent('simple-vr-controls', {
+                init: function() {
+                    var rig = document.querySelector('#rig');
+                    var speed = 0.05;
                     
-                    // Listen for thumbstick movement on both controllers
-                    rig.addEventListener('thumbstickmoved', function (event) {
-                        // Forward/backward movement with left thumbstick
-                        if (event.detail.hand === 'left') {
-                            var camera = rig.querySelector('[camera]');
-                            var cameraRotation = camera.object3D.rotation.y;
+                    this.el.addEventListener('thumbstickmoved', function(evt) {
+                        // Left controller - movement
+                        if (evt.detail.hand === 'left' && evt.detail.y !== 0) {
+                            var camera = document.querySelector('#camera');
+                            var angle = camera.object3D.rotation.y;
+                            var moveX = Math.sin(angle) * evt.detail.y * speed;
+                            var moveZ = Math.cos(angle) * evt.detail.y * speed;
                             
-                            // Calculate movement direction based on camera rotation
-                            var movementX = Math.sin(cameraRotation) * event.detail.y * 0.05;
-                            var movementZ = Math.cos(cameraRotation) * event.detail.y * 0.05;
-                            
-                            // Apply movement
-                            var currentPosition = rig.getAttribute('position');
+                            var pos = rig.getAttribute('position');
                             rig.setAttribute('position', {
-                                x: currentPosition.x - movementX,
-                                y: currentPosition.y,
-                                z: currentPosition.z - movementZ
+                                x: pos.x - moveX,
+                                y: pos.y,
+                                z: pos.z - moveZ
                             });
                         }
                         
-                        // Rotation with right thumbstick
-                        if (event.detail.hand === 'right' && Math.abs(event.detail.x) > 0.8) {
-                            if (!moving) {
-                                moving = true;
-                                var currentRotation = rig.getAttribute('rotation');
-                                var rotationAmount = event.detail.x > 0 ? 30 : -30;
-                                
-                                rig.setAttribute('rotation', {
-                                    x: currentRotation.x,
-                                    y: currentRotation.y + rotationAmount,
-                                    z: currentRotation.z
-                                });
-                                
-                                // Prevent continuous rotation
-                                setTimeout(function() {
-                                    moving = false;
-                                }, 300);
-                            }
-                        }
-                    });
-
-                    // Reset movement flag when thumbstick is released
-                    rig.addEventListener('thumbstickup', function (event) {
-                        moving = false;
-                    });
-                }
-            });
-
-            // Component for rotating grabbed objects
-            AFRAME.registerComponent('rotatable', {
-                init: function() {
-                    var el = this.el;
-                    var isGrabbed = false;
-                    var grabbingHand = null;
-                    
-                    // Track when object is grabbed
-                    el.addEventListener('grab-start', function(evt) {
-                        isGrabbed = true;
-                        grabbingHand = evt.detail.hand;
-                        
-                        // Store initial rotation offsets
-                        el.grabbedRotation = {
-                            x: el.object3D.rotation.x,
-                            y: el.object3D.rotation.y,
-                            z: el.object3D.rotation.z
-                        };
-                    });
-                    
-                    el.addEventListener('grab-end', function(evt) {
-                        isGrabbed = false;
-                        grabbingHand = null;
-                    });
-                    
-                    // Listen for button presses while grabbed
-                    el.sceneEl.addEventListener('bbuttondown', function(evt) {
-                        if (isGrabbed && grabbingHand === evt.target) {
-                            // B button - rotate around Y axis
-                            var rotation = el.getAttribute('rotation');
-                            el.setAttribute('rotation', {
-                                x: rotation.x,
-                                y: rotation.y + 45,
-                                z: rotation.z
+                        // Right controller - rotation
+                        if (evt.detail.hand === 'right' && Math.abs(evt.detail.x) > 0.8) {
+                            var rot = rig.getAttribute('rotation');
+                            var turnAmount = evt.detail.x > 0 ? 30 : -30;
+                            rig.setAttribute('rotation', {
+                                x: rot.x,
+                                y: rot.y + turnAmount,
+                                z: rot.z
                             });
-                        }
-                    });
-                    
-                    el.sceneEl.addEventListener('abuttondown', function(evt) {
-                        if (isGrabbed && grabbingHand === evt.target) {
-                            // A button - rotate around X axis
-                            var rotation = el.getAttribute('rotation');
-                            el.setAttribute('rotation', {
-                                x: rotation.x + 45,
-                                y: rotation.y,
-                                z: rotation.z
-                            });
-                        }
-                    });
-                    
-                    el.sceneEl.addEventListener('xbuttondown', function(evt) {
-                        if (isGrabbed && grabbingHand === evt.target) {
-                            // X button - rotate around Z axis
-                            var rotation = el.getAttribute('rotation');
-                            el.setAttribute('rotation', {
-                                x: rotation.x,
-                                y: rotation.y,
-                                z: rotation.z + 45
-                            });
-                        }
-                    });
-                    
-                    el.sceneEl.addEventListener('ybuttondown', function(evt) {
-                        if (isGrabbed && grabbingHand === evt.target) {
-                            // Y button - reset rotation
-                            el.setAttribute('rotation', '0 0 0');
                         }
                     });
                 }
             });
 
-            // Fix for desktop mouse interactions
-            AFRAME.registerComponent('desktop-cursor-fix', {
-                init: function() {
-                    var el = this.el;
-                    var currentlyGrabbed = null;
-                    
-                    this.el.addEventListener('loaded', function() {
-                        // Ensure cursor works properly on desktop
-                        if (!AFRAME.utils.device.checkHeadsetConnected()) {
-                            var cursor = document.querySelector('#cursor');
-                            cursor.setAttribute('raycaster', 'objects: .grabbable');
-                            cursor.setAttribute('cursor', 'rayOrigin: mouse');
-                            
-                            // Desktop keyboard rotation controls
-                            document.addEventListener('keydown', function(evt) {
-                                if (currentlyGrabbed) {
-                                    var rotation = currentlyGrabbed.getAttribute('rotation');
-                                    switch(evt.key) {
-                                        case '1':
-                                            currentlyGrabbed.setAttribute('rotation', {
-                                                x: rotation.x + 45,
-                                                y: rotation.y,
-                                                z: rotation.z
-                                            });
-                                            break;
-                                        case '2':
-                                            currentlyGrabbed.setAttribute('rotation', {
-                                                x: rotation.x,
-                                                y: rotation.y + 45,
-                                                z: rotation.z
-                                            });
-                                            break;
-                                        case '3':
-                                            currentlyGrabbed.setAttribute('rotation', {
-                                                x: rotation.x,
-                                                y: rotation.y,
-                                                z: rotation.z + 45
-                                            });
-                                            break;
-                                        case '4':
-                                            currentlyGrabbed.setAttribute('rotation', '0 0 0');
-                                            break;
-                                    }
-                                }
-                            });
-                            
-                            // Track grabbed objects on desktop
-                            el.addEventListener('grab-start', function(evt) {
-                                currentlyGrabbed = evt.detail.grabbed;
-                            });
-                            
-                            el.addEventListener('grab-end', function(evt) {
-                                currentlyGrabbed = null;
-                            });
-                        }
-                    });
-                }
+            // Apply controls to hands
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    document.querySelector('#leftHand').setAttribute('simple-vr-controls', '');
+                    document.querySelector('#rightHand').setAttribute('simple-vr-controls', '');
+                }, 1000);
             });
         </script>
     </a-scene>
 
     <div class="info">
         <strong>VR Controls:</strong><br>
-        Left Thumbstick: Move forward/backward<br>
-        Right Thumbstick (left/right): Snap turn rotation<br>
-        Trigger/Grip: Grab objects<br>
+        Left Stick: Move forward/backward<br>
+        Right Stick: Turn left/right<br>
+        Trigger: Grab objects<br>
         <br>
-        <strong>Object Rotation (while holding):</strong><br>
-        A Button: Rotate X axis (45°)<br>
-        B Button: Rotate Y axis (45°)<br>
-        X Button: Rotate Z axis (45°)<br>
-        Y Button: Reset rotation<br>
-        <br>
-        <strong>Desktop Controls:</strong><br>
-        WASD: Move, Mouse: Look around<br>
-        Click and drag: Grab objects<br>
-        Number keys 1-4: Rotate grabbed object<br>
-        <br>
-        <strong>Goal:</strong> Pick up components and stack them in the PC case!
+        <strong>Desktop:</strong><br>
+        WASD: Move, Mouse: Look<br>
+        Click: Grab objects<br>
     </div>
 </body>
 </html>

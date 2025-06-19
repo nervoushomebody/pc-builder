@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple VR PC Builder - Improved Experience</title>
+    <title>Simple VR PC Builder - Teleport & Descriptions</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -47,67 +47,87 @@
         </a-assets>
 
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body nav-mesh></a-plane>
 
         <a-box id="table" position="0 0.5 -1.2" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
         
-        <a-entity id="pc-case" position="-1 0.6 -1.2">
+        <a-entity id="pc-case" position="-0.7 0.6 -1.2">
             <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
         </a-entity>
 
-        <a-box id="motherboard" mixin="interactive" position="1 0.7 -1.2" width="0.3" height="0.02" depth="0.35" color="#1a5f1a">
+        <a-box id="motherboard" mixin="interactive" position="0.2 0.7 -1.2" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
+               show-description-on-grab="description: Motherboard - Connects all components.">
             <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
         </a-box>
-        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -1.2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a">
+        <a-box id="cpu" mixin="interactive" position="0.6 0.7 -1.2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
+               show-description-on-grab="description: CPU (Central Processing Unit) - The computer's brain.">
             <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ram" mixin="interactive" position="1 0.7 -0.7" width="0.12" height="0.02" depth="0.03" color="#2a7a2a">
+        <a-box id="ram" mixin="interactive" position="0.2 0.7 -0.9" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
+               show-description-on-grab="description: RAM (Random Access Memory) - Short-term memory.">
             <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -0.7" width="0.25" height="0.03" depth="0.15" color="#3a3a8a">
+        <a-box id="gpu" mixin="interactive" position="0.6 0.7 -0.9" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
+               show-description-on-grab="description: GPU (Graphics Processing Unit) - Renders images.">
             <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
         </a-box>
-        <a-box id="psu" mixin="interactive" position="1 0.7 -1.7" width="0.15" height="0.08" depth="0.15" color="#5a5a5a">
+        <a-box id="psu" mixin="interactive" position="0.2 0.7 -1.5" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
+               show-description-on-grab="description: PSU (Power Supply Unit) - Provides power.">
             <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -1.7" width="0.1" height="0.01" depth="0.07" color="#7a7a7a">
+        <a-box id="ssd" mixin="interactive" position="0.6 0.7 -1.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
+               show-description-on-grab="description: SSD (Solid State Drive) - Long-term storage.">
             <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
         </a-box>
 
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
 
-        <a-entity id="rig" position="0 0 0" movement-controls="speed: 0.3; controls: left" thumbstick-turn="hand: right">
+        <a-entity id="rig" position="0 0 0" teleport-controls="hand: left; button: trigger; collisionEntities: #ground-plane;">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls>
                 <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
             </a-camera>
 
-            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left"></a-entity>
             <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right"></a-entity>
+            <a-entity id="leftHand" hand-controls="hand: left"></a-entity>
         </a-entity>
 
         <script>
-            // NEW COMPONENT: Respawns an entity if it falls through the floor
-            AFRAME.registerComponent('respawnable', {
-              init: function () {
-                this.initialPosition = this.el.object3D.position.clone();
+            // NEW: Shows a description above the object when grabbed
+            AFRAME.registerComponent('show-description-on-grab', {
+              schema: {
+                description: {type: 'string', default: 'Item description.'},
+                yOffset: {type: 'number', default: 0.25}
               },
-              tick: function () {
+              init: function () {
                 const el = this.el;
-                const currentPosition = el.object3D.position;
-                // Respawn if it falls below the world and is not being held
-                if (currentPosition.y < 0 && !el.is('grabbed')) {
-                  console.log('Respawning ' + el.id);
-                  this.resetEntity();
-                }
+                const data = this.data;
+                this.descriptionText = document.createElement('a-text');
+                this.descriptionText.setAttribute('value', data.description);
+                this.descriptionText.setAttribute('align', 'center');
+                this.descriptionText.setAttribute('position', `0 ${data.yOffset} 0`);
+                this.descriptionText.setAttribute('width', '1.5'); // Make text wrap
+                this.descriptionText.setAttribute('look-at', '#camera');
+                this.descriptionText.setAttribute('visible', false);
+                el.appendChild(this.descriptionText);
+
+                el.addEventListener('grab-start', () => { this.descriptionText.setAttribute('visible', true); });
+                el.addEventListener('grab-end', () => { this.descriptionText.setAttribute('visible', false); });
+              }
+            });
+
+            // Respawns an entity if it falls
+            AFRAME.registerComponent('respawnable', {
+              init: function () { this.initialPosition = this.el.object3D.position.clone(); },
+              tick: function () {
+                if (this.el.object3D.position.y < 0 && !this.el.is('grabbed')) { this.resetEntity(); }
               },
               resetEntity: function() {
                 const el = this.el;
                 el.object3D.position.copy(this.initialPosition);
-                // Also reset the physics body to stop all movement
                 if (el.body) {
                   el.body.position.copy(this.initialPosition);
                   el.body.velocity.set(0, 0, 0);
@@ -116,32 +136,28 @@
               }
             });
 
-            // From super-hands docs: prevents hands from knocking things away before grabbing
+            // Prevents hands from knocking things away
             AFRAME.registerComponent('phase-shift', {
-                init: function () {
-                    var el = this.el;
-                    el.addEventListener('gripdown', function () {
-                        el.setAttribute('collision-filter', {collisionForces: true});
-                    });
-                    el.addEventListener('gripup', function () {
-                        el.setAttribute('collision-filter', {collisionForces: false});
-                    });
-                }
+              init: function () {
+                var el = this.el;
+                el.addEventListener('gripdown', () => el.setAttribute('collision-filter', {collisionForces: true}));
+                el.addEventListener('gripup', () => el.setAttribute('collision-filter', {collisionForces: false}));
+              }
             });
 
-            // Updated hoverable component
+            // Handles hover and grab highlighting
             AFRAME.registerComponent('hoverable', {
-                init: function () {
-                    var el = this.el;
-                    el.originalColor = el.getAttribute('material').color;
-                    el.addEventListener('hover-start', function () { el.setAttribute('color', '#ffff00'); });
-                    el.addEventListener('hover-end', function () { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
-                    el.addEventListener('grab-start', function () { el.setAttribute('color', '#ff0000'); });
-                    el.addEventListener('grab-end', function () {
-                        if (el.is('hovered')) { el.setAttribute('color', '#ffff00'); } 
-                        else { el.setAttribute('color', el.originalColor); }
-                    });
-                }
+              init: function () {
+                var el = this.el;
+                el.originalColor = el.getAttribute('material').color;
+                el.addEventListener('hover-start', () => el.setAttribute('color', '#ffff00'));
+                el.addEventListener('hover-end', () => { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
+                el.addEventListener('grab-start', () => el.setAttribute('color', '#ff0000'));
+                el.addEventListener('grab-end', () => {
+                    if (el.is('hovered')) { el.setAttribute('color', '#ffff00'); } 
+                    else { el.setAttribute('color', el.originalColor); }
+                });
+              }
             });
         </script>
     </a-scene>
@@ -150,12 +166,12 @@
         <strong>Controls:</strong><br>
         The workstation is directly in front of you.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Grab:</strong> Reach out and use Trigger/Grip buttons.<br>
-         - <strong>Move:</strong> Use the Left Thumbstick.<br>
-         - <strong>Turn:</strong> Use the Right Thumbstick.<br><br>
+         - <strong>Teleport:</strong> Aim with your Left Hand, pull Trigger to move.<br>
+         - <strong>Grab:</strong> Reach with your Right Hand and use Trigger/Grip.<br>
+         - <strong>Info:</strong> Descriptive text appears above objects when you grab them.<br><br>
         <strong>Desktop:</strong> WASD to move, Mouse to look.
         <br><br>
-        <strong>Goal:</strong> Pick up components and place them in the PC case! Dropped parts will respawn if they fall.
+        <strong>Goal:</strong> Assemble the PC! Dropped parts will respawn if they fall.
     </div>
 </body>
 </html>

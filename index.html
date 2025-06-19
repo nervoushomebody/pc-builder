@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>VR PC Builder - Immersive Layout</title>
+    <title>VR Збирач ПК - Фінальна версія</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -31,9 +31,16 @@
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
 
+            <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
+            <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
+            <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
+            <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
+            <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
+            <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
+            <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
+            
             <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable
-                     dynamic-body>
+                     hoverable grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
@@ -52,45 +59,47 @@
         
         <a-entity id="pc-case-station" position="0 0.8 -1.5">
              <a-box position="0 0.5 0" width="0.6" height="0.1" depth="0.7" color="#4d4d4d" static-body></a-box>
-             <a-entity id="pc-case">
-                <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
-                <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
-                <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
-                <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
+             <a-entity id="pc-case" static-body>
+                <a-gltf-model src="#case-model" scale="1 1 1" position="0 0 0"></a-gltf-model>
             </a-entity>
         </a-entity>
 
 
-        <a-box id="motherboard" mixin="interactive" position="1.2 1.2 0" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
-               side-description="description: Motherboard - connects all components.; offset: 0 0.1 -0.25">
-            <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3" rotation="-90 0 0"></a-text>
-        </a-box>
+        <a-entity id="motherboard" mixin="interactive" position="1.2 1.2 0" 
+                  dynamic-body="shape: box; boxSize: 0.3 0.02 0.35"
+                  side-description="description: Motherboard - connects all components.; offset: 0 0.1 -0.25">
+            <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
         
-        <a-box id="cpu" mixin="interactive" position="-0.8 1.2 -1" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
-               side-description="description: CPU (Processor) - the brain of the computer.; offset: 0.15 0 0">
-            <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
-        </a-box>
+        <a-entity id="cpu" mixin="interactive" position="-0.8 1.2 -1" 
+                  dynamic-body="shape: box; boxSize: 0.08 0.02 0.08"
+                  side-description="description: CPU (Processor) - the brain of the computer.; offset: 0.15 0 0">
+            <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
 
-        <a-box id="ram" mixin="interactive" position="-0.8 1.2 0.8" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
-               side-description="description: RAM (Random Access Memory) - short-term memory.; offset: 0.16 0 0">
-            <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
-        </a-box>
+        <a-entity id="ram" mixin="interactive" position="-0.8 1.2 0.8" 
+                  dynamic-body="shape: box; boxSize: 0.12 0.02 0.03"
+                  side-description="description: RAM (Random Access Memory) - short-term memory.; offset: 0.16 0 0">
+            <a-gltf-model src="#ram-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
         
-        <a-box id="gpu" mixin="interactive" position="-1.2 1.2 0" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
-               side-description="description: GPU (Graphics Card) - processes graphics.; offset: 0 0.05 0.2">
-            <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25" rotation="-90 0 0"></a-text>
-        </a-box>
+        <a-entity id="gpu" mixin="interactive" position="-1.2 1.2 0" 
+                  dynamic-body="shape: box; boxSize: 0.25 0.03 0.15"
+                  side-description="description: GPU (Graphics Card) - processes graphics.; offset: 0 0.05 0.2">
+            <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
 
-        <a-box id="psu" mixin="interactive" position="0.8 1.2 -1" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
-               side-description="description: Power Supply Unit - provides power.; offset: 0.18 0.05 0">
-            <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
-        </a-box>
+        <a-entity id="psu" mixin="interactive" position="0.8 1.2 -1" 
+                  dynamic-body="shape: box; boxSize: 0.15 0.08 0.15"
+                  side-description="description: Power Supply Unit - provides power.; offset: 0.18 0.05 0">
+            <a-gltf-model src="#psu-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
 
-        <a-box id="ssd" mixin="interactive" position="0.8 1.2 0.8" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
-               side-description="description: SSD (Solid State Drive) - long-term storage.; offset: 0.15 0 0">
-            <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15" rotation="-90 0 0"></a-text>
-        </a-box>
-
+        <a-entity id="ssd" mixin="interactive" position="0.8 1.2 0.8" 
+                  dynamic-body="shape: box; boxSize: 0.1 0.01 0.07"
+                  side-description="description: SSD (Solid State Drive) - long-term storage.; offset: 0.15 0 0">
+            <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="1 1 1"></a-gltf-model>
+        </a-entity>
 
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
@@ -99,7 +108,6 @@
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls>
                 <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
             </a-camera>
-
             <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left"></a-entity>
             <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right"></a-entity>
         </a-entity>
@@ -119,9 +127,9 @@
                 this.descriptionText.setAttribute('align', 'left');
                 this.descriptionText.setAttribute('position', data.offset);
                 this.descriptionText.setAttribute('width', '2');
-                this.descriptionText.setAttribute('look-at', '#camera'); // This makes it always face the user
+                this.descriptionText.setAttribute('look-at', '#camera');
                 this.descriptionText.setAttribute('visible', false);
-                el.appendChild(this.descriptionText); // Attach text to the component
+                el.appendChild(this.descriptionText);
 
                 el.addEventListener('grab-start', () => { this.descriptionText.setAttribute('visible', true); });
                 el.addEventListener('grab-end', () => { this.descriptionText.setAttribute('visible', false); });
@@ -134,8 +142,7 @@
                 this.initialPosition = this.el.object3D.position.clone();
               },
               tick: function () {
-                const el = this.el;
-                if (el.object3D.position.y < -5 && !el.is('grabbed')) {
+                if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) {
                   this.resetEntity();
                 }
               },
@@ -154,12 +161,8 @@
             AFRAME.registerComponent('phase-shift', {
               init: function () {
                   var el = this.el;
-                  el.addEventListener('gripdown', function () {
-                      el.setAttribute('collision-filter', {collisionForces: true});
-                  });
-                  el.addEventListener('gripup', function () {
-                      el.setAttribute('collision-filter', {collisionForces: false});
-                  });
+                  el.addEventListener('gripdown', () => el.setAttribute('collision-filter', {collisionForces: true}));
+                  el.addEventListener('gripup', () => el.setAttribute('collision-filter', {collisionForces: false}));
               }
             });
 
@@ -167,13 +170,24 @@
             AFRAME.registerComponent('hoverable', {
               init: function () {
                   var el = this.el;
-                  el.originalColor = el.getAttribute('material').color;
-                  el.addEventListener('hover-start', function () { el.setAttribute('color', '#ffff00'); });
-                  el.addEventListener('hover-end', function () { if (!el.is('grabbed')) { el.setAttribute('color', el.originalColor); } });
-                  el.addEventListener('grab-start', function () { el.setAttribute('color', '#ff0000'); });
-                  el.addEventListener('grab-end', function () {
-                      if (el.is('hovered')) { el.setAttribute('color', '#ffff00'); } 
-                      else { el.setAttribute('color', el.originalColor); }
+                  el.originalColor = el.getAttribute('material') ? el.getAttribute('material').color : '#FFF';
+                  el.addEventListener('hover-start', function (evt) { 
+                    evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', 'color', '#ffff00'));
+                  });
+                  el.addEventListener('hover-end', function (evt) { 
+                    if (!el.is('grabbed')) {
+                      evt.target.querySelectorAll('a-gltf-model').forEach(model => model.removeAttribute('material'));
+                    }
+                  });
+                  el.addEventListener('grab-start', function (evt) { 
+                    evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', 'color', '#ff0000'));
+                  });
+                  el.addEventListener('grab-end', function (evt) {
+                    if (el.is('hovered')) {
+                      evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', 'color', '#ffff00'));
+                    } else {
+                      evt.target.querySelectorAll('a-gltf-model').forEach(model => model.removeAttribute('material'));
+                    }
                   });
               }
             });
@@ -181,16 +195,16 @@
     </a-scene>
 
     <div class="info">
-        <strong>Controls:</strong><br>
-        The PC Case is in front. Components are in a circle around you.<br><br>
+        <strong>Керування:</strong><br>
+        Корпус ПК перед вами. Компоненти розташовані навколо вас.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Grab:</strong> Reach out and use Trigger/Grip buttons.<br>
-         - <strong>Move:</strong> Use the Left Thumbstick.<br>
-         - <strong>Turn:</strong> Use the Right Thumbstick.<br>
-         - <strong>Info:</strong> When you grab an item, a description appears at its side.<br><br>
-        <strong>Desktop:</strong> WASD to move, Mouse to look.
+         - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
+         - <strong>Рух:</strong> Лівий джойстик.<br>
+         - <strong>Поворот:</strong> Правий джойстик.<br>
+         - <strong>Інфо:</strong> При захопленні предмета збоку з'явиться опис.<br><br>
+        <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Goal:</strong> Pick up components and place them in the PC case! Dropped parts will respawn.
+        <strong>Мета:</strong> Зібрати ПК, перетягуючи компоненти в корпус!
     </div>
 </body>
 </html>

@@ -1,199 +1,271 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>A-Frame VR Scene with Physics and Interactions</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@v7.5.0/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/super-hands@3.0.3/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Simple VR PC Builder</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <a-scene physics="gravity: -9.8; debug: false">
+    <a-scene physics="gravity: -9.8">
         <!-- Assets -->
         <a-assets>
-            <a-mixin id="grabbable"
-                     hoverable grabbable stretchable draggable
-                     event-set__hoveron="_event: hover-start; material.opacity: 0.7"
-                     event-set__hoveroff="_event: hover-end; material.opacity: 1"
-                     event-set__dragstart="_event: drag-start; material.emissive: #2f2f2f"
-                     event-set__dragend="_event: drag-end; material.emissive: #000000">
-            </a-mixin>
+            <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
+            <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
         </a-assets>
 
         <!-- Environment -->
-        <a-sky color="#ECECEC"></a-sky>
-        
-        <!-- Ground -->
-        <a-plane 
-            position="0 0 0" 
-            rotation="-90 0 0" 
-            width="20" 
-            height="20" 
-            color="#7BC8A4"
-            static-body
-            shadow="receive: true">
-        </a-plane>
+        <a-sky src="#sky"></a-sky>
+        <a-plane id="ground-plane" 
+                 src="#ground" 
+                 rotation="-90 0 0" 
+                 width="20" 
+                 height="20" 
+                 static-body></a-plane>
 
-        <!-- Table -->
-        <a-box 
-            id="table"
-            position="0 0.75 -3" 
-            width="3" 
-            height="0.1" 
-            depth="2"
-            color="#8B4513"
-            static-body
-            shadow>
-        </a-box>
-        <!-- Table legs -->
-        <a-box position="-1.3 0.375 -2.3" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
-        <a-box position="1.3 0.375 -2.3" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
-        <a-box position="-1.3 0.375 -3.7" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
-        <a-box position="1.3 0.375 -3.7" width="0.1" height="0.75" depth="0.1" color="#654321" static-body></a-box>
+        <!-- Work Table -->
+        <a-box id="table" 
+               position="0 0.5 -3" 
+               width="4" 
+               height="0.1" 
+               depth="2" 
+               color="#8B4513" 
+               static-body></a-box>
+        
+        <!-- PC Case Frame -->
+        <a-entity id="pc-case" position="-1 0.6 -3">
+            <!-- Bottom -->
+            <a-box position="0 0 0" 
+                   width="0.4" 
+                   height="0.02" 
+                   depth="0.5" 
+                   color="#2a2a2a" 
+                   static-body></a-box>
+            <!-- Back -->
+            <a-box position="-0.19 0.2 0" 
+                   width="0.02" 
+                   height="0.4" 
+                   depth="0.5" 
+                   color="#2a2a2a" 
+                   static-body></a-box>
+            <!-- Left Side -->
+            <a-box position="0 0.2 -0.24" 
+                   width="0.4" 
+                   height="0.4" 
+                   depth="0.02" 
+                   color="#2a2a2a" 
+                   static-body></a-box>
+            <!-- Right Side -->
+            <a-box position="0 0.2 0.24" 
+                   width="0.4" 
+                   height="0.4" 
+                   depth="0.02" 
+                   color="#2a2a2a" 
+                   static-body></a-box>
+        </a-entity>
 
-        <!-- Grabbable Boxes on table -->
-        <a-box 
-            mixin="grabbable"
-            position="-0.5 1.2 -3" 
-            width="0.3" 
-            height="0.3" 
-            depth="0.3"
-            color="#FF6B6B"
-            dynamic-body
-            shadow>
-        </a-box>
-        
-        <a-box 
-            mixin="grabbable"
-            position="0.5 1.2 -3" 
-            width="0.4" 
-            height="0.4" 
-            depth="0.4"
-            color="#4ECDC4"
-            dynamic-body
-            shadow>
-        </a-box>
-        
-        <a-box 
-            mixin="grabbable"
-            position="0 1.5 -3.5" 
-            width="0.35" 
-            height="0.35" 
-            depth="0.35"
-            color="#FFE66D"
-            dynamic-body
-            shadow>
+        <!-- PC Components (can be grabbed) -->
+        <!-- Motherboard -->
+        <a-box id="motherboard" 
+               class="grabbable"
+               position="1 0.7 -3" 
+               width="0.3" 
+               height="0.02" 
+               depth="0.35" 
+               color="#1a5f1a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="Motherboard" 
+                       position="0 0.02 0" 
+                       align="center" 
+                       scale="0.3 0.3 0.3"></a-text>
         </a-box>
 
-        <!-- Grabbable Spheres -->
-        <a-sphere 
-            mixin="grabbable"
-            position="-1.5 0.3 -2" 
-            radius="0.3" 
-            color="#95E1D3"
-            dynamic-body
-            shadow>
-        </a-sphere>
-        
-        <a-sphere 
-            mixin="grabbable"
-            position="1.5 0.25 -2.5" 
-            radius="0.25" 
-            color="#F3B8F3"
-            dynamic-body
-            shadow>
-        </a-sphere>
-        
-        <a-sphere 
-            mixin="grabbable"
-            position="0 0.4 -1" 
-            radius="0.4" 
-            color="#FFB6C1"
-            dynamic-body
-            shadow>
-        </a-sphere>
-
-        <!-- Additional scattered objects -->
-        <a-box 
-            mixin="grabbable"
-            position="-2.5 0.2 -4" 
-            width="0.4" 
-            height="0.4" 
-            depth="0.4"
-            color="#DDA0DD"
-            dynamic-body
-            shadow>
+        <!-- CPU -->
+        <a-box id="cpu" 
+               class="grabbable"
+               position="1.5 0.7 -3" 
+               width="0.08" 
+               height="0.02" 
+               depth="0.08" 
+               color="#4a4a4a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="CPU" 
+                       position="0 0.02 0" 
+                       align="center" 
+                       scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        
-        <a-sphere 
-            mixin="grabbable"
-            position="2.5 0.3 -4.5" 
-            radius="0.3" 
-            color="#98FB98"
-            dynamic-body
-            shadow>
-        </a-sphere>
 
-        <!-- Player rig with movement and hand controls -->
-        <a-entity id="rig" movement-controls position="0 0 2">
-            <!-- Camera -->
-            <a-entity 
-                id="camera"
-                camera
-                position="0 1.6 0"
-                look-controls>
-                <!-- Desktop cursor -->
-                <a-entity
-                    cursor="rayOrigin: mouse"
-                    raycaster="objects: [mixin='grabbable'], [clickable]"
-                    super-hands="colliderEvent: raycaster-intersection;
-                               colliderEventProperty: els;
-                               colliderEndEvent: raycaster-intersection-cleared;
-                               colliderEndEventProperty: clearedEls">
-                </a-entity>
+        <!-- RAM -->
+        <a-box id="ram" 
+               class="grabbable"
+               position="1 0.7 -2.5" 
+               width="0.12" 
+               height="0.02" 
+               depth="0.03" 
+               color="#2a7a2a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="RAM" 
+                       position="0 0.02 0" 
+                       align="center" 
+                       scale="0.2 0.2 0.2"></a-text>
+        </a-box>
+
+        <!-- GPU -->
+        <a-box id="gpu" 
+               class="grabbable"
+               position="1.5 0.7 -2.5" 
+               width="0.25" 
+               height="0.03" 
+               depth="0.15" 
+               color="#3a3a8a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="GPU" 
+                       position="0 0.02 0" 
+                       align="center" 
+                       scale="0.25 0.25 0.25"></a-text>
+        </a-box>
+
+        <!-- Power Supply -->
+        <a-box id="psu" 
+               class="grabbable"
+               position="1 0.7 -3.5" 
+               width="0.15" 
+               height="0.08" 
+               depth="0.15" 
+               color="#5a5a5a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="PSU" 
+                       position="0 0.05 0" 
+                       align="center" 
+                       scale="0.2 0.2 0.2"></a-text>
+        </a-box>
+
+        <!-- SSD -->
+        <a-box id="ssd" 
+               class="grabbable"
+               position="1.5 0.7 -3.5" 
+               width="0.1" 
+               height="0.01" 
+               depth="0.07" 
+               color="#7a7a7a"
+               hoverable grabbable stretchable draggable droppable
+               dynamic-body>
+               <a-text value="SSD" 
+                       position="0 0.01 0" 
+                       align="center" 
+                       scale="0.15 0.15 0.15"></a-text>
+        </a-box>
+
+        <!-- Lights -->
+        <a-light type="ambient" color="#404040"></a-light>
+        <a-light type="directional" 
+                 position="0 5 0" 
+                 rotation="-90 0 0" 
+                 intensity="0.6"></a-light>
+
+        <!-- Camera Rig for VR -->
+        <a-entity id="rig" position="0 0 0">
+            <!-- Camera with look controls for rotation -->
+            <a-camera id="camera" 
+                      position="0 1.6 0" 
+                      look-controls 
+                      wasd-controls>
+                <!-- Cursor for desktop -->
+                <a-cursor id="cursor" 
+                          position="0 0 -1"
+                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                          material="color: white; shader: flat"
+                          raycaster="objects: .grabbable">
+                </a-cursor>
+            </a-camera>
+
+            <!-- VR Controllers with super-hands -->
+            <a-entity id="leftHand" 
+                      hand-controls="hand: left"
+                      laser-controls="hand: left"
+                      raycaster="objects: .grabbable"
+                      line="color: #ff0000"
+                      super-hands="colliderEvent: raycaster-intersection;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: raycaster-intersection-cleared;
+                                   colliderEndEventProperty: clearedEls;
+                                   grabStartButtons: gripdown, triggerdown, pointdown, thumbdown, pointingstart;
+                                   grabEndButtons: gripup, triggerup, pointup, thumbup, pointingend">
             </a-entity>
             
-            <!-- VR Controllers -->
-            <a-entity 
-                id="leftHand"
-                hand-controls="hand: left"
-                super-hands="colliderEvent: collisions;
-                           colliderEventProperty: els;
-                           colliderEndEvent: collisions-cleared;
-                           colliderEndEventProperty: clearedEls">
-            </a-entity>
-            
-            <a-entity 
-                id="rightHand"
-                hand-controls="hand: right"
-                super-hands="colliderEvent: collisions;
-                           colliderEventProperty: els;
-                           colliderEndEvent: collisions-cleared;
-                           colliderEndEventProperty: clearedEls">
+            <a-entity id="rightHand" 
+                      hand-controls="hand: right"
+                      laser-controls="hand: right"
+                      raycaster="objects: .grabbable"
+                      line="color: #0000ff"
+                      super-hands="colliderEvent: raycaster-intersection;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: raycaster-intersection-cleared;
+                                   colliderEndEventProperty: clearedEls;
+                                   grabStartButtons: gripdown, triggerdown, pointdown, thumbdown, pointingstart;
+                                   grabEndButtons: gripup, triggerup, pointup, thumbup, pointingend">
             </a-entity>
         </a-entity>
 
-        <!-- Lighting -->
-        <a-light type="ambient" color="#BBB"></a-light>
-        <a-light type="directional" color="#FFF" intensity="0.6" position="-0.5 1 1" shadow></a-light>
+        <!-- Custom component for highlighting -->
+        <script>
+            AFRAME.registerComponent('hoverable', {
+                init: function () {
+                    var el = this.el;
+                    var originalColor = el.getAttribute('color');
+                    
+                    el.addEventListener('mouseenter', function () {
+                        el.setAttribute('color', '#ffff00');
+                    });
+                    
+                    el.addEventListener('mouseleave', function () {
+                        el.setAttribute('color', originalColor);
+                    });
+                    
+                    el.addEventListener('grab-start', function () {
+                        el.setAttribute('color', '#ff0000');
+                    });
+                    
+                    el.addEventListener('grab-end', function () {
+                        el.setAttribute('color', originalColor);
+                    });
+                }
+            });
+        </script>
     </a-scene>
 
-    <script>
-        // Add some interactivity feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            // Log when objects are grabbed/released
-            const grabbables = document.querySelectorAll('[mixin="grabbable"]');
-            grabbables.forEach(el => {
-                el.addEventListener('grab-start', function(evt) {
-                    console.log('Grabbed:', el);
-                });
-                el.addEventListener('grab-end', function(evt) {
-                    console.log('Released:', el);
-                });
-            });
-        });
-    </script>
+    <div class="info">
+        <strong>Controls:</strong><br>
+        Desktop: WASD to move, Mouse to look around, Click and drag to grab<br>
+        VR: Use controllers to point and grab with trigger/grip buttons<br>
+        <br>
+        <strong>Goal:</strong> Pick up components and place them in the PC case!
+    </div>
 </body>
 </html>

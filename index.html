@@ -68,6 +68,7 @@
             <a-mixin id="cube-physics"
                      dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
                      hoverable grabbable stretchable draggable
+                     smooth-grabbing
                      event-set__hoveron="_event: hover-start; material.opacity: 0.7"
                      event-set__hoveroff="_event: hover-end; material.opacity: 1"
                      event-set__dragon="_event: dragover-start; material.color: #00ff00"
@@ -222,7 +223,8 @@
                       hand-controls="hand: left"
                       oculus-touch-controls="hand: left"
                       mixin="hand-physics"
-                      hand-coordinates="hand: left">
+                      hand-coordinates="hand: left"
+                      smooth-controller>
             </a-entity>
             
             <a-entity id="rightHand"
@@ -230,7 +232,8 @@
                       oculus-touch-controls="hand: right"
                       oculus-thumbstick-controls="fly: true"
                       mixin="hand-physics"
-                      hand-coordinates="hand: right">
+                      hand-coordinates="hand: right"
+                      smooth-controller>
             </a-entity>
         </a-entity>
 
@@ -334,6 +337,71 @@
                             this.collisions.delete(key);
                         }
                     }
+                }
+            });
+
+            // Smooth grabbing component
+            AFRAME.registerComponent('smooth-grabbing', {
+                init: function() {
+                    const el = this.el;
+                    this.originalDynamicBody = null;
+                    this.isGrabbed = false;
+                    
+                    el.addEventListener('grab-start', (evt) => {
+                        this.isGrabbed = true;
+                        // Store original physics settings
+                        if (el.hasAttribute('dynamic-body')) {
+                            this.originalDynamicBody = el.getAttribute('dynamic-body');
+                            // Remove physics while grabbed
+                            el.removeAttribute('dynamic-body');
+                        }
+                        
+                        // Make object kinematic
+                        el.setAttribute('kinematic-body', '');
+                    });
+                    
+                    el.addEventListener('grab-end', (evt) => {
+                        this.isGrabbed = false;
+                        // Remove kinematic
+                        el.removeAttribute('kinematic-body');
+                        
+                        // Restore physics after a small delay
+                        setTimeout(() => {
+                            if (this.originalDynamicBody && !this.isGrabbed) {
+                                el.setAttribute('dynamic-body', this.originalDynamicBody);
+                                
+                                // Reset velocities to prevent flying
+                                setTimeout(() => {
+                                    if (el.body) {
+                                        el.body.velocity.set(0, 0, 0);
+                                        el.body.angularVelocity.set(0, 0, 0);
+                                    }
+                                }, 50);
+                            }
+                        }, 100);
+                    });
+                }
+            });
+
+            // Smooth controller for better grabbing
+            AFRAME.registerComponent('smooth-controller', {
+                init: function() {
+                    // Add visual feedback
+                    const el = this.el;
+                    const highlight = document.createElement('a-sphere');
+                    highlight.setAttribute('radius', '0.03');
+                    highlight.setAttribute('color', '#00ff00');
+                    highlight.setAttribute('opacity', '0.5');
+                    highlight.setAttribute('visible', 'false');
+                    el.appendChild(highlight);
+                    
+                    el.addEventListener('gripdown', () => {
+                        highlight.setAttribute('visible', 'true');
+                    });
+                    
+                    el.addEventListener('gripup', () => {
+                        highlight.setAttribute('visible', 'false');
+                    });
                 }
             });
 

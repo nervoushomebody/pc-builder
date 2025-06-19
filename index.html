@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
     
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -99,10 +100,10 @@
         <a-box position="-5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
         <a-box position="5 1 0" width="0.1" height="2" depth="10" color="#333" static-body></a-box>
 
-        <!-- Test Components with Different Shapes -->
+        <!-- Test Components with Different Shapes - Spread out more for better access -->
         <!-- Motherboard (Box shape) -->
         <a-box id="motherboard"
-               position="-2 1 -2"
+               position="-2 1.2 -1"
                width="0.4"
                height="0.02"
                depth="0.4"
@@ -119,7 +120,7 @@
 
         <!-- CPU (Small box) -->
         <a-box id="cpu"
-               position="-1 1 -2"
+               position="-1 1.2 -1"
                width="0.1"
                height="0.05"
                depth="0.1"
@@ -136,7 +137,7 @@
 
         <!-- GPU (Larger box) -->
         <a-box id="gpu"
-               position="0 1 -2"
+               position="0 1.2 -1"
                width="0.3"
                height="0.15"
                depth="0.5"
@@ -153,7 +154,7 @@
 
         <!-- RAM (Thin box) -->
         <a-box id="ram"
-               position="1 1 -2"
+               position="1 1.2 -1"
                width="0.3"
                height="0.05"
                depth="0.02"
@@ -170,7 +171,7 @@
 
         <!-- PSU (Cube) -->
         <a-box id="psu"
-               position="2 1 -2"
+               position="2 1.2 -1"
                width="0.25"
                height="0.25"
                depth="0.25"
@@ -212,19 +213,22 @@
             <a-camera id="camera" 
                       position="0 1.6 1" 
                       look-controls 
-                      wasd-controls>
+                      wasd-controls="fly: true">
                 <a-cursor raycaster="objects: [mixin='cube-physics']"></a-cursor>
             </a-camera>
             
             <!-- VR Controllers -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
+                      oculus-touch-controls="hand: left"
                       mixin="hand-physics"
                       hand-coordinates="hand: left">
             </a-entity>
             
             <a-entity id="rightHand"
                       hand-controls="hand: right"
+                      oculus-touch-controls="hand: right"
+                      oculus-thumbstick-controls="fly: true"
                       mixin="hand-physics"
                       hand-coordinates="hand: right">
             </a-entity>
@@ -361,19 +365,19 @@
 
     <div class="info">
         <strong>Fixed Physics Demo</strong><br><br>
+        <strong>VR Movement:</strong><br>
+        • Right thumbstick - move/fly<br>
+        • Left thumbstick - rotate<br>
+        • Grip/Trigger - grab objects<br><br>
+        <strong>Desktop:</strong><br>
+        • WASD - move (Shift to fly up/down)<br>
+        • Mouse - look around<br>
+        • Click - grab objects<br><br>
         <strong>Improvements:</strong><br>
-        • Proper collision shapes (all boxes)<br>
-        • Better mass and damping values<br>
-        • CCD (Continuous Collision Detection)<br>
+        • Proper collision shapes<br>
+        • Better physics damping<br>
         • Hand coordinate tracking<br>
-        • Physics debug info<br><br>
-        <strong>Controls:</strong><br>
-        VR: Grip/Trigger to grab<br>
-        Desktop: Click to grab, WASD to move<br><br>
-        <strong>Tips:</strong><br>
-        • All objects use box colliders<br>
-        • Damping prevents jiggling<br>
-        • Mass is properly distributed
+        • Physics debug info
     </div>
 </body>
 </html>

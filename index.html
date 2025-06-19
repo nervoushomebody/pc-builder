@@ -49,31 +49,31 @@
         <a-sky src="#sky"></a-sky>
         <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
 
-        <a-box id="table" position="0 0.5 -3" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
+        <a-box id="table" position="0 0.5 -1.5" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
         
-        <a-entity id="pc-case" position="-1 0.6 -3">
+        <a-entity id="pc-case" position="-1 0.6 -1.5">
             <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
         </a-entity>
 
-        <a-box id="motherboard" mixin="interactive" position="1 0.7 -3" width="0.3" height="0.02" depth="0.35" color="#1a5f1a">
+        <a-box id="motherboard" mixin="interactive" position="1 0.7 -1.5" width="0.3" height="0.02" depth="0.35" color="#1a5f1a">
             <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
         </a-box>
-        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -3" width="0.08" height="0.02" depth="0.08" color="#4a4a4a">
+        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -1.5" width="0.08" height="0.02" depth="0.08" color="#4a4a4a">
             <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ram" mixin="interactive" position="1 0.7 -2.5" width="0.12" height="0.02" depth="0.03" color="#2a7a2a">
+        <a-box id="ram" mixin="interactive" position="1 0.7 -1.0" width="0.12" height="0.02" depth="0.03" color="#2a7a2a">
             <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -2.5" width="0.25" height="0.03" depth="0.15" color="#3a3a8a">
+        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -1.0" width="0.25" height="0.03" depth="0.15" color="#3a3a8a">
             <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
         </a-box>
-        <a-box id="psu" mixin="interactive" position="1 0.7 -3.5" width="0.15" height="0.08" depth="0.15" color="#5a5a5a">
+        <a-box id="psu" mixin="interactive" position="1 0.7 -2.0" width="0.15" height="0.08" depth="0.15" color="#5a5a5a">
             <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -3.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a">
+        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -2.0" width="0.1" height="0.01" depth="0.07" color="#7a7a7a">
             <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
         </a-box>
 
@@ -137,9 +137,10 @@
 
     <div class="info">
         <strong>Controls:</strong><br>
-        Desktop: WASD to move, Mouse to look<br>
-        VR: Left Thumbstick to move, Right Thumbstick to turn. Squeeze Grip to "activate" hand physics, then use Trigger/Grip to grab.<br>
-        <br>
+        The workstation is directly in front of you.<br><br>
+        <strong>VR:</strong> Squeeze Grip to activate hand physics, then use Trigger/Grip to grab. Left Thumbstick moves, Right Thumbstick turns.<br>
+        <strong>Desktop:</strong> WASD to move, Mouse to look.
+        <br><br>
         <strong>Goal:</strong> Pick up components and place them in the PC case!
     </div>
 </body>

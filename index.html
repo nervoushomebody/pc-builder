@@ -171,16 +171,114 @@
         </a-entity>
 
         <script>
-            AFRAME.registerComponent('billboard', { tick: function() { this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position); } });
-            AFRAME.registerComponent('hand-coordinates', { schema: { hand: {type: 'string', default: 'left'} }, init: function() { this.coordsDisplay = document.getElementById('hand-coords'); }, tick: function() { const position = this.el.object3D.position; const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`; if (this.coordsDisplay) { const lines = this.coordsDisplay.innerHTML.split('<br>'); if (this.data.hand === 'left') { lines[0] = `Left Hand: x: ${coords}`; } else { lines[1] = `Right Hand: x: ${coords}`; } this.coordsDisplay.innerHTML = lines.join('<br>'); } } });
-            AFRAME.registerComponent('pc-component', { schema: { type: {type: 'string'} }, init: function() { this.initialPosition = this.el.object3D.position.clone(); this.isInstalled = false; this.el.addEventListener('drag-drop', (evt) => { const dropTarget = evt.detail.on; if (dropTarget && dropTarget.components['pc-slot']) { const slotType = dropTarget.components['pc-slot'].data.type; if (slotType === this.data.type && !this.isInstalled) { this.installComponent(dropTarget); } } }); }, installComponent: function(slot) { this.isInstalled = true; const slotPos = new THREE.Vector3(); slot.object3D.getWorldPosition(slotPos); this.el.object3D.position.copy(slotPos); this.el.removeAttribute('dynamic-body'); this.el.removeAttribute('hoverable'); this.el.removeAttribute('grabbable'); this.el.setAttribute('material', 'emissive', '#00ff00'); this.el.setAttribute('material', 'emissiveIntensity', '0.3'); this.el.sceneEl.emit('component-installed', {type: this.data.type}); } });
-            AFRAME.registerComponent('pc-slot', { schema: { type: {type: 'string'} }, init: function() { this.el.addEventListener('drag-drop', (evt) => { if (evt.detail.dropped && evt.detail.dropped.components['pc-component']) { const componentType = evt.detail.dropped.components['pc-component'].data.type; if (componentType === this.data.type) { this.el.setAttribute('material', 'color', '#00ff00'); } } }); } });
-            
+            // --- CORE COMPONENTS ---
+
+            // CORRECTED Billboard component - makes text always face camera
+            AFRAME.registerComponent('billboard', {
+                tick: function () {
+                    // This check prevents the 'cannot read property of undefined' error
+                    if (this.el.sceneEl && this.el.sceneEl.camera) {
+                        this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position);
+                    }
+                }
+            });
+
+            // Component to track hand coordinates
+            AFRAME.registerComponent('hand-coordinates', {
+                schema: { hand: {type: 'string', default: 'left'} },
+                init: function () {
+                    this.coordsDisplay = document.getElementById('hand-coords');
+                },
+                tick: function () {
+                    const position = this.el.object3D.position;
+                    const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`;
+                    if (this.coordsDisplay) {
+                        const lines = this.coordsDisplay.innerHTML.split('<br>');
+                        if (this.data.hand === 'left') {
+                            lines[0] = `Left Hand: x: ${coords}`;
+                        } else {
+                            lines[1] = `Right Hand: x: ${coords}`;
+                        }
+                        this.coordsDisplay.innerHTML = lines.join('<br>');
+                    }
+                }
+            });
+
+            // PC Component tracking
+            AFRAME.registerComponent('pc-component', {
+                schema: { type: {type: 'string'} },
+                init: function () {
+                    this.isInstalled = false;
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        const dropTarget = evt.detail.on;
+                        if (dropTarget && dropTarget.components['pc-slot']) {
+                            const slotType = dropTarget.components['pc-slot'].data.type;
+                            if (slotType === this.data.type && !this.isInstalled) {
+                                this.installComponent(dropTarget);
+                            }
+                        }
+                    });
+                },
+                installComponent: function (slot) {
+                    this.isInstalled = true;
+                    const slotPos = new THREE.Vector3();
+                    slot.object3D.getWorldPosition(slotPos);
+                    this.el.object3D.position.copy(slotPos);
+                    this.el.removeAttribute('dynamic-body');
+                    this.el.removeAttribute('hoverable');
+                    this.el.removeAttribute('grabbable');
+                    this.el.setAttribute('material', 'emissive', '#00ff00');
+                    this.el.setAttribute('material', 'emissiveIntensity', '0.3');
+                    this.el.sceneEl.emit('component-installed', {type: this.data.type});
+                }
+            });
+
+            // PC Slot management
+            AFRAME.registerComponent('pc-slot', {
+                schema: { type: {type: 'string'} },
+                init: function () {
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        if (evt.detail.dropped && evt.detail.dropped.components['pc-component']) {
+                            const componentType = evt.detail.dropped.components['pc-component'].data.type;
+                            if (componentType === this.data.type) {
+                                this.el.setAttribute('material', 'color', '#00ff00');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // --- PROGRESS TRACKING LOGIC ---
             let installedComponents = new Set();
             const totalComponents = 6;
             const slotOrder = ['motherboard', 'cpu', 'gpu', 'ram', 'psu', 'ssd'];
-            document.querySelector('a-scene').addEventListener('component-installed', (evt) => { installedComponents.add(evt.detail.type); updateProgress(); const currentIndex = slotOrder.indexOf(evt.detail.type); if (currentIndex < slotOrder.length - 1) { const nextSlotType = slotOrder[currentIndex + 1]; const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`); if (nextSlot) { nextSlot.setAttribute('visible', true); nextSlot.setAttribute('opacity', 0.3); nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6'); nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3'); } } });
-            function updateProgress() { const progress = (installedComponents.size / totalComponents) * 100; document.getElementById('progress-fill').style.width = `${progress}%`; if (installedComponents.size === totalComponents) { setTimeout(() => { document.getElementById('completion-message').style.display = 'block'; document.querySelector('#pc-case').setAttribute('animation', 'property: material.emissive; to: #00ff00; dur: 1000; easing: easeInOutQuad; loop: 3'); }, 500); } }
+            
+            document.querySelector('a-scene').addEventListener('component-installed', (evt) => {
+                installedComponents.add(evt.detail.type);
+                updateProgress();
+                const currentIndex = slotOrder.indexOf(evt.detail.type);
+                if (currentIndex < slotOrder.length - 1) {
+                    const nextSlotType = slotOrder[currentIndex + 1];
+                    const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`);
+                    if (nextSlot) {
+                        nextSlot.setAttribute('visible', true);
+                        nextSlot.setAttribute('opacity', 0.3);
+                        nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6');
+                        nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3');
+                    }
+                }
+            });
+            
+            function updateProgress() {
+                const progress = (installedComponents.size / totalComponents) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                if (installedComponents.size === totalComponents) {
+                    setTimeout(() => {
+                        document.getElementById('completion-message').style.display = 'block';
+                        document.querySelector('#pc-case').setAttribute('animation', 'property: material.emissive; to: #00ff00; dur: 1000; easing: easeInOutQuad; loop: 3');
+                    }, 500);
+                }
+            }
         </script>
         
         <script>
@@ -190,18 +288,14 @@
                 this.rightHand = null;
                 this.flyControls = null;
 
-                // Bind 'this' to ensure the correct context inside the event handlers
                 this.onGrabStart = this.onGrabStart.bind(this);
                 this.onGrabEnd = this.onGrabEnd.bind(this);
                 this.onThumbstickMoved = this.onThumbstickMoved.bind(this);
                 
-                // Add listeners to this component's entity
                 this.el.addEventListener('grab-start', this.onGrabStart);
                 this.el.addEventListener('grab-end', this.onGrabEnd);
               },
             
-              // Use the play() handler to safely access other entities
-              // after the scene has loaded.
               play: function() {
                 this.rightHand = this.el.sceneEl.querySelector('#rightHand');
                 if (this.rightHand) {
@@ -217,7 +311,6 @@
                 }
               },
 
-              // Clean up listeners from external entities
               pause: function() {
                 if (this.rightHand) {
                     this.rightHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
@@ -240,8 +333,7 @@
               
               onThumbstickMoved: function(evt) {
                 if (!this.isGrabbed) return;
-                // Use thumbstick X movement to rotate the object around its Y axis
-                this.el.object3D.rotateY(-evt.detail.x * 0.05); // Adjust 0.05 for rotation speed
+                this.el.object3D.rotateY(-evt.detail.x * 0.05);
               }
             });
         </script>

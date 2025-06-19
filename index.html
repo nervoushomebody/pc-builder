@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Simple VR PC Builder - Teleport & Descriptions</title>
+    <title>VR Симулятор Збірки ПК - Новий Інтерфейс</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -49,37 +49,35 @@
         <a-sky src="#sky"></a-sky>
         <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body nav-mesh></a-plane>
 
-        <a-box id="table" position="0 0.5 -1.2" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
-        
-        <a-entity id="pc-case" position="-0.7 0.6 -1.2">
+        <a-entity id="pc-case" position="0 1 -1">
             <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
             <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
         </a-entity>
 
-        <a-box id="motherboard" mixin="interactive" position="0.2 0.7 -1.2" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
-               show-description-on-grab="description: Motherboard - Connects all components.">
+        <a-box id="motherboard" mixin="interactive" position="-0.8 1.2 0" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
+               show-description-on-grab="description: Материнська плата - поєднує всі компоненти.">
             <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
         </a-box>
-        <a-box id="cpu" mixin="interactive" position="0.6 0.7 -1.2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
-               show-description-on-grab="description: CPU (Central Processing Unit) - The computer's brain.">
+        <a-box id="cpu" mixin="interactive" position="-0.5 1.2 -0.6" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
+               show-description-on-grab="description: CPU (Процесор) - мозок комп'ютера.">
             <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ram" mixin="interactive" position="0.2 0.7 -0.9" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
-               show-description-on-grab="description: RAM (Random Access Memory) - Short-term memory.">
+        <a-box id="ram" mixin="interactive" position="0.8 1.2 0" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
+               show-description-on-grab="description: RAM (Оперативна пам'ять) - короткочасна пам'ять.">
             <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="gpu" mixin="interactive" position="0.6 0.7 -0.9" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
-               show-description-on-grab="description: GPU (Graphics Processing Unit) - Renders images.">
+        <a-box id="gpu" mixin="interactive" position="0.5 1.2 -0.6" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
+               show-description-on-grab="description: GPU (Відеокарта) - обробляє графіку.">
             <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
         </a-box>
-        <a-box id="psu" mixin="interactive" position="0.2 0.7 -1.5" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
-               show-description-on-grab="description: PSU (Power Supply Unit) - Provides power.">
+        <a-box id="psu" mixin="interactive" position="-1.0 1.2 0.4" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
+               show-description-on-grab="description: Блок живлення - забезпечує енергією.">
             <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-        <a-box id="ssd" mixin="interactive" position="0.6 0.7 -1.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
-               show-description-on-grab="description: SSD (Solid State Drive) - Long-term storage.">
+        <a-box id="ssd" mixin="interactive" position="1.0 1.2 0.4" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
+               show-description-on-grab="description: SSD (Накопичувач) - довготривала пам'ять.">
             <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
         </a-box>
 
@@ -92,14 +90,14 @@
             </a-camera>
 
             <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right"></a-entity>
-            <a-entity id="leftHand" hand-controls="hand: left"></a-entity>
+            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left"></a-entity>
         </a-entity>
 
         <script>
-            // NEW: Shows a description above the object when grabbed
+            // NEW: Показує опис над об'єктом, коли його взяли
             AFRAME.registerComponent('show-description-on-grab', {
               schema: {
-                description: {type: 'string', default: 'Item description.'},
+                description: {type: 'string', default: 'Опис предмета.'},
                 yOffset: {type: 'number', default: 0.25}
               },
               init: function () {
@@ -109,7 +107,7 @@
                 this.descriptionText.setAttribute('value', data.description);
                 this.descriptionText.setAttribute('align', 'center');
                 this.descriptionText.setAttribute('position', `0 ${data.yOffset} 0`);
-                this.descriptionText.setAttribute('width', '1.5'); // Make text wrap
+                this.descriptionText.setAttribute('width', '1.5');
                 this.descriptionText.setAttribute('look-at', '#camera');
                 this.descriptionText.setAttribute('visible', false);
                 el.appendChild(this.descriptionText);
@@ -119,7 +117,7 @@
               }
             });
 
-            // Respawns an entity if it falls
+            // Повертає об'єкт на місце, якщо він впав
             AFRAME.registerComponent('respawnable', {
               init: function () { this.initialPosition = this.el.object3D.position.clone(); },
               tick: function () {
@@ -136,7 +134,7 @@
               }
             });
 
-            // Prevents hands from knocking things away
+            // Запобігає відштовхуванню об'єктів руками
             AFRAME.registerComponent('phase-shift', {
               init: function () {
                 var el = this.el;
@@ -145,7 +143,7 @@
               }
             });
 
-            // Handles hover and grab highlighting
+            // Підсвічування об'єктів
             AFRAME.registerComponent('hoverable', {
               init: function () {
                 var el = this.el;
@@ -163,15 +161,15 @@
     </a-scene>
 
     <div class="info">
-        <strong>Controls:</strong><br>
-        The workstation is directly in front of you.<br><br>
+        <strong>Керування:</strong><br>
+        Компоненти розташовані навколо вас, корпус - прямо перед вами.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Teleport:</strong> Aim with your Left Hand, pull Trigger to move.<br>
-         - <strong>Grab:</strong> Reach with your Right Hand and use Trigger/Grip.<br>
-         - <strong>Info:</strong> Descriptive text appears above objects when you grab them.<br><br>
-        <strong>Desktop:</strong> WASD to move, Mouse to look.
+         - <strong>Телепортація:</strong> Наведіть ліву руку та натисніть тригер, щоб переміститись.<br>
+         - <strong>Взяти предмет:</strong> Простягніть будь-яку руку та натисніть тригер/grip.<br>
+         - <strong>Інформація:</strong> Коли ви берете предмет, над ним з'являється опис.<br><br>
+        <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Goal:</strong> Assemble the PC! Dropped parts will respawn if they fall.
+        <strong>Мета:</strong> Зібрати ПК! Якщо впустите деталь, вона повернеться на місце.
     </div>
 </body>
 </html>

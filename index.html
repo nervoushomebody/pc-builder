@@ -2,19 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple VR PC Builder</title>
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
+    <title>Simple VR PC Builder - Physics Edition</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; }
         .info {
             position: absolute;
             bottom: 10px;
@@ -32,220 +29,105 @@
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
+
+            <a-mixin id="interactive"
+                     hoverable grabbable draggable
+                     dynamic-body>
+            </a-mixin>
+
+            <a-mixin id="physics-hands"
+                     physics-collider phase-shift
+                     collision-filter="collisionForces: false"
+                     static-body="shape: sphere; sphereRadius: 0.02"
+                     super-hands="colliderEvent: collisions;
+                                  colliderEventProperty: els;
+                                  colliderEndEvent: collisions;
+                                  colliderEndEventProperty: clearedEls;">
+            </a-mixin>
         </a-assets>
 
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" 
-                 src="#ground" 
-                 rotation="-90 0 0" 
-                 width="20" 
-                 height="20" 
-                 static-body></a-plane>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
 
-        <a-box id="table" 
-               position="0 0.5 -3" 
-               width="4" 
-               height="0.1" 
-               depth="2" 
-               color="#8B4513" 
-               static-body></a-box>
+        <a-box id="table" position="0 0.5 -3" width="4" height="0.1" depth="2" color="#8B4513" static-body></a-box>
         
         <a-entity id="pc-case" position="-1 0.6 -3">
-            <a-box position="0 0 0" 
-                   width="0.4" 
-                   height="0.02" 
-                   depth="0.5" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
-            <a-box position="-0.19 0.2 0" 
-                   width="0.02" 
-                   height="0.4" 
-                   depth="0.5" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
-            <a-box position="0 0.2 -0.24" 
-                   width="0.4" 
-                   height="0.4" 
-                   depth="0.02" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
-            <a-box position="0 0.2 0.24" 
-                   width="0.4" 
-                   height="0.4" 
-                   depth="0.02" 
-                   color="#2a2a2a" 
-                   static-body></a-box>
+            <a-box position="0 0 0" width="0.4" height="0.02" depth="0.5" color="#2a2a2a" static-body></a-box>
+            <a-box position="-0.19 0.2 0" width="0.02" height="0.4" depth="0.5" color="#2a2a2a" static-body></a-box>
+            <a-box position="0 0.2 -0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
+            <a-box position="0 0.2 0.24" width="0.4" height="0.4" depth="0.02" color="#2a2a2a" static-body></a-box>
         </a-entity>
 
-        <a-box id="motherboard" 
-               class="grabbable"
-               position="1 0.7 -3" 
-               width="0.3" 
-               height="0.02" 
-               depth="0.35" 
-               color="#1a5f1a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="Motherboard" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.3 0.3 0.3"></a-text>
+        <a-box id="motherboard" mixin="interactive" position="1 0.7 -3" width="0.3" height="0.02" depth="0.35" color="#1a5f1a">
+            <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3"></a-text>
         </a-box>
-
-        <a-box id="cpu" 
-               class="grabbable"
-               position="1.5 0.7 -3" 
-               width="0.08" 
-               height="0.02" 
-               depth="0.08" 
-               color="#4a4a4a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="CPU" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+        <a-box id="cpu" mixin="interactive" position="1.5 0.7 -3" width="0.08" height="0.02" depth="0.08" color="#4a4a4a">
+            <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-
-        <a-box id="ram" 
-               class="grabbable"
-               position="1 0.7 -2.5" 
-               width="0.12" 
-               height="0.02" 
-               depth="0.03" 
-               color="#2a7a2a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="RAM" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+        <a-box id="ram" mixin="interactive" position="1 0.7 -2.5" width="0.12" height="0.02" depth="0.03" color="#2a7a2a">
+            <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-
-        <a-box id="gpu" 
-               class="grabbable"
-               position="1.5 0.7 -2.5" 
-               width="0.25" 
-               height="0.03" 
-               depth="0.15" 
-               color="#3a3a8a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="GPU" 
-                       position="0 0.02 0" 
-                       align="center" 
-                       scale="0.25 0.25 0.25"></a-text>
+        <a-box id="gpu" mixin="interactive" position="1.5 0.7 -2.5" width="0.25" height="0.03" depth="0.15" color="#3a3a8a">
+            <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25"></a-text>
         </a-box>
-
-        <a-box id="psu" 
-               class="grabbable"
-               position="1 0.7 -3.5" 
-               width="0.15" 
-               height="0.08" 
-               depth="0.15" 
-               color="#5a5a5a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="PSU" 
-                       position="0 0.05 0" 
-                       align="center" 
-                       scale="0.2 0.2 0.2"></a-text>
+        <a-box id="psu" mixin="interactive" position="1 0.7 -3.5" width="0.15" height="0.08" depth="0.15" color="#5a5a5a">
+            <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2"></a-text>
         </a-box>
-
-        <a-box id="ssd" 
-               class="grabbable"
-               position="1.5 0.7 -3.5" 
-               width="0.1" 
-               height="0.01" 
-               depth="0.07" 
-               color="#7a7a7a"
-               hoverable grabbable stretchable draggable droppable
-               dynamic-body>
-               <a-text value="SSD" 
-                       position="0 0.01 0" 
-                       align="center" 
-                       scale="0.15 0.15 0.15"></a-text>
+        <a-box id="ssd" mixin="interactive" position="1.5 0.7 -3.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a">
+            <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15"></a-text>
         </a-box>
 
         <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="directional" 
-                 position="0 5 0" 
-                 rotation="-90 0 0" 
-                 intensity="0.6"></a-light>
+        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
 
-        <a-entity id="rig" 
-                  position="0 0 0"
-                  movement-controls="speed: 0.15; controls: left"
-                  thumbstick-turn="hand: right">
-            
-            <a-camera id="camera" 
-                      position="0 1.6 0" 
-                      look-controls 
-                      wasd-controls>
-                <a-cursor id="cursor" 
-                          position="0 0 -1"
-                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                          material="color: white; shader: flat"
-                          raycaster="objects: .grabbable">
-                </a-cursor>
+        <a-entity id="rig" position="0 0 0" movement-controls="speed: 0.15; controls: left" thumbstick-turn="hand: right">
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls>
+                <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
             </a-camera>
 
-            <a-entity id="leftHand" 
-                      hand-controls="hand: left"
-                      laser-controls="hand: left"
-                      raycaster="objects: .grabbable"
-                      line="color: #ff0000"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls;
-                                   grabStartButtons: gripdown, triggerdown, pointdown, thumbdown, pointingstart;
-                                   grabEndButtons: gripup, triggerup, pointup, thumbup, pointingend">
-            </a-entity>
-            
-            <a-entity id="rightHand" 
-                      hand-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: .grabbable"
-                      line="color: #0000ff"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls;
-                                   grabStartButtons: gripdown, triggerdown, pointdown, thumbdown, pointingstart;
-                                   grabEndButtons: gripup, triggerup, pointup, thumbup, pointingend">
-            </a-entity>
+            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left"></a-entity>
+            <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right"></a-entity>
         </a-entity>
 
         <script>
+            // From super-hands docs: prevents hands from knocking things away before grabbing
+            AFRAME.registerComponent('phase-shift', {
+                init: function () {
+                    var el = this.el;
+                    el.addEventListener('gripdown', function () {
+                        el.setAttribute('collision-filter', {collisionForces: true});
+                    });
+                    el.addEventListener('gripup', function () {
+                        el.setAttribute('collision-filter', {collisionForces: false});
+                    });
+                }
+            });
+
+            // Updated hoverable component to use new physics events
             AFRAME.registerComponent('hoverable', {
                 init: function () {
                     var el = this.el;
-                    // Store original color on the element itself to avoid scope issues
                     el.originalColor = el.getAttribute('material').color;
-                    
-                    el.addEventListener('mouseenter', function () {
-                        el.setAttribute('color', '#ffff00');
+
+                    el.addEventListener('hover-start', function () {
+                        el.setAttribute('color', '#ffff00'); // Yellow for hover
                     });
-                    
-                    el.addEventListener('mouseleave', function () {
-                        // Revert to original color only if not being held
-                        if (el.is('grabbed')) return;
-                        el.setAttribute('color', el.originalColor);
+
+                    el.addEventListener('hover-end', function () {
+                        if (!el.is('grabbed')) {
+                            el.setAttribute('color', el.originalColor);
+                        }
                     });
-                    
-                    // Fired by super-hands
+
                     el.addEventListener('grab-start', function () {
-                        el.setAttribute('color', '#ff0000');
+                        el.setAttribute('color', '#ff0000'); // Red for grab
                     });
-                    
-                    // Fired by super-hands
-                    el.addEventListener('grab-end', function (evt) {
-                        // Check if cursor/raycaster is still on the object
-                        if (evt.detail.hand.is('hovering')) {
-                           el.setAttribute('color', '#ffff00');
+
+                    el.addEventListener('grab-end', function () {
+                        if (el.is('hovered')) {
+                            el.setAttribute('color', '#ffff00');
                         } else {
-                           el.setAttribute('color', el.originalColor);
+                            el.setAttribute('color', el.originalColor);
                         }
                     });
                 }
@@ -255,8 +137,8 @@
 
     <div class="info">
         <strong>Controls:</strong><br>
-        Desktop: WASD to move, Mouse to look, Click to grab<br>
-        VR: Left Thumbstick to move, Right Thumbstick to turn, Use controller triggers/grips to grab<br>
+        Desktop: WASD to move, Mouse to look<br>
+        VR: Left Thumbstick to move, Right Thumbstick to turn. Squeeze Grip to "activate" hand physics, then use Trigger/Grip to grab.<br>
         <br>
         <strong>Goal:</strong> Pick up components and place them in the PC case!
     </div>

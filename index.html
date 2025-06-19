@@ -61,32 +61,32 @@
         </a-entity>
 
 
-        <a-box id="motherboard" mixin="interactive" position="-1.5 1.2 -1.5" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
-               side-description="description: Motherboard - connects all components.; offset: 0.25 0.1 0">
+        <a-box id="motherboard" mixin="interactive" position="1.2 1.2 0" width="0.3" height="0.02" depth="0.35" color="#1a5f1a"
+               side-description="description: Motherboard - connects all components.; offset: 0 0.1 -0.25">
             <a-text value="Motherboard" position="0 0.02 0" align="center" scale="0.3 0.3 0.3" rotation="-90 0 0"></a-text>
         </a-box>
         
-        <a-box id="cpu" mixin="interactive" position="-1 1.2 -2" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
+        <a-box id="cpu" mixin="interactive" position="-0.8 1.2 -1" width="0.08" height="0.02" depth="0.08" color="#4a4a4a"
                side-description="description: CPU (Processor) - the brain of the computer.; offset: 0.15 0 0">
             <a-text value="CPU" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
 
-        <a-box id="ram" mixin="interactive" position="-0.5 1.2 -2.2" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
+        <a-box id="ram" mixin="interactive" position="-0.8 1.2 0.8" width="0.12" height="0.02" depth="0.03" color="#2a7a2a"
                side-description="description: RAM (Random Access Memory) - short-term memory.; offset: 0.16 0 0">
             <a-text value="RAM" position="0 0.02 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
         
-        <a-box id="gpu" mixin="interactive" position="0.5 1.2 -2.2" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
-               side-description="description: GPU (Graphics Card) - processes graphics.; offset: 0.22 0.05 0">
+        <a-box id="gpu" mixin="interactive" position="-1.2 1.2 0" width="0.25" height="0.03" depth="0.15" color="#3a3a8a"
+               side-description="description: GPU (Graphics Card) - processes graphics.; offset: 0 0.05 0.2">
             <a-text value="GPU" position="0 0.02 0" align="center" scale="0.25 0.25 0.25" rotation="-90 0 0"></a-text>
         </a-box>
 
-        <a-box id="psu" mixin="interactive" position="1 1.2 -2" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
+        <a-box id="psu" mixin="interactive" position="0.8 1.2 -1" width="0.15" height="0.08" depth="0.15" color="#5a5a5a"
                side-description="description: Power Supply Unit - provides power.; offset: 0.18 0.05 0">
             <a-text value="PSU" position="0 0.05 0" align="center" scale="0.2 0.2 0.2" rotation="-90 0 0"></a-text>
         </a-box>
 
-        <a-box id="ssd" mixin="interactive" position="1.5 1.2 -1.5" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
+        <a-box id="ssd" mixin="interactive" position="0.8 1.2 0.8" width="0.1" height="0.01" depth="0.07" color="#7a7a7a"
                side-description="description: SSD (Solid State Drive) - long-term storage.; offset: 0.15 0 0">
             <a-text value="SSD" position="0 0.01 0" align="center" scale="0.15 0.15 0.15" rotation="-90 0 0"></a-text>
         </a-box>
@@ -105,7 +105,7 @@
         </a-entity>
 
         <script>
-            // NEW COMPONENT: Shows a description on the side of an entity when it is grabbed
+            // Shows a description on the side of an entity when it is grabbed
             AFRAME.registerComponent('side-description', {
               schema: {
                 description: {type: 'string', default: 'Item description.'},
@@ -182,7 +182,7 @@
 
     <div class="info">
         <strong>Controls:</strong><br>
-        The PC Case is in front of you. Components are placed around you.<br><br>
+        The PC Case is in front. Components are in a circle around you.<br><br>
         <strong>VR:</strong><br>
          - <strong>Grab:</strong> Reach out and use Trigger/Grip buttons.<br>
          - <strong>Move:</strong> Use the Left Thumbstick.<br>

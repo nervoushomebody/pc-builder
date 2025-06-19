@@ -137,6 +137,7 @@
         
         <!-- Motherboard -->
         <a-entity id="motherboard" 
+                  class="grabbable"
                   position="-1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: motherboard"
@@ -152,6 +153,7 @@
 
         <!-- CPU -->
         <a-entity id="cpu" 
+                  class="grabbable"
                   position="-0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: cpu"
@@ -167,6 +169,7 @@
 
         <!-- GPU -->
         <a-entity id="gpu" 
+                  class="grabbable"
                   position="0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: gpu"
@@ -182,6 +185,7 @@
 
         <!-- RAM -->
         <a-entity id="ram" 
+                  class="grabbable"
                   position="1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: ram"
@@ -197,6 +201,7 @@
 
         <!-- PSU -->
         <a-entity id="psu" 
+                  class="grabbable"
                   position="-1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: psu"
@@ -212,6 +217,7 @@
 
         <!-- SSD -->
         <a-entity id="ssd" 
+                  class="grabbable"
                   position="1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: ssd"
@@ -346,55 +352,35 @@
                 </a-entity>
             </a-camera>
             
-            <!-- VR Controllers with physics-collider -->
+            <!-- VR Controllers - simplified approach -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
-                      physics-collider="ignoreSleep: false"
-                      collision-filter="group: hands; collidesWith: objects"
-                      sphere-collider="objects: [hoverable]; radius: 0.1"
-                      super-hands="colliderEvent: collisions;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: collisions;
-                                   colliderEndEventProperty: clearedEls"
+                      sphere-collider="objects: .grabbable; radius: 0.1"
+                      super-hands
                       hand-coordinates="hand: left">
-                <!-- Controller body for physics -->
-                <a-sphere radius="0.05" 
-                          visible="false"
-                          static-body="shape: sphere">
-                </a-sphere>
                 <!-- Visual feedback sphere -->
-                <a-sphere radius="0.03" 
+                <a-sphere radius="0.04" 
                           color="#44ff44" 
-                          opacity="0.5"
+                          opacity="0.6"
                           visible="false"
-                          event-set__grabon="_event: grab-start; visible: true"
-                          event-set__graboff="_event: grab-end; visible: false">
+                          event-set__grabon="_event: grab-start; visible: true; color: #ffff00"
+                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44">
                 </a-sphere>
             </a-entity>
             
             <a-entity id="rightHand"
                       hand-controls="hand: right"
                       oculus-thumbstick-controls="fly: true"
-                      physics-collider="ignoreSleep: false"
-                      collision-filter="group: hands; collidesWith: objects"
-                      sphere-collider="objects: [hoverable]; radius: 0.1"
-                      super-hands="colliderEvent: collisions;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: collisions;
-                                   colliderEndEventProperty: clearedEls"
+                      sphere-collider="objects: .grabbable; radius: 0.1"
+                      super-hands
                       hand-coordinates="hand: right">
-                <!-- Controller body for physics -->
-                <a-sphere radius="0.05" 
-                          visible="false"
-                          static-body="shape: sphere">
-                </a-sphere>
                 <!-- Visual feedback sphere -->
-                <a-sphere radius="0.03" 
+                <a-sphere radius="0.04" 
                           color="#44ff44" 
-                          opacity="0.5"
+                          opacity="0.6"
                           visible="false"
-                          event-set__grabon="_event: grab-start; visible: true"
-                          event-set__graboff="_event: grab-end; visible: false">
+                          event-set__grabon="_event: grab-start; visible: true; color: #ffff00"
+                          event-set__graboff="_event: grab-end; visible: false; color: #44ff44">
                 </a-sphere>
             </a-entity>
         </a-entity>

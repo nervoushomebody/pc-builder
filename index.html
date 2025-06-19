@@ -95,15 +95,12 @@
             </a-mixin>
             
             <a-mixin id="pc-component"
-                     hoverable 
-                     grabbable="usePhysics: ifavailable; maxGrabbers: 2"
-                     stretchable="usePhysics: never"
-                     draggable
-                     dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4"
-                     collision-filter="group: objects; collidesWith: default, hands, objects"
-                     mixin="hover-material grab-material">
-            </a-mixin>
-        </a-assets>
+                     hoverable 
+                     grabbable
+                     dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4"
+                     collision-filter="group: objects; collidesWith: default, hands, objects"
+                     mixin="hover-material grab-material" grab-actions>
+            </a-mixin>
 
         <!-- Environment -->
         <a-sky color="#1a1a2e"></a-sky>
@@ -481,7 +478,58 @@
                     }
                 }
             });
+            AFRAME.registerComponent('grab-actions', {
+                  init: function () {
+                    this.isGrabbed = false;
+                    this.rightHand = document.getElementById('rightHand');
+                    this.flyControls = null; // Will be assigned when hand is ready
 
+                    // Function to handle grabbing
+                    this.onGrabStart = () => {
+                      this.isGrabbed = true;
+                      // Disable flying when an object is held
+                      if (this.flyControls) {
+                        this.flyControls.data.fly = false;
+                      }
+                    };
+
+                    // Function to handle releasing
+                    this.onGrabEnd = () => {
+                      this.isGrabbed = false;
+                      // Re-enable flying when the object is released
+                      if (this.flyControls) {
+                        this.flyControls.data.fly = true;
+                      }
+                    };
+                    
+                    // Function to handle rotation with thumbstick
+                    this.onThumbstickMoved = (evt) => {
+                      if (!this.isGrabbed) return;
+                      // Use thumbstick X movement to rotate the object around its Y axis
+                      // The 0.05 value is the rotation speed, you can adjust it
+                      this.el.object3D.rotateY(-evt.detail.x * 0.05); 
+                    };
+
+                    // Wait for the hand to be ready before getting the component
+                    this.rightHand.addEventListener('controllerconnected', () => {
+                        this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
+                    });
+
+                    // Add the event listeners
+                    this.el.addEventListener('grab-start', this.onGrabStart);
+                    this.el.addEventListener('grab-end', this.onGrabEnd);
+                    this.rightHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
+                  },
+
+                  remove: function () {
+                    // Clean up the event listeners when the component is removed
+                    this.el.removeEventListener('grab-start', this.onGrabStart);
+                    this.el.removeEventListener('grab-end', this.onGrabEnd);
+                    if(this.rightHand) {
+                        this.rightHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
+                    }
+                  }
+                });
             // PC Slot management
             AFRAME.registerComponent('pc-slot', {
                 schema: {

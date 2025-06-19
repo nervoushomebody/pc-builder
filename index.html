@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
     <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-extras@0.1.2/dist/aframe-physics-extras.min.js"></script>
     
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -95,10 +96,11 @@
             
             <a-mixin id="pc-component"
                      hoverable 
-                     grabbable="usePhysics: ifavailable"
+                     grabbable="usePhysics: ifavailable; maxGrabbers: 2"
                      stretchable="usePhysics: never"
                      draggable
-                     dynamic-body="linearDamping: 0.4; angularDamping: 0.6"
+                     dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4"
+                     collision-filter="group: objects; collidesWith: default, hands, objects"
                      mixin="hover-material grab-material">
             </a-mixin>
         </a-assets>
@@ -113,6 +115,7 @@
                  height="12" 
                  color="#16213e"
                  static-body
+                 collision-filter="group: default; collidesWith: objects"
                  grid="width: 12; height: 12; color: #0f3460">
         </a-plane>
 
@@ -343,12 +346,22 @@
                 </a-entity>
             </a-camera>
             
-            <!-- VR Controllers with sphere-collider for close interaction -->
+            <!-- VR Controllers with physics-collider -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
-                      sphere-collider="objects: [hoverable]; radius: 0.05"
-                      super-hands
+                      physics-collider="ignoreSleep: false"
+                      collision-filter="group: hands; collidesWith: objects"
+                      sphere-collider="objects: [hoverable]; radius: 0.1"
+                      super-hands="colliderEvent: collisions;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: collisions;
+                                   colliderEndEventProperty: clearedEls"
                       hand-coordinates="hand: left">
+                <!-- Controller body for physics -->
+                <a-sphere radius="0.05" 
+                          visible="false"
+                          static-body="shape: sphere">
+                </a-sphere>
                 <!-- Visual feedback sphere -->
                 <a-sphere radius="0.03" 
                           color="#44ff44" 
@@ -362,9 +375,19 @@
             <a-entity id="rightHand"
                       hand-controls="hand: right"
                       oculus-thumbstick-controls="fly: true"
-                      sphere-collider="objects: [hoverable]; radius: 0.05"
-                      super-hands
+                      physics-collider="ignoreSleep: false"
+                      collision-filter="group: hands; collidesWith: objects"
+                      sphere-collider="objects: [hoverable]; radius: 0.1"
+                      super-hands="colliderEvent: collisions;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: collisions;
+                                   colliderEndEventProperty: clearedEls"
                       hand-coordinates="hand: right">
+                <!-- Controller body for physics -->
+                <a-sphere radius="0.05" 
+                          visible="false"
+                          static-body="shape: sphere">
+                </a-sphere>
                 <!-- Visual feedback sphere -->
                 <a-sphere radius="0.03" 
                           color="#44ff44" 

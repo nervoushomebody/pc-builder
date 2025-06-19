@@ -173,38 +173,38 @@
         <script>
             // --- CORE COMPONENTS ---
 
-            // CORRECTED Billboard component - makes text always face camera
             AFRAME.registerComponent('billboard', {
                 tick: function () {
-                    // This check prevents the 'cannot read property of undefined' error
                     if (this.el.sceneEl && this.el.sceneEl.camera) {
                         this.el.object3D.lookAt(this.el.sceneEl.camera.object3D.position);
                     }
                 }
             });
 
-            // Component to track hand coordinates
+            // CORRECTED Component to track hand coordinates
             AFRAME.registerComponent('hand-coordinates', {
                 schema: { hand: {type: 'string', default: 'left'} },
                 init: function () {
                     this.coordsDisplay = document.getElementById('hand-coords');
                 },
                 tick: function () {
-                    const position = this.el.object3D.position;
-                    const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`;
-                    if (this.coordsDisplay) {
-                        const lines = this.coordsDisplay.innerHTML.split('<br>');
-                        if (this.data.hand === 'left') {
-                            lines[0] = `Left Hand: x: ${coords}`;
-                        } else {
-                            lines[1] = `Right Hand: x: ${coords}`;
+                    // THIS IS THE FIX: Check if the hand's 3D model is ready before trying to access it.
+                    if (this.el.object3D && this.el.object3D.position) {
+                        const position = this.el.object3D.position;
+                        const coords = `${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`;
+                        if (this.coordsDisplay) {
+                            const lines = this.coordsDisplay.innerHTML.split('<br>');
+                            if (this.data.hand === 'left') {
+                                lines[0] = `Left Hand: x: ${coords}`;
+                            } else {
+                                lines[1] = `Right Hand: x: ${coords}`;
+                            }
+                            this.coordsDisplay.innerHTML = lines.join('<br>');
                         }
-                        this.coordsDisplay.innerHTML = lines.join('<br>');
                     }
                 }
             });
 
-            // PC Component tracking
             AFRAME.registerComponent('pc-component', {
                 schema: { type: {type: 'string'} },
                 init: function () {
@@ -233,7 +233,6 @@
                 }
             });
 
-            // PC Slot management
             AFRAME.registerComponent('pc-slot', {
                 schema: { type: {type: 'string'} },
                 init: function () {

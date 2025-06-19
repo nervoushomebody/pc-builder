@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple VR PC Builder</title>
+    <!-- Core A-Frame and dependencies from your project -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
     <script src="https://unpkg.com/super-hands@^3.0.3/dist/super-hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <!-- Physics from your project -->
     <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     
@@ -16,16 +19,43 @@
             position: absolute;
             bottom: 10px;
             left: 10px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             color: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             font-size: 14px;
+            max-width: 300px;
         }
     </style>
+    
+    <script>
+        // Global variables from your project
+        var cogiendo = false;
+        var componentes = {};
+        
+        // Simplified version of cogido function
+        function cogido(event, cmpInfo) {
+            if (cogiendo) return;
+            cogiendo = true;
+            console.log("Grabbed: " + event.target.id);
+        }
+        
+        // Simplified version of soltado function  
+        function soltado(event, cmpInfo) {
+            cogiendo = false;
+            console.log("Released: " + event.target.id);
+        }
+        
+        // Component info arrays for each component
+        var motherboardInfo = ['cmp-placabase-1', 'Motherboard', 'MSI B450', '0.3', '0.02', '0.35', 'green.jpg', '100', '1', '0', 'placa base', 'ATX', 'AM4', '4', '2', '2', 'DDR4'];
+        var cpuInfo = ['cmp-cpu-1', 'CPU', 'AMD Ryzen 5', '0.08', '0.02', '0.08', 'gray.jpg', '80', '1', '1', 'procesador', 'AM4', '6', '3.6', '4.2', '65W'];
+        var ramInfo = ['cmp-ram-1', 'RAM', 'Corsair 8GB', '0.12', '0.02', '0.03', 'green.jpg', '60', '1', '2', 'memoria', 'DDR4', '8', '3200'];
+        var gpuInfo = ['cmp-gpu-1', 'GPU', 'GTX 1660', '0.25', '0.03', '0.15', 'blue.jpg', '300', '1', '3', 'grafica', 'PCIe', '120W'];
+        var psuInfo = ['cmp-fuente-1', 'PSU', '600W Bronze', '0.15', '0.08', '0.15', 'gray.jpg', '70', '1', '4', 'fuente', '600W'];
+    </script>
 </head>
 <body>
-    <a-scene physics="debug: false; gravity: -9.8">
+    <a-scene id="escena" physics="debug: false; gravity: -9.8">
         <!-- Assets -->
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
@@ -34,137 +64,132 @@
 
         <!-- Environment -->
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" 
-                 src="#ground" 
-                 rotation="-90 0 0" 
-                 width="20" 
-                 height="20" 
-                 static-body></a-plane>
+        <a-plane src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
 
         <!-- Work Table -->
-        <a-box id="table" 
-               position="0 0.5 -3" 
-               width="4" 
-               height="0.1" 
-               depth="2" 
-               color="#8B4513" 
-               static-body="shape: box"></a-box>
+        <a-box position="0 0.5 -3" width="4" height="0.1" depth="2" color="#8B4513" static-body="shape: box" class="raycastable"></a-box>
         
-        <!-- PC Case (simplified) -->
-        <a-entity id="pc-case" position="-1 0.6 -3">
-            <!-- Bottom -->
-            <a-box position="0 0 0" 
-                   width="0.4" 
-                   height="0.02" 
-                   depth="0.5" 
-                   color="#2a2a2a" 
-                   static-body="shape: box"></a-box>
-            <!-- Back wall -->
-            <a-box position="-0.19 0.2 0" 
-                   width="0.02" 
-                   height="0.4" 
-                   depth="0.5" 
-                   color="#2a2a2a" 
-                   static-body="shape: box"></a-box>
+        <!-- PC Case (simplified like in your project) -->
+        <a-entity id="ordenador" position="-1 0.6 -3">
+            <!-- Base -->
+            <a-box position="0 0 0" width="0.55" height="0.02" depth="0.5" color="#1a1a1a" static-body="shape: box" class="raycastable"></a-box>
+            <!-- Back panel -->
+            <a-box position="-0.27 0.1 0" width="0.01" height="0.2" depth="0.5" color="#1a1a1a" static-body="shape: box" class="raycastable"></a-box>
+            <!-- Side panels -->
+            <a-box position="0 0.1 0.25" width="0.56" height="0.2" depth="0.01" rotation="0 90 0" color="#2a2a2a" static-body="shape: box" class="raycastable"></a-box>
+            <a-box position="0 0.1 -0.25" width="0.56" height="0.2" depth="0.01" rotation="0 90 0" color="#292929" static-body="shape: box" class="raycastable"></a-box>
+            
+            <!-- Component container -->
+            <a-entity id="componentes" position="-0.25 0.05 0"></a-entity>
         </a-entity>
 
-        <!-- PC Components -->
+        <!-- PC Components (following your project structure) -->
         <!-- Motherboard -->
-        <a-box id="motherboard" 
-               class="interactable"
+        <a-box id="cmp-placabase-1" 
+               class="interactable raycastable"
                position="1 0.65 -3" 
-               width="0.3" 
-               height="0.02" 
-               depth="0.35" 
+               width="0.3" height="0.02" depth="0.35" 
                color="#1a5f1a"
                hoverable grabbable draggable droppable
-               dynamic-body="shape: box">
+               ondragstart="cogido(event, motherboardInfo)" 
+               ondragend="soltado(event, motherboardInfo)"
+               dynamic-body="shape: box"
+               rotation="0 180 0">
         </a-box>
 
         <!-- CPU -->
-        <a-box id="cpu" 
-               class="interactable"
+        <a-box id="cmp-cpu-1" 
+               class="interactable raycastable"
                position="1.5 0.65 -3" 
-               width="0.08" 
-               height="0.02" 
-               depth="0.08" 
+               width="0.08" height="0.02" depth="0.08" 
                color="#4a4a4a"
                hoverable grabbable draggable droppable
-               dynamic-body="shape: box">
+               ondragstart="cogido(event, cpuInfo)" 
+               ondragend="soltado(event, cpuInfo)"
+               dynamic-body="shape: box"
+               rotation="0 180 0">
         </a-box>
 
         <!-- RAM -->
-        <a-box id="ram" 
-               class="interactable"
+        <a-box id="cmp-ram-1" 
+               class="interactable raycastable"
                position="1 0.65 -2.5" 
-               width="0.12" 
-               height="0.02" 
-               depth="0.03" 
+               width="0.12" height="0.02" depth="0.03" 
                color="#2a7a2a"
                hoverable grabbable draggable droppable
-               dynamic-body="shape: box">
+               ondragstart="cogido(event, ramInfo)" 
+               ondragend="soltado(event, ramInfo)"
+               dynamic-body="shape: box"
+               rotation="0 180 0">
         </a-box>
 
         <!-- GPU -->
-        <a-box id="gpu" 
-               class="interactable"
+        <a-box id="cmp-gpu-1" 
+               class="interactable raycastable"
                position="1.5 0.65 -2.5" 
-               width="0.25" 
-               height="0.03" 
-               depth="0.15" 
+               width="0.25" height="0.03" depth="0.15" 
                color="#3a3a8a"
                hoverable grabbable draggable droppable
-               dynamic-body="shape: box">
+               ondragstart="cogido(event, gpuInfo)" 
+               ondragend="soltado(event, gpuInfo)"
+               dynamic-body="shape: box"
+               rotation="0 180 0">
         </a-box>
 
         <!-- Power Supply -->
-        <a-box id="psu" 
-               class="interactable"
+        <a-box id="cmp-fuente-1" 
+               class="interactable raycastable"
                position="1 0.65 -3.5" 
-               width="0.15" 
-               height="0.08" 
-               depth="0.15" 
+               width="0.15" height="0.08" depth="0.15" 
                color="#5a5a5a"
                hoverable grabbable draggable droppable
-               dynamic-body="shape: box">
+               ondragstart="cogido(event, psuInfo)" 
+               ondragend="soltado(event, psuInfo)"
+               dynamic-body="shape: box"
+               rotation="0 180 0">
         </a-box>
 
         <!-- Lights -->
         <a-light type="ambient" color="#404040"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.6"></a-light>
 
-        <!-- Camera Rig -->
-        <a-entity id="rig" position="0 0 0">
+        <!-- Camera Rig (following your project structure) -->
+        <a-entity id="rig" position="0 0.2 0" rotation="0 0 0">
             <!-- Camera -->
-            <a-camera id="camera" 
-                      position="0 1.6 0" 
-                      look-controls 
-                      wasd-controls>
-                <a-cursor position="0 0 -1"
-                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                          material="color: white; shader: flat"
-                          cursor="rayOrigin: mouse; fuse: false"
-                          raycaster="objects: .interactable">
-                </a-cursor>
+            <a-camera id="camara" position="0 1.6 0" look-controls wasd-controls>
+                <a-entity id="tracker-cam" position="0 0 -1.1"></a-entity>
             </a-camera>
 
-            <!-- VR Controllers -->
+            <!-- Cursor for desktop -->
+            <a-entity id="cursor" 
+                      cursor="rayOrigin: mouse; fuse: false" 
+                      raycaster="objects: .raycastable"></a-entity>
+
+            <!-- Controllers -->
             <a-entity id="leftHand" 
-                      hand-controls="hand: left"
-                      sphere-collider="objects: .interactable"
-                      super-hands>
+                      laser-controls="hand: left"
+                      raycaster="objects: .raycastable; lineColor: #4103fc; lineOpacity: 1"
+                      controller-cmp>
             </a-entity>
             
             <a-entity id="rightHand" 
-                      hand-controls="hand: right"
-                      sphere-collider="objects: .interactable"
-                      super-hands>
+                      laser-controls="hand: right"
+                      raycaster="objects: .raycastable; lineColor: #4103fc; lineOpacity: 1"
+                      controller-cmp>
+            </a-entity>
+
+            <!-- SuperHands for VR -->
+            <a-entity id="rightSuperHand" 
+                      static-body="shape: sphere; sphereRadius: 0.02;"
+                      sphere-collider="objects: .interactable" 
+                      super-hands
+                      hand-controls="hand: right; handModelStyle: highPoly">
             </a-entity>
         </a-entity>
 
-        <!-- Simple movement and rotation script -->
+        <!-- Custom components -->
         <script>
-            // Component for highlighting on hover
+            // Hoverable component from your project
             AFRAME.registerComponent('hoverable', {
                 init: function () {
                     var el = this.el;
@@ -180,19 +205,22 @@
                 }
             });
 
-            // Simple VR movement
-            AFRAME.registerComponent('simple-vr-controls', {
-                init: function() {
-                    var rig = document.querySelector('#rig');
-                    var speed = 0.05;
+            // Controller component based on your project
+            AFRAME.registerComponent('controller-cmp', {
+                init: function () {
+                    var el = this.el;
                     
-                    this.el.addEventListener('thumbstickmoved', function(evt) {
-                        // Left controller - movement
-                        if (evt.detail.hand === 'left' && evt.detail.y !== 0) {
-                            var camera = document.querySelector('#camera');
-                            var angle = camera.object3D.rotation.y;
-                            var moveX = Math.sin(angle) * evt.detail.y * speed;
-                            var moveZ = Math.cos(angle) * evt.detail.y * speed;
+                    // Movement with thumbstick
+                    el.addEventListener('thumbstickmoved', function(evt) {
+                        var rig = document.querySelector('#rig');
+                        
+                        // Left controller - forward/backward movement
+                        if (evt.detail.hand === 'left' && Math.abs(evt.detail.y) > 0.1) {
+                            var camera = document.querySelector('#camara');
+                            var angle = camera.object3D.rotation.y + rig.object3D.rotation.y;
+                            
+                            var moveX = Math.sin(angle) * evt.detail.y * 0.05;
+                            var moveZ = Math.cos(angle) * evt.detail.y * 0.05;
                             
                             var pos = rig.getAttribute('position');
                             rig.setAttribute('position', {
@@ -205,36 +233,39 @@
                         // Right controller - rotation
                         if (evt.detail.hand === 'right' && Math.abs(evt.detail.x) > 0.8) {
                             var rot = rig.getAttribute('rotation');
-                            var turnAmount = evt.detail.x > 0 ? 30 : -30;
                             rig.setAttribute('rotation', {
                                 x: rot.x,
-                                y: rot.y + turnAmount,
+                                y: rot.y + (evt.detail.x > 0 ? 30 : -30),
                                 z: rot.z
                             });
                         }
                     });
+                    
+                    // X button - center player
+                    el.addEventListener('xbuttondown', function(evt) {
+                        console.log("X button pressed");
+                        var rig = document.querySelector('#rig');
+                        rig.setAttribute('position', '0 0.2 0');
+                        rig.setAttribute('rotation', '0 0 0');
+                    });
                 }
-            });
-
-            // Apply controls to hands
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(function() {
-                    document.querySelector('#leftHand').setAttribute('simple-vr-controls', '');
-                    document.querySelector('#rightHand').setAttribute('simple-vr-controls', '');
-                }, 1000);
             });
         </script>
     </a-scene>
 
     <div class="info">
         <strong>VR Controls:</strong><br>
-        Left Stick: Move forward/backward<br>
-        Right Stick: Turn left/right<br>
-        Trigger: Grab objects<br>
+        • Left Stick: Move forward/backward<br>
+        • Right Stick: Rotate left/right<br>
+        • Trigger: Pick up components<br>
+        • X Button: Reset position<br>
         <br>
         <strong>Desktop:</strong><br>
-        WASD: Move, Mouse: Look<br>
-        Click: Grab objects<br>
+        • WASD: Movement<br>
+        • Mouse: Look around<br>
+        • Click & Drag: Pick up components<br>
+        <br>
+        <strong>Goal:</strong> Pick up PC components and place them in the case!
     </div>
 </body>
 </html>

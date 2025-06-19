@@ -2,8 +2,8 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>VR Симулятор Збірки ПК - Фінальна версія</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <title>VR Симулятор Збірки ПК - Виправлення контролерів</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
@@ -89,8 +89,12 @@
                 <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
             </a-camera>
 
-            <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right; handModelStyle: lowPoly; color: #ffdbac;"></a-entity>
-            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left; handModelStyle: lowPoly; color: #ffdbac;"></a-entity>
+            <a-entity id="rightHand" mixin="physics-hands" hand-controls="hand: right;">
+                 <a-sphere radius="0.02" color="#FFFFFF" material="opacity: 0.5"></a-sphere>
+            </a-entity>
+            <a-entity id="leftHand" mixin="physics-hands" hand-controls="hand: left;">
+                 <a-sphere radius="0.02" color="#FFFFFF" material="opacity: 0.5"></a-sphere>
+            </a-entity>
         </a-entity>
 
         <script>

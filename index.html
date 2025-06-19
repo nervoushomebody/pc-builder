@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>VR PC Builder - Super Hands Edition</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
     <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
     <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
@@ -346,8 +346,7 @@
             <!-- VR Controllers with sphere-collider for close interaction -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
-                      oculus-touch-controls="hand: left"
-                      sphere-collider="objects: [hoverable]"
+                      sphere-collider="objects: [hoverable]; radius: 0.05"
                       super-hands
                       hand-coordinates="hand: left">
                 <!-- Visual feedback sphere -->
@@ -362,9 +361,8 @@
             
             <a-entity id="rightHand"
                       hand-controls="hand: right"
-                      oculus-touch-controls="hand: right"
                       oculus-thumbstick-controls="fly: true"
-                      sphere-collider="objects: [hoverable]"
+                      sphere-collider="objects: [hoverable]; radius: 0.05"
                       super-hands
                       hand-coordinates="hand: right">
                 <!-- Visual feedback sphere -->
@@ -459,8 +457,19 @@
                     // Update progress
                     this.el.sceneEl.emit('component-installed', {type: this.data.type});
                     
-                    // Make next slot visible
-                    this.showNextSlot();
+                      showNextSlot: function() {
+                    const slotOrder = ['motherboard', 'cpu', 'gpu', 'ram', 'psu', 'ssd'];
+                    const currentIndex = slotOrder.indexOf(this.data.type);
+                    if (currentIndex < slotOrder.length - 1) {
+                        const nextSlotType = slotOrder[currentIndex + 1];
+                        const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`);
+                        if (nextSlot) {
+                            nextSlot.setAttribute('visible', true);
+                            nextSlot.setAttribute('opacity', 0.3);
+                            nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6');
+                            nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3');
+                        }
+                    }
                 }
             });
 

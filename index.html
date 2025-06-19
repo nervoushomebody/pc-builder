@@ -83,7 +83,6 @@
 
     <a-scene physics="driver: local; debug: false; gravity: -9.8; iterations: 15">
         <a-assets>
-            <!-- Materials -->
             <a-mixin id="hover-material"
                      event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
                      event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0">
@@ -95,17 +94,17 @@
             </a-mixin>
             
             <a-mixin id="pc-component"
-                     hoverable 
-                     grabbable
-                     dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4"
-                     collision-filter="group: objects; collidesWith: default, hands, objects"
-                     mixin="hover-material grab-material" grab-actions>
-            </a-mixin>
+                     hoverable 
+                     grabbable
+                     dynamic-body="mass: 1; linearDamping: 0.4; angularDamping: 0.4"
+                     collision-filter="group: objects; collidesWith: default, hands, objects"
+                     mixin="hover-material grab-material"
+                     grab-actions>
+            </a-mixin>
+        </a-assets>
 
-        <!-- Environment -->
         <a-sky color="#1a1a2e"></a-sky>
         
-        <!-- Ground with grid -->
         <a-plane position="0 0 0" 
                  rotation="-90 0 0" 
                  width="12" 
@@ -116,7 +115,6 @@
                  grid="width: 12; height: 12; color: #0f3460">
         </a-plane>
 
-        <!-- Work table -->
         <a-box position="0 0.4 -2" 
                width="3" 
                height="0.8" 
@@ -130,9 +128,6 @@
             </a-text>
         </a-box>
 
-        <!-- PC Components -->
-        
-        <!-- Motherboard -->
         <a-entity id="motherboard" 
                   class="grabbable"
                   position="-1.5 1.2 -0.5"
@@ -148,7 +143,6 @@
             </a-text>
         </a-entity>
 
-        <!-- CPU -->
         <a-entity id="cpu" 
                   class="grabbable"
                   position="-0.5 1.2 -0.5"
@@ -164,7 +158,6 @@
             </a-text>
         </a-entity>
 
-        <!-- GPU -->
         <a-entity id="gpu" 
                   class="grabbable"
                   position="0.5 1.2 -0.5"
@@ -180,7 +173,6 @@
             </a-text>
         </a-entity>
 
-        <!-- RAM -->
         <a-entity id="ram" 
                   class="grabbable"
                   position="1.5 1.2 -0.5"
@@ -196,7 +188,6 @@
             </a-text>
         </a-entity>
 
-        <!-- PSU -->
         <a-entity id="psu" 
                   class="grabbable"
                   position="-1 1.2 0.5"
@@ -212,7 +203,6 @@
             </a-text>
         </a-entity>
 
-        <!-- SSD -->
         <a-entity id="ssd" 
                   class="grabbable"
                   position="1 1.2 0.5"
@@ -228,9 +218,7 @@
             </a-text>
         </a-entity>
 
-        <!-- PC Case (Drop Target) -->
         <a-entity id="pc-case-group" position="0 0.8 -2">
-            <!-- Visual case -->
             <a-box id="pc-case"
                    width="0.6"
                    height="0.8"
@@ -246,7 +234,6 @@
                 </a-text>
             </a-box>
             
-            <!-- Droppable zones for each component -->
             <a-box id="motherboard-slot"
                    position="0 -0.3 0"
                    width="0.5"
@@ -266,7 +253,6 @@
                 </a-text>
             </a-box>
             
-            <!-- Other component slots -->
             <a-box id="cpu-slot"
                    position="0 -0.15 0"
                    width="0.15"
@@ -328,18 +314,15 @@
             </a-box>
         </a-entity>
 
-        <!-- Lighting -->
         <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
         <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6"></a-light>
         <a-light type="point" position="0 2.5 0" color="#ffffff" intensity="0.4"></a-light>
 
-        <!-- Camera Rig -->
         <a-entity id="rig" position="0 0 1.5">
             <a-camera id="camera" 
                       position="0 1.6 0" 
                       look-controls 
                       wasd-controls="fly: true">
-                <!-- For desktop cursor interaction -->
                 <a-entity cursor="rayOrigin: mouse"
                           raycaster="objects: [hoverable]"
                           super-hands="colliderEvent: raycaster-intersection;
@@ -349,13 +332,11 @@
                 </a-entity>
             </a-camera>
             
-            <!-- VR Controllers - simplified approach -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
                       sphere-collider="objects: .grabbable; radius: 0.1"
                       super-hands
                       hand-coordinates="hand: left">
-                <!-- Visual feedback sphere -->
                 <a-sphere radius="0.04" 
                           color="#44ff44" 
                           opacity="0.6"
@@ -371,7 +352,6 @@
                       sphere-collider="objects: .grabbable; radius: 0.1"
                       super-hands
                       hand-coordinates="hand: right">
-                <!-- Visual feedback sphere -->
                 <a-sphere radius="0.04" 
                           color="#44ff44" 
                           opacity="0.6"
@@ -423,11 +403,9 @@
                 },
                 
                 init: function() {
-                    // Store initial position for reset
                     this.initialPosition = this.el.object3D.position.clone();
                     this.isInstalled = false;
                     
-                    // Listen for drag-drop events
                     this.el.addEventListener('drag-drop', (evt) => {
                         const dropTarget = evt.detail.on;
                         if (dropTarget && dropTarget.components['pc-slot']) {
@@ -439,6 +417,7 @@
                     });
                 },
                 
+                // CORRECTED installComponent function
                 installComponent: function(slot) {
                     this.isInstalled = true;
                     
@@ -447,9 +426,9 @@
                     slot.object3D.getWorldPosition(slotPos);
                     this.el.object3D.position.copy(slotPos);
                     
-                    // Remove physics and make static
+                    // Remove the component from the physics simulation by removing its body.
+                    // DO NOT make it a new static-body.
                     this.el.removeAttribute('dynamic-body');
-//                    this.el.setAttribute('static-body', '');
                     
                     // Remove interactivity
                     this.el.removeAttribute('hoverable');
@@ -462,74 +441,9 @@
                     
                     // Update progress
                     this.el.sceneEl.emit('component-installed', {type: this.data.type});
-                    
-                      showNextSlot: function() {
-                    const slotOrder = ['motherboard', 'cpu', 'gpu', 'ram', 'psu', 'ssd'];
-                    const currentIndex = slotOrder.indexOf(this.data.type);
-                    if (currentIndex < slotOrder.length - 1) {
-                        const nextSlotType = slotOrder[currentIndex + 1];
-                        const nextSlot = document.querySelector(`[pc-slot="type: ${nextSlotType}"]`);
-                        if (nextSlot) {
-                            nextSlot.setAttribute('visible', true);
-                            nextSlot.setAttribute('opacity', 0.3);
-                            nextSlot.setAttribute('event-set__dragenter', '_event: dragenter; opacity: 0.6');
-                            nextSlot.setAttribute('event-set__dragleave', '_event: dragleave; opacity: 0.3');
-                        }
-                    }
                 }
             });
-            AFRAME.registerComponent('grab-actions', {
-                  init: function () {
-                    this.isGrabbed = false;
-                    this.rightHand = document.getElementById('rightHand');
-                    this.flyControls = null; // Will be assigned when hand is ready
 
-                    // Function to handle grabbing
-                    this.onGrabStart = () => {
-                      this.isGrabbed = true;
-                      // Disable flying when an object is held
-                      if (this.flyControls) {
-                        this.flyControls.data.fly = false;
-                      }
-                    };
-
-                    // Function to handle releasing
-                    this.onGrabEnd = () => {
-                      this.isGrabbed = false;
-                      // Re-enable flying when the object is released
-                      if (this.flyControls) {
-                        this.flyControls.data.fly = true;
-                      }
-                    };
-                    
-                    // Function to handle rotation with thumbstick
-                    this.onThumbstickMoved = (evt) => {
-                      if (!this.isGrabbed) return;
-                      // Use thumbstick X movement to rotate the object around its Y axis
-                      // The 0.05 value is the rotation speed, you can adjust it
-                      this.el.object3D.rotateY(-evt.detail.x * 0.05); 
-                    };
-
-                    // Wait for the hand to be ready before getting the component
-                    this.rightHand.addEventListener('controllerconnected', () => {
-                        this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
-                    });
-
-                    // Add the event listeners
-                    this.el.addEventListener('grab-start', this.onGrabStart);
-                    this.el.addEventListener('grab-end', this.onGrabEnd);
-                    this.rightHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
-                  },
-
-                  remove: function () {
-                    // Clean up the event listeners when the component is removed
-                    this.el.removeEventListener('grab-start', this.onGrabStart);
-                    this.el.removeEventListener('grab-end', this.onGrabEnd);
-                    if(this.rightHand) {
-                        this.rightHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
-                    }
-                  }
-                });
             // PC Slot management
             AFRAME.registerComponent('pc-slot', {
                 schema: {
@@ -585,19 +499,80 @@
                 }
             }
         </script>
+        
+        <script>
+            AFRAME.registerComponent('grab-actions', {
+              init: function () {
+                this.isGrabbed = false;
+                this.rightHand = document.getElementById('rightHand');
+                this.flyControls = null; // Will be assigned when hand is ready
+
+                // Function to handle grabbing
+                this.onGrabStart = () => {
+                  this.isGrabbed = true;
+                  // Disable flying when an object is held
+                  if (this.flyControls) {
+                    this.flyControls.data.fly = false;
+                  }
+                };
+
+                // Function to handle releasing
+                this.onGrabEnd = () => {
+                  this.isGrabbed = false;
+                  // Re-enable flying when the object is released
+                  if (this.flyControls) {
+                    this.flyControls.data.fly = true;
+                  }
+                };
+                
+                // Function to handle rotation with thumbstick
+                this.onThumbstickMoved = (evt) => {
+                  if (!this.isGrabbed) return;
+                  // Use thumbstick X movement to rotate the object around its Y axis
+                  // The 0.05 value is the rotation speed, you can adjust it
+                  this.el.object3D.rotateY(-evt.detail.x * 0.05); 
+                };
+
+                // Wait for the hand to be ready before getting the component
+                // This handles cases where the hand and its components initialize after this one
+                if (this.rightHand.components['oculus-thumbstick-controls']) {
+                    this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
+                } else {
+                    this.rightHand.addEventListener('controllerconnected', () => {
+                        this.flyControls = this.rightHand.components['oculus-thumbstick-controls'];
+                    });
+                }
+
+                // Add the event listeners
+                this.el.addEventListener('grab-start', this.onGrabStart);
+                this.el.addEventListener('grab-end', this.onGrabEnd);
+                this.rightHand.addEventListener('thumbstickmoved', this.onThumbstickMoved);
+              },
+
+              remove: function () {
+                // Clean up the event listeners when the component is removed
+                this.el.removeEventListener('grab-start', this.onGrabStart);
+                this.el.removeEventListener('grab-end', this.onGrabEnd);
+                if(this.rightHand) {
+                    this.rightHand.removeEventListener('thumbstickmoved', this.onThumbstickMoved);
+                }
+              }
+            });
+        </script>
     </a-scene>
 
     <div class="info">
         <strong>VR PC Builder - Super Hands</strong><br><br>
         <strong>Як грати:</strong><br>
-        1. Візьміть компонент (trigger/grip)<br>
-        2. Перетягніть його до корпусу ПК<br>
-        3. Відпустіть над відповідним слотом<br>
-        4. Слоти з'являються по черзі<br><br>
+        1. Наведіть руку на компонент і натисніть trigger/grip, щоб взяти його.<br>
+        2. Утримуючи компонент, рухайте правим джойстиком вліво/вправо, щоб обертати його.<br>
+        3. Перетягніть його до відповідного слоту в корпусі ПК.<br>
+        4. Відпустіть trigger/grip, щоб встановити компонент.<br>
+        5. Слоти з'являються по черзі.<br><br>
         <strong>VR Controls:</strong><br>
-        • Правий стік - рух/політ<br>
-        • Trigger/Grip - взяти/відпустити<br>
-        • Компоненти підсвічуються при наведенні<br><br>
+        • Правий стік - рух/політ (коли нічого не тримаєте)<br>
+        • Правий стік - обертання (коли тримаєте предмет)<br>
+        • Trigger/Grip - взяти/відпустити<br><br>
         <strong>Desktop:</strong><br>
         • WASD - рух, мишка - огляд<br>
         • Клік - взяти/відпустити

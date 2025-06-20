@@ -2,210 +2,274 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VR PC Builder - Final Working Version</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
-    <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Frame PC Builder Simulator</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        .info {
-            position: absolute; bottom: 10px; left: 10px;
-            background: rgba(0,0,0,0.8); color: white; padding: 15px;
-            border-radius: 5px; font-size: 12px; width: 300px; z-index: 10000;
+        body { margin: 0; overflow: hidden; }
+        .controls-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            max-width: 300px;
+            line-height: 1.6;
         }
-        .progress-bar {
-            position: absolute; top: 20px; left: 50%;
-            transform: translateX(-50%); width: 300px; height: 20px;
-            background: rgba(0,0,0,0.5); border-radius: 10px; z-index: 10000;
+        .controls-info h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
         }
-        .progress-fill {
-            height: 100%; width: 0%; background: #4CAF50;
-            border-radius: 10px; transition: width 0.3s;
+         .rotation-buttons {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .debug-info {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(0,0,0,0.8); color: #00ff00; padding: 10px;
-            font-family: monospace; font-size: 12px; z-index: 10000;
+        .rotation-buttons button {
+            background-color: #333;
+            color: white;
+            border: 2px solid #555;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .rotation-buttons button:hover {
+            background-color: #555;
+        }
+         .rotation-buttons button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
-    <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-    </div>
-    
-    <div class="debug-info" id="debug-info">
-        Status: Ready<br>
-        Grabbed: None
-    </div>
-
-    <a-scene physics="driver: local; debug: false; gravity: -9.8">
+    <!-- A-Frame Scene -->
+    <a-scene background="color: #2d2d2d" renderer="colorManagement: true;">
+        <!-- Assets -->
+        <!-- Since I cannot access local files, I'm using placeholder URLs. -->
+        <!-- Replace these with your actual .glb file paths. -->
         <a-assets>
-            <a-mixin id="pc-component"
-                     hoverable grabbable draggable droppable
-                     dynamic-body="shape: box; linearDamping: 0.5; angularDamping: 0.5; mass: 1"
-                     event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
-                     event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0">
-            </a-mixin>
+            <a-asset-item id="motherboard-model" src="https://cdn.glitch.global/e1c678ac-7313-4648-9719-c703b4131b7f/motherboard.glb?v=1718873082539"></a-asset-item>
+            <a-asset-item id="gpu-model" src="https://cdn.glitch.global/e1c678ac-7313-4648-9719-c703b4131b7f/gpu.glb?v=1718873078422"></a-asset-item>
+            <a-asset-item id="cpu-model" src="https://cdn.glitch.global/e1c678ac-7313-4648-9719-c703b4131b7f/cpu.glb?v=1718873076164"></a-asset-item>
+            <a-asset-item id="ram-model" src="https://cdn.glitch.global/e1c678ac-7313-4648-9719-c703b4131b7f/ram.glb?v=1718873084668"></a-asset-item>
         </a-assets>
 
-        <a-sky color="#1a1a2e"></a-sky>
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#16213e" static-body></a-plane>
-        <a-box id="work-table" position="0 0.4 -2" width="6.5" height="0.8" depth="7.5" color="#2c3e50" static-body>
-            <a-text value="Build Table" position="0 0.5 0" align="center" color="#ecf0f1"></a-text>
-        </a-box>
-
-        <a-entity id="motherboard" position="-1.5 1.2 -0.5" mixin="pc-component" pc-component="type: motherboard" geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4" material="color: #2a7f2a; metalness: 0.6">
-            <a-text value="Motherboard" position="0 0.1 0" align="center" scale="0.3 0.3 0.3"></a-text>
-            <a-box class="outline" width="0.42" height="0.04" depth="0.42" material="color: #00ff00; wireframe: true" visible="false"></a-box>
-        </a-entity>
-        <a-entity id="cpu" position="-0.5 1.2 -0.5" mixin="pc-component" pc-component="type: cpu" geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08" material="color: #4169e1; metalness: 0.8">
-            <a-text value="CPU" position="0 0.08 0" align="center" scale="0.25 0.25 0.25"></a-text>
-            <a-box class="outline" width="0.1" height="0.07" depth="0.1" material="color: #00ff00; wireframe: true" visible="false"></a-box>
-        </a-entity>
-        <a-entity id="gpu" position="0.5 1.2 -0.5" mixin="pc-component" pc-component="type: gpu" geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05" material="color: #ff4500; metalness: 0.7"></a-entity>
-        <a-entity id="ram" position="1.5 1.2 -0.5" mixin="pc-component" pc-component="type: ram" geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02" material="color: #32cd32; metalness: 0.5"></a-entity>
-        <a-entity id="psu" position="-1 1.2 0.5" mixin="pc-component" pc-component="type: psu" geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2" material="color: #696969; metalness: 0.9"></a-entity>
-        <a-entity id="ssd" position="1 1.2 0.5" mixin="pc-component" pc-component="type: ssd" geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1" material="color: #ff69b4; metalness: 0.4"></a-entity>
-
-        <a-entity id="pc-case-group" position="0 0.8 -2">
-            <a-box id="pc-case" width="0.6" height="0.8" depth="0.6" color="#1a1a1a" opacity="0.9" static-body>
-                <a-text value="PC CASE" position="0 0.5 0" align="center" scale="0.4 0.4 0.4" color="#fff"></a-text>
-            </a-box>
-            <a-box id="drop-zone" position="0 0 0" width="0.8" height="1" depth="0.8" material="opacity: 0" drop-zone></a-box>
-        </a-entity>
-
-        <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
-        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6"></a-light>
-
-        <a-entity id="rig" position="0 0 1.5" thumbstick-movement>
-            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls>
-                <a-entity cursor="rayOrigin: mouse"
-                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                          material="color: white; shader: flat"
-                          position="0 0 -1"
-                          raycaster="objects: [hoverable]"
-                          super-hands="
-                            colliderEvent: raycaster-intersection;
-                            colliderEventProperty: els;
-                            colliderEndEvent: raycaster-intersection-cleared;
-                            colliderEndEventProperty: clearedEls;
-                            
-                            // --- BUG FIX HERE ---
-                            // The button names MUST be inside an array [].
-                            grabStartButtons: [mousedown];
-                            grabEndButtons: [mouseup];
-                          ">
-                </a-entity>
-            </a-camera>
-            
-            <a-entity id="leftHand" oculus-touch-controls="hand: left" sphere-collider="objects: [hoverable]; radius: 0.1" super-hands>
-                <a-sphere class="grab-indicator" radius="0.05" color="#00ff00" opacity="0.3" visible="false"></a-sphere>
-            </a-entity>
-            <a-entity id="rightHand" oculus-touch-controls="hand: right" sphere-collider="objects: [hoverable]; radius: 0.1" super-hands>
-                <a-sphere class="grab-indicator" radius="0.05" color="#00ff00" opacity="0.3" visible="false"></a-sphere>
+        <!-- Lighting -->
+        <a-entity light="type: ambient; color: #888"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
+        
+        <!-- Player and Camera -->
+        <!-- The camera is wrapped in a "rig" entity for smooth WASD movement -->
+        <a-entity id="player-rig" position="0 1.6 4">
+            <a-entity id="camera" camera look-controls="pointerLockEnabled: false" wasd-controls>
+                <a-cursor 
+                    id="cursor"
+                    raycaster="objects: .grabbable"
+                    fuse="false"
+                    material="color: white; shader: flat; opacity: 0.75"
+                    geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015">
+                </a-cursor>
             </a-entity>
         </a-entity>
-
-        <script>
-            // --- All JavaScript code from the previous example remains the same ---
-            // The bug was in the HTML portion above, not in the script itself.
-            const debugInfo = document.getElementById('debug-info');
+        
+        <!-- Ground -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#444444" shadow></a-plane>
+        
+        <!-- PC Assembly Area -->
+        <a-entity id="assembly-area" position="0 1 -1">
             
-            AFRAME.registerComponent('thumbstick-movement', {
-                init: function() {
-                    this.velocity = new THREE.Vector3();
-                    this.el.sceneEl.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
-                },
-                onThumbstickMoved: function(evt) {
-                    if (evt.detail.hand === 'left') {
-                        const rig = this.el;
-                        const camera = rig.querySelector('[camera]');
-                        const cameraRotation = camera.object3D.rotation.y;
-                        const speed = 2;
-                        const moveX = evt.detail.x;
-                        const moveZ = evt.detail.y;
-                        const sin = Math.sin(cameraRotation);
-                        const cos = Math.cos(cameraRotation);
-                        this.velocity.x = (moveX * cos - moveZ * sin);
-                        this.velocity.z = (moveX * sin + moveZ * cos);
-                    }
-                },
-                tick: function(time, delta) {
-                    const dt = delta / 1000;
-                    if (this.velocity.lengthSq() < 0.0001) return;
-                    this.el.object3D.position.x -= this.velocity.x * dt;
-                    this.el.object3D.position.z -= this.velocity.z * dt;
-                    this.velocity.multiplyScalar(0.7);
-                }
-            });
+            <!-- Component Snap Zones -->
+            <a-entity id="motherboard-zone" class="snap-zone" geometry="primitive: box; width: 1; height: 0.1; depth: 1.2" material="color: #404040; opacity: 0.5" position="0 0 0"></a-entity>
+            <a-entity id="gpu-zone" class="snap-zone" geometry="primitive: box; width: 0.8; height: 0.2; depth: 0.3" material="color: #404040; opacity: 0.5" position="0 0.15 -0.1"></a-entity>
+            <a-entity id="cpu-zone" class="snap-zone" geometry="primitive: box; width: 0.2; height: 0.1; depth: 0.2" material="color: #404040; opacity: 0.5" position="-0.25 0.1 0.3"></a-entity>
+            <a-entity id="ram-zone" class="snap-zone" geometry="primitive: box; width: 0.5; height: 0.1; depth: 0.1" material="color: #404040; opacity: 0.5" position="0.25 0.1 0.4"></a-entity>
 
-            AFRAME.registerComponent('pc-component', {
-                schema: { type: {type: 'string'} },
-                init: function() {
-                    this.initialPosition = this.el.object3D.position.clone();
-                    this.isInstalled = false;
-                    this.outline = this.el.querySelector('.outline');
-                    this.isGrabbed = false;
-                    this.el.addEventListener('grab-start', (evt) => {
-                        this.isGrabbed = true;
-                        debugInfo.innerHTML = `Status: Grabbing<br>Component: ${this.data.type}`;
-                        if (this.outline) this.outline.setAttribute('visible', true);
-                        const hand = evt.detail.hand;
-                        if (hand) hand.querySelector('.grab-indicator')?.setAttribute('visible', true);
-                    });
-                    this.el.addEventListener('grab-end', (evt) => {
-                        this.isGrabbed = false;
-                        debugInfo.innerHTML = `Status: Ready<br>Grabbed: None`;
-                        if (this.outline) this.outline.setAttribute('visible', false);
-                        const hand = evt.detail.hand;
-                        if (hand) hand.querySelector('.grab-indicator')?.setAttribute('visible', false);
-                    });
-                    this.el.addEventListener('drag-drop', (evt) => {
-                        const dropTargetEl = evt.detail.droppedOn;
-                        if (dropTargetEl && dropTargetEl.id === 'drop-zone') {
-                            this.installComponent();
-                        }
-                    });
-                },
-                installComponent: function() {
-                    if (this.isInstalled) return;
-                    this.isInstalled = true;
-                    this.el.removeAttribute('grabbable');
-                    this.el.removeAttribute('dynamic-body');
-                    this.el.setAttribute('static-body', '');
-                    const caseGroup = document.querySelector('#pc-case-group');
-                    const targetPosition = new THREE.Vector3();
-                    caseGroup.object3D.getWorldPosition(targetPosition);
-                    this.el.setAttribute('animation', {
-                        property: 'position', to: `${targetPosition.x} ${targetPosition.y} ${targetPosition.z}`,
-                        dur: 500, easing: 'easeInOutQuad'
-                    });
-                    updateProgress(this.data.type);
-                }
-            });
+            <!-- Draggable PC Components -->
+            <a-entity id="motherboard" class="grabbable" gltf-model="#motherboard-model" position="-2 0.5 0" scale="0.5 0.5 0.5" pc-component="snapTarget: #motherboard-zone"></a-entity>
+            <a-entity id="gpu" class="grabbable" gltf-model="#gpu-model" position="-2 0.5 -1.5" scale="0.5 0.5 0.5" pc-component="snapTarget: #gpu-zone"></a-entity>
+            <a-entity id="cpu" class="grabbable" gltf-model="#cpu-model" position="0 0.5 -2.5" scale="0.5 0.5 0.5" pc-component="snapTarget: #cpu-zone"></a-entity>
+            <a-entity id="ram" class="grabbable" gltf-model="#ram-model" position="2 0.5 -1.5" scale="0.5 0.5 0.5" pc-component="snapTarget: #ram-zone"></a-entity>
+        
+        </a-entity>
 
-            AFRAME.registerComponent('drop-zone', { /* ... */ });
-            let installedComponents = new Set();
-            const totalComponents = 6;
-            function updateProgress(componentType) { /* ... */ }
-            function resetGame() { /* ... */ }
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'r' || e.key === 'R') { resetGame(); }
-            });
-        </script>
     </a-scene>
 
-    <div class="info">
-        <strong>VR PC Builder - Quest Touch</strong><br><br>
-        <strong>VR Controls:</strong><br>
-        • <b>Left thumbstick</b> - Move around<br>
-        • Grip button - Grab/release objects<br>
-        • Objects now have real physics!<br><br>
-        Press 'R' to reset game
+    <!-- UI -->
+    <div class="controls-info">
+        <h3>Controls</h3>
+        - <b>WASD:</b> Move around<br>
+        - <b>Mouse:</b> Look around<br>
+        - <b>Click & Drag:</b> Pick up/move components<br>
+        - <b>Buttons (1, 2, 3):</b> Rotate held part
     </div>
+
+    <div class="rotation-buttons">
+        <button id="rotate-x">Rotate X (1)</button>
+        <button id="rotate-y">Rotate Y (2)</button>
+        <button id="rotate-z">Rotate Z (3)</button>
+    </div>
+
+    <script>
+    // --- A-FRAME COMPONENT: PC COMPONENT LOGIC --- //
+    AFRAME.registerComponent('pc-component', {
+        schema: {
+            snapTarget: { type: 'selector' },
+            isHeld: { type: 'boolean', default: false },
+            originalPosition: { type: 'vec3' },
+            originalRotation: { type: 'vec3' },
+            originalColor: { type: 'color' }
+        },
+
+        init: function () {
+            const el = this.el;
+            const data = this.data;
+
+            // Store initial state
+            data.originalPosition.copy(el.object3D.position);
+            data.originalRotation.copy(el.object3D.rotation);
+            
+            // Mouse events for hover and grabbing
+            el.addEventListener('mouseenter', this.onMouseEnter.bind(this));
+            el.addEventListener('mouseleave', this.onMouseLeave.bind(this));
+            el.addEventListener('mousedown', this.onMouseDown.bind(this));
+            el.addEventListener('mouseup', this.onMouseUp.bind(this));
+        },
+
+        onMouseEnter: function () {
+            if (this.data.isHeld) return;
+            // Apply glow effect on hover
+            this.el.object3D.traverse(child => {
+                if (child.isMesh) {
+                    child.material.emissive = new THREE.Color(0x00ff00);
+                    child.material.emissiveIntensity = 0.5;
+                }
+            });
+        },
+
+        onMouseLeave: function () {
+            // Remove glow effect when not hovering
+             this.el.object3D.traverse(child => {
+                if (child.isMesh) {
+                    child.material.emissive = new THREE.Color(0x000000);
+                     child.material.emissiveIntensity = 1;
+                }
+            });
+        },
+
+        onMouseDown: function (evt) {
+            this.data.isHeld = true;
+            this.el.setAttribute('pc-component', 'isHeld', true);
+            
+            // Attach component to camera to move it
+            const camera = document.querySelector('#camera');
+            // Reparenting to camera
+            const worldPos = new THREE.Vector3();
+            const worldRot = new THREE.Quaternion();
+            this.el.object3D.getWorldPosition(worldPos);
+            this.el.object3D.getWorldQuaternion(worldRot);
+            
+            camera.object3D.attach(this.el.object3D);
+
+            // Give it a bit of distance from the camera
+            this.el.object3D.position.z = -2; 
+        },
+
+        onMouseUp: function (evt) {
+            if (!this.data.isHeld) return;
+            this.data.isHeld = false;
+            this.el.setAttribute('pc-component', 'isHeld', false);
+
+            const sceneEl = this.el.sceneEl.object3D;
+            const assemblyArea = document.querySelector('#assembly-area').object3D;
+
+            // Get world position of the held object
+            const worldPos = new THREE.Vector3();
+            this.el.object3D.getWorldPosition(worldPos);
+
+            // Detach from camera and re-attach to assembly area
+            assemblyArea.attach(this.el.object3D);
+
+            // Check for snap
+            const snapTarget = this.data.snapTarget;
+            const snapPos = new THREE.Vector3();
+            snapTarget.object3D.getWorldPosition(snapPos);
+
+            const distance = worldPos.distanceTo(snapPos);
+            if (distance < 0.5) { // Snap threshold
+                this.el.object3D.position.copy(snapTarget.object3D.position);
+                this.el.object3D.rotation.set(0, 0, 0); // Reset rotation on snap
+                snapTarget.setAttribute('visible', 'false'); // Hide snap zone
+                this.el.classList.remove('grabbable'); // No longer grabbable
+                this.el.removeEventListener('mouseenter', this.onMouseEnter);
+                this.el.removeEventListener('mouseleave', this.onMouseLeave);
+                this.onMouseLeave(); // Ensure glow is off
+            }
+        },
+
+        // Rotate the held component
+        rotate: function (axis) {
+            if (!this.data.isHeld) return;
+            const rotation = this.el.object3D.rotation;
+            const angle = THREE.MathUtils.degToRad(45);
+            
+            if (axis === 'x') rotation.x += angle;
+            if (axis === 'y') rotation.y += angle;
+            if (axis === 'z') rotation.z += angle;
+        }
+    });
+
+    // --- System to handle global state and controls --- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const rotateXBtn = document.getElementById('rotate-x');
+        const rotateYBtn = document.getElementById('rotate-y');
+        const rotateZBtn = document.getElementById('rotate-z');
+
+        function getHeldComponent() {
+            return document.querySelector('[pc-component="isHeld: true"]');
+        }
+
+        rotateXBtn.addEventListener('click', () => {
+            const heldComponent = getHeldComponent();
+            if (heldComponent) heldComponent.components['pc-component'].rotate('x');
+        });
+        rotateYBtn.addEventListener('click', () => {
+             const heldComponent = getHeldComponent();
+            if (heldComponent) heldComponent.components['pc-component'].rotate('y');
+        });
+        rotateZBtn.addEventListener('click', () => {
+             const heldComponent = getHeldComponent();
+            if (heldComponent) heldComponent.components['pc-component'].rotate('z');
+        });
+
+        // Keyboard shortcuts for rotation
+        window.addEventListener('keydown', (e) => {
+            const heldComponent = getHeldComponent();
+            if (!heldComponent) return;
+
+            switch (e.key) {
+                case '1':
+                    heldComponent.components['pc-component'].rotate('x');
+                    break;
+                case '2':
+                    heldComponent.components['pc-component'].rotate('y');
+                    break;
+                case '3':
+                    heldComponent.components['pc-component'].rotate('z');
+                    break;
+            }
+        });
+    });
+
+    </script>
 </body>
 </html>

@@ -1,68 +1,72 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>PC Builder Simulator</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands-component@5/dist/aframe-super-hands.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      #controls { position: absolute; top: 10px; left: 10px; color: white; font-family: sans-serif; }
-    </style>
-  </head>
-  <body>
-    <div id="controls">
-      <h3>Rotate Selected (when grabbed)</h3>
-      <p>1 - Rotate X | 2 - Rotate Y | 3 - Rotate Z</p>
-      <p>WASD - Move Camera</p>
-    </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PC Builder — Desktop Edition</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #info {
+      position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.6);
+      padding: 10px; font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+<div id="info">
+  WASD: Move | Click + drag: Move parts | 1/2/3: Rotate X/Y/Z
+</div>
+<a-scene>
+  <a-assets>
+    <a-asset-item id="mb" src="models/motherboard.glb"></a-asset-item>
+  </a-assets>
 
-    <a-scene physics="gravity: -9.8" cursor="rayOrigin: mouse">
-      <a-assets>
-        <a-asset-item id="motherboard" src="models/motherboard.glb"></a-asset-item>
-        <a-asset-item id="gpu" src="models/gpu.glb"></a-asset-item>
-        <a-asset-item id="cpu" src="models/cpu.glb"></a-asset-item>
-      </a-assets>
+  <a-entity camera look-controls wasd-controls position="0 1.6 5"></a-entity>
 
-      <a-entity id="cameraRig">
-        <a-entity id="camera" camera look-controls wasd-controls position="0 1.6 4"></a-entity>
-      </a-entity>
+  <a-box position="0 0 -2" width="3" height="0.05" depth="3" color="#555"></a-box>
 
-      <a-entity id="motherboard-slot" geometry="primitive: box; width: 1; height: 0.05; depth: 1" position="-2 0 -2" material="color: grey; opacity: 0.3"></a-entity>
-      <a-entity id="gpu-slot" geometry="primitive: box; width: 0.8; height: 0.05; depth: 0.3" position="0 0 -2" material="color: grey; opacity: 0.3"></a-entity>
-      <a-entity id="cpu-slot" geometry="primitive: box; width: 0.3; height: 0.05; depth: 0.3" position="2 0 -2" material="color: grey; opacity: 0.3"></a-entity>
+  <a-entity id="mb-entity" gltf-model="#mb" position="0 0.5 -2" scale="0.5 0.5 0.5"
+            material="color: white">
+  </a-entity>
 
-      <!-- Components -->
-      <a-entity gltf-model="#motherboard" position="-2 0.5 -2" scale="0.5 0.5 0.5"
-                class="draggable" hoverable grabbable stretchable dynamic-body
-                event-set__hoveron="material.color: green"
-                event-set__hoveroff="material.color: white"></a-entity>
+  <a-plane rotation="-90 0 0" width="20" height="20" color="#222"></a-plane>
+</a-scene>
+<script>
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selected = null;
 
-      <a-entity gltf-model="#gpu" position="0 0.5 -2" scale="0.5 0.5 0.5"
-                class="draggable" hoverable grabbable stretchable dynamic-body
-                event-set__hoveron="material.color: green"
-                event-set__hoveroff="material.color: white"></a-entity>
+  window.addEventListener('mousedown', e => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    const camera = document.querySelector('[camera]').getObject3D('camera');
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects([document.querySelector('#mb-entity').getObject3D('mesh')], true);
+    if (intersects.length) selected = document.querySelector('#mb-entity');
+  });
 
-      <a-entity gltf-model="#cpu" position="2 0.5 -2" scale="0.5 0.5 0.5"
-                class="draggable" hoverable grabbable stretchable dynamic-body
-                event-set__hoveron="material.color: green"
-                event-set__hoveroff="material.color: white"></a-entity>
+  window.addEventListener('mouseup', () => selected = null);
 
-      <!-- Ground -->
-      <a-plane rotation="-90 0 0" width="20" height="20" color="#222"></a-plane>
+  window.addEventListener('mousemove', e => {
+    if (!selected) return;
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    const camera = document.querySelector('[camera]').getObject3D('camera');
+    raycaster.setFromCamera(mouse, camera);
+    const plane = document.querySelector('a-plane').getObject3D('mesh');
+    const intersect = raycaster.intersectObject(plane);
+    if (intersect.length) {
+      selected.object3D.position.set(intersect[0].point.x, 0.5, intersect[0].point.z);
+    }
+  });
 
-    </a-scene>
-
-    <script>
-      document.addEventListener('keydown', function (e) {
-        const grabbed = document.querySelector('[grabbable][grabbed]');
-        if (!grabbed) return;
-        let rotation = grabbed.getAttribute('rotation');
-        if (e.key === '1') rotation.x += 45;
-        if (e.key === '2') rotation.y += 45;
-        if (e.key === '3') rotation.z += 45;
-        grabbed.setAttribute('rotation', rotation);
-      });
-    </script>
-  </body>
+  window.addEventListener('keydown', e => {
+    if (!selected) return;
+    const rot = selected.object3D.rotation;
+    if (e.key === '1') rot.x += Math.PI / 4;
+    if (e.key === '2') rot.y += Math.PI / 4;
+    if (e.key === '3') rot.z += Math.PI / 4;
+  });
+</script>
+</body>
 </html>

@@ -1,53 +1,408 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>VR PC Builder - Super Hands Edition (A-Frame 1.6)</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script>
-    delete AFRAME.components["grabbable"];
-  </script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@7.5.x/dist/aframe-extras.min.js"></script>
-  <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
-  <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
-  <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <meta charset="UTF-8">
+    <title>VR PC Builder - Quest Touch Edition</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            width: 300px;
+            z-index: 10000;
+        }
+        .progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            z-index: 10000;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .completion-message {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            background: rgba(0,128,0,0.9);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <a-scene>
-    <a-assets></a-assets>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="completion-message" id="completion-message">🎉 PC Successfully Built!</div>
 
-    <a-entity>
-      <a-camera position="0 1.6 0">
-        <a-entity cursor="rayOrigin: mouse"
-                  raycaster="objects: [hoverable]"
-                  super-hands="colliderEvent: raycaster-intersection;
-                               colliderEventProperty: els;
-                               colliderEndEvent: raycaster-intersection-cleared;
-                               colliderEndEventProperty: clearedEls">
+    <a-scene>
+        <a-assets>
+            <!-- Component mixins -->
+            <a-mixin id="pc-component"
+                     hoverable 
+                     grabbable
+                     stretchable
+                     draggable
+                     droppable
+                     event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
+                     event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0"
+                     event-set__grabon="_event: grab-start; material.emissive: #ffff22; material.emissiveIntensity: 0.3"
+                     event-set__graboff="_event: grab-end; material.emissive: #000000; material.emissiveIntensity: 0">
+            </a-mixin>
+        </a-assets>
+
+        <!-- Environment -->
+        <a-sky color="#1a1a2e"></a-sky>
+        
+        <!-- Ground -->
+        <a-plane position="0 0 0" 
+                 rotation="-90 0 0" 
+                 width="20" 
+                 height="20" 
+                 color="#16213e"
+                 shadow="receive: true">
+        </a-plane>
+
+        <!-- Work table -->
+        <a-box id="work-table"
+               position="0 0.4 -2" 
+               width="3" 
+               height="0.8" 
+               depth="1.5" 
+               color="#2c3e50"
+               shadow>
+            <a-text value="Build Table" 
+                    position="0 0.5 0" 
+                    align="center" 
+                    color="#ecf0f1">
+            </a-text>
+        </a-box>
+
+        <!-- PC Components -->
+        
+        <!-- Motherboard -->
+        <a-entity id="motherboard" 
+                  position="-1.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: motherboard"
+                  geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4"
+                  material="color: #2a7f2a; metalness: 0.6"
+                  shadow>
+            <a-text value="Motherboard" 
+                    position="0 0.1 0" 
+                    align="center" 
+                    scale="0.3 0.3 0.3">
+            </a-text>
         </a-entity>
-      </a-camera>
 
-      <a-entity hand-controls="hand: left"
-                sphere-collider="objects: [hoverable]; radius: 0.05"
-                super-hands>
-        <a-sphere radius="0.03" color="#44ff44" opacity="0.5"></a-sphere>
-      </a-entity>
+        <!-- CPU -->
+        <a-entity id="cpu" 
+                  position="-0.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: cpu"
+                  geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08"
+                  material="color: #4169e1; metalness: 0.8"
+                  shadow>
+            <a-text value="CPU" 
+                    position="0 0.08 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25">
+            </a-text>
+        </a-entity>
 
-      <a-entity hand-controls="hand: right"
-                sphere-collider="objects: [hoverable]; radius: 0.05"
-                super-hands>
-        <a-sphere radius="0.03" color="#44ff44" opacity="0.5"></a-sphere>
-      </a-entity>
-    </a-entity>
+        <!-- GPU -->
+        <a-entity id="gpu" 
+                  position="0.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: gpu"
+                  geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05"
+                  material="color: #ff4500; metalness: 0.7"
+                  shadow>
+            <a-text value="Graphics Card" 
+                    position="0 0.12 0" 
+                    align="center" 
+                    scale="0.3 0.3 0.3">
+            </a-text>
+        </a-entity>
 
-    <!-- Ground -->
-    <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#1a1a1a" static-body></a-plane>
+        <!-- RAM -->
+        <a-entity id="ram" 
+                  position="1.5 1.2 -0.5"
+                  mixin="pc-component"
+                  pc-component="type: ram"
+                  geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02"
+                  material="color: #32cd32; metalness: 0.5"
+                  shadow>
+            <a-text value="RAM" 
+                    position="0 0.08 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25">
+            </a-text>
+        </a-entity>
 
-    <!-- Test Grabbable Box -->
-    <a-box position="0 1.5 -3" color="#0077ff" width="0.5" height="0.5" depth="0.5"
-           hoverable grabbable stretchable draggable droppable></a-box>
+        <!-- PSU -->
+        <a-entity id="psu" 
+                  position="-1 1.2 0.5"
+                  mixin="pc-component"
+                  pc-component="type: psu"
+                  geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2"
+                  material="color: #696969; metalness: 0.9"
+                  shadow>
+            <a-text value="Power Supply" 
+                    position="0 0.15 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25">
+            </a-text>
+        </a-entity>
 
-  </a-scene>
+        <!-- SSD -->
+        <a-entity id="ssd" 
+                  position="1 1.2 0.5"
+                  mixin="pc-component"
+                  pc-component="type: ssd"
+                  geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1"
+                  material="color: #ff69b4; metalness: 0.4"
+                  shadow>
+            <a-text value="SSD" 
+                    position="0 0.05 0" 
+                    align="center" 
+                    scale="0.25 0.25 0.25">
+            </a-text>
+        </a-entity>
+
+        <!-- PC Case (Drop Target) -->
+        <a-entity id="pc-case-group" position="0 0.8 -2">
+            <!-- Visual case -->
+            <a-box id="pc-case"
+                   width="0.6"
+                   height="0.8"
+                   depth="0.6"
+                   color="#1a1a1a"
+                   opacity="0.9"
+                   shadow>
+                <a-text value="PC CASE" 
+                        position="0 0.5 0" 
+                        align="center" 
+                        scale="0.4 0.4 0.4"
+                        color="#fff">
+                </a-text>
+            </a-box>
+            
+            <!-- Drop zone indicators -->
+            <a-box id="drop-zone"
+                   position="0 0 0"
+                   width="0.8"
+                   height="1"
+                   depth="0.8"
+                   opacity="0"
+                   droppable
+                   drop-zone>
+            </a-box>
+        </a-entity>
+
+        <!-- Lighting -->
+        <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
+        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6" castShadow="true"></a-light>
+
+        <!-- Camera Rig -->
+        <a-entity id="rig" position="0 0 1.5" movement-controls="fly: true">
+            <a-camera id="camera" 
+                      position="0 1.6 0" 
+                      look-controls 
+                      wasd-controls>
+                <!-- Desktop cursor -->
+                <a-cursor position="0 0 -1"
+                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                          material="color: white; shader: flat"
+                          raycaster="objects: [hoverable]"
+                          super-hands="colliderEvent: raycaster-intersection;
+                                       colliderEventProperty: els;
+                                       colliderEndEvent: raycaster-intersection-cleared;
+                                       colliderEndEventProperty: clearedEls">
+                </a-cursor>
+            </a-camera>
+            
+            <!-- VR Controllers -->
+            <a-entity id="leftHand"
+                      hand-controls="hand: left"
+                      laser-controls="hand: left"
+                      raycaster="objects: [hoverable]; far: 2"
+                      super-hands="colliderEvent: raycaster-intersection;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: raycaster-intersection-cleared;
+                                   colliderEndEventProperty: clearedEls"
+                      sphere-collider="objects: [hoverable]; radius: 0.05">
+            </a-entity>
+            
+            <a-entity id="rightHand"
+                      hand-controls="hand: right"
+                      laser-controls="hand: right"
+                      raycaster="objects: [hoverable]; far: 2"
+                      super-hands="colliderEvent: raycaster-intersection;
+                                   colliderEventProperty: els;
+                                   colliderEndEvent: raycaster-intersection-cleared;
+                                   colliderEndEventProperty: clearedEls"
+                      sphere-collider="objects: [hoverable]; radius: 0.05">
+            </a-entity>
+        </a-entity>
+
+        <script>
+            // PC Component tracking
+            AFRAME.registerComponent('pc-component', {
+                schema: {
+                    type: {type: 'string'}
+                },
+                
+                init: function() {
+                    this.initialPosition = this.el.object3D.position.clone();
+                    this.isInstalled = false;
+                    
+                    // Listen for drag-drop events
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        const dropTarget = evt.detail.on;
+                        if (dropTarget && dropTarget.components['drop-zone']) {
+                            this.installComponent();
+                        } else {
+                            // Return to initial position if not dropped on case
+                            this.el.object3D.position.copy(this.initialPosition);
+                        }
+                    });
+                    
+                    // Make sure component returns to table if dropped elsewhere
+                    this.el.addEventListener('drag-end', (evt) => {
+                        if (!this.isInstalled) {
+                            setTimeout(() => {
+                                if (this.el.object3D.position.y < 0.5) {
+                                    this.el.object3D.position.copy(this.initialPosition);
+                                }
+                            }, 100);
+                        }
+                    });
+                }
+            });
+
+            // Drop zone for PC case
+            AFRAME.registerComponent('drop-zone', {
+                init: function() {
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        const dropped = evt.detail.dropped;
+                        if (dropped && dropped.components['pc-component']) {
+                            const component = dropped.components['pc-component'];
+                            if (!component.isInstalled) {
+                                component.installComponent();
+                            }
+                        }
+                    });
+                    
+                    // Visual feedback
+                    this.el.addEventListener('dragover-start', (evt) => {
+                        document.querySelector('#pc-case').setAttribute('material', 'emissive', '#00ff00');
+                        document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', '0.2');
+                    });
+                    
+                    this.el.addEventListener('dragover-end', (evt) => {
+                        document.querySelector('#pc-case').setAttribute('material', 'emissive', '#000000');
+                        document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', '0');
+                    });
+                }
+            });
+
+            // Extend pc-component to add install functionality
+            AFRAME.components['pc-component'].Component.prototype.installComponent = function() {
+                if (this.isInstalled) return;
+                
+                this.isInstalled = true;
+                
+                // Hide the component (simulate it being inside the case)
+                this.el.setAttribute('visible', false);
+                
+                // Update progress
+                installedComponents.add(this.data.type);
+                updateProgress();
+                
+                // Play success sound effect (if you want to add one)
+                // this.el.sceneEl.emit('play-sound', {src: 'success.mp3'});
+            };
+
+            // Progress tracking
+            let installedComponents = new Set();
+            const totalComponents = 6;
+            
+            function updateProgress() {
+                const progress = (installedComponents.size / totalComponents) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                
+                if (installedComponents.size === totalComponents) {
+                    setTimeout(() => {
+                        document.getElementById('completion-message').style.display = 'block';
+                        // Celebration effect
+                        document.querySelector('#pc-case').setAttribute('animation', 
+                            'property: rotation; to: 0 360 0; dur: 2000; easing: easeInOutQuad');
+                    }, 500);
+                }
+            }
+
+            // Reset function
+            function resetGame() {
+                installedComponents.clear();
+                updateProgress();
+                document.getElementById('completion-message').style.display = 'none';
+                
+                // Reset all components
+                document.querySelectorAll('[pc-component]').forEach(el => {
+                    el.setAttribute('visible', true);
+                    el.components['pc-component'].isInstalled = false;
+                    el.object3D.position.copy(el.components['pc-component'].initialPosition);
+                });
+            }
+
+            // Add reset button listener
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'r' || e.key === 'R') {
+                    resetGame();
+                }
+            });
+        </script>
+    </a-scene>
+
+    <div class="info">
+        <strong>VR PC Builder - Quest Touch</strong><br><br>
+        <strong>How to Play:</strong><br>
+        1. Grab components with trigger<br>
+        2. Drag them to the PC case<br>
+        3. Drop to install<br>
+        4. Build all 6 components!<br><br>
+        <strong>Controls:</strong><br>
+        • Quest: Point & trigger to grab<br>
+        • Desktop: Click to grab/drop<br>
+        • Press 'R' to reset<br><br>
+        Components glow when you hover!
+    </div>
 </body>
 </html>

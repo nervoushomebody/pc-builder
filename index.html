@@ -60,18 +60,19 @@
     </div>
     
     <div class="debug-info" id="debug-info">
-        Grab Status: Ready
+        Status: Ready<br>
+        Grabbed: None
     </div>
 
     <a-scene physics="driver: local; debug: false; gravity: -9.8">
         <a-assets>
-            <!-- Component mixin WITHOUT stretchable to avoid conflicts -->
+            <!-- Component mixin with grabbable physics -->
             <a-mixin id="pc-component"
                      hoverable 
-                     grabbable
+                     grabbable="usePhysics: true"
                      draggable
                      droppable
-                     dynamic-body="linearDamping: 0.5; angularDamping: 0.5"
+                     dynamic-body="mass: 0.5; linearDamping: 0.4; angularDamping: 0.4"
                      event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
                      event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0">
             </a-mixin>
@@ -118,7 +119,7 @@
                     align="center" 
                     scale="0.3 0.3 0.3">
             </a-text>
-            <!-- Green outline box (hidden by default) -->
+            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.42" height="0.04" depth="0.42"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -260,32 +261,39 @@
                       position="0 1.6 0" 
                       look-controls 
                       wasd-controls>
-                <!-- Desktop cursor -->
-                <a-cursor position="0 0 -1"
+                <!-- Desktop cursor with raycaster -->
+                <a-entity cursor="rayOrigin: mouse"
                           geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                           material="color: white; shader: flat"
-                          raycaster="objects: [hoverable]; showLine: true; lineColor: white; lineOpacity: 0.5"
+                          position="0 0 -1"
+                          raycaster="objects: [hoverable]; showLine: false"
                           super-hands="
                             colliderEvent: raycaster-intersection;
                             colliderEventProperty: els;
                             colliderEndEvent: raycaster-intersection-cleared;
-                            colliderEndEventProperty: clearedEls">
-                </a-cursor>
+                            colliderEndEventProperty: clearedEls;
+                            grabStartButtons: mousedown;
+                            grabEndButtons: mouseup">
+                </a-entity>
             </a-camera>
             
             <!-- Left Controller -->
             <a-entity id="leftHand"
-                      hand-controls="hand: left"
+                      oculus-touch-controls="hand: left"
+                      laser-controls="hand: left"
+                      raycaster="objects: [hoverable]; showLine: true; lineColor: red; lineOpacity: 0.5"
                       sphere-collider="objects: [hoverable]; radius: 0.1"
                       super-hands="
-                        colliderEvent: hit;
-                        colliderEventProperty: el;
-                        colliderEndEvent: hitEnd;
-                        colliderEndEventProperty: el">
+                        colliderEvent: raycaster-intersection;
+                        colliderEventProperty: els;
+                        colliderEndEvent: raycaster-intersection-cleared;
+                        colliderEndEventProperty: clearedEls;
+                        grabStartButtons: gripdown, triggerdown;
+                        grabEndButtons: gripup, triggerup">
                 <!-- Visual indicator -->
-                <a-sphere radius="0.05" 
+                <a-sphere radius="0.03" 
                           color="#00ff00" 
-                          opacity="0.3"
+                          opacity="0.5"
                           visible="false"
                           position="0 0 0"
                           class="grab-indicator">
@@ -294,17 +302,21 @@
             
             <!-- Right Controller -->
             <a-entity id="rightHand"
-                      hand-controls="hand: right"
+                      oculus-touch-controls="hand: right"
+                      laser-controls="hand: right"
+                      raycaster="objects: [hoverable]; showLine: true; lineColor: blue; lineOpacity: 0.5"
                       sphere-collider="objects: [hoverable]; radius: 0.1"
                       super-hands="
-                        colliderEvent: hit;
-                        colliderEventProperty: el;
-                        colliderEndEvent: hitEnd;
-                        colliderEndEventProperty: el">
+                        colliderEvent: raycaster-intersection;
+                        colliderEventProperty: els;
+                        colliderEndEvent: raycaster-intersection-cleared;
+                        colliderEndEventProperty: clearedEls;
+                        grabStartButtons: gripdown, triggerdown;
+                        grabEndButtons: gripup, triggerup">
                 <!-- Visual indicator -->
-                <a-sphere radius="0.05" 
+                <a-sphere radius="0.03" 
                           color="#00ff00" 
-                          opacity="0.3"
+                          opacity="0.5"
                           visible="false"
                           position="0 0 0"
                           class="grab-indicator">
@@ -313,29 +325,26 @@
         </a-entity>
 
         <script>
-            // Debug info
+            // Debug logging
             const debugInfo = document.getElementById('debug-info');
+            let currentlyGrabbed = null;
             
             // Thumbstick movement component
             AFRAME.registerComponent('thumbstick-movement', {
                 init: function() {
                     this.velocity = new THREE.Vector3();
                     
-                    // Listen for thumbstick events
                     document.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
                 },
                 
                 onThumbstickMoved: function(evt) {
-                    // Right thumbstick for movement
                     if (evt.target.id === 'rightHand') {
                         const camera = this.el.querySelector('[camera]');
                         const rotation = camera.object3D.rotation.y;
                         
-                        // Calculate movement
                         const moveX = evt.detail.x * 0.05;
                         const moveZ = evt.detail.y * 0.05;
                         
-                        // Apply rotation to movement
                         this.velocity.x = moveX * Math.cos(rotation) + moveZ * Math.sin(rotation);
                         this.velocity.z = -moveX * Math.sin(rotation) + moveZ * Math.cos(rotation);
                     }
@@ -343,11 +352,11 @@
                 
                 tick: function() {
                     this.el.object3D.position.add(this.velocity);
-                    this.velocity.multiplyScalar(0.85); // Damping
+                    this.velocity.multiplyScalar(0.85);
                 }
             });
 
-            // PC Component with proper grab handling
+            // PC Component with enhanced grab handling
             AFRAME.registerComponent('pc-component', {
                 schema: {
                     type: {type: 'string'}
@@ -359,22 +368,37 @@
                     this.outline = this.el.querySelector('.outline');
                     this.isGrabbed = false;
                     
-                    // Listen for grab events
+                    // Track all events for debugging
+                    ['hover-start', 'hover-end', 'grab-start', 'grab-end', 'drag-start', 'drag-end', 'drag-drop'].forEach(eventName => {
+                        this.el.addEventListener(eventName, (evt) => {
+                            console.log(`${eventName} on ${this.data.type}`, evt.detail);
+                            
+                            if (eventName === 'hover-start') {
+                                debugInfo.innerHTML = `Status: Hovering<br>Component: ${this.data.type}`;
+                            }
+                            
+                            if (eventName === 'hover-end' && !this.isGrabbed) {
+                                debugInfo.innerHTML = `Status: Ready<br>Grabbed: None`;
+                            }
+                        });
+                    });
+                    
+                    // Grab handling
                     this.el.addEventListener('grab-start', (evt) => {
-                        console.log('Grab started on', this.data.type);
-                        debugInfo.innerHTML = `Grabbing: ${this.data.type}`;
                         this.isGrabbed = true;
+                        currentlyGrabbed = this.data.type;
+                        debugInfo.innerHTML = `Status: Grabbing<br>Component: ${this.data.type}`;
                         
                         // Show outline
                         if (this.outline) {
                             this.outline.setAttribute('visible', true);
                         }
                         
-                        // Make component glow
+                        // Enhanced visual feedback
                         this.el.setAttribute('material', 'emissive', '#00ff00');
                         this.el.setAttribute('material', 'emissiveIntensity', 0.3);
                         
-                        // Show grab indicator on hand
+                        // Show hand indicator
                         const hand = evt.detail.hand;
                         if (hand) {
                             const indicator = hand.querySelector('.grab-indicator');
@@ -385,9 +409,9 @@
                     });
                     
                     this.el.addEventListener('grab-end', (evt) => {
-                        console.log('Grab ended on', this.data.type);
-                        debugInfo.innerHTML = 'Grab Status: Ready';
                         this.isGrabbed = false;
+                        currentlyGrabbed = null;
+                        debugInfo.innerHTML = `Status: Released<br>Component: ${this.data.type}`;
                         
                         // Hide outline
                         if (this.outline) {
@@ -398,7 +422,7 @@
                         this.el.setAttribute('material', 'emissive', '#000000');
                         this.el.setAttribute('material', 'emissiveIntensity', 0);
                         
-                        // Hide grab indicator
+                        // Hide hand indicator
                         const hand = evt.detail.hand;
                         if (hand) {
                             const indicator = hand.querySelector('.grab-indicator');
@@ -408,25 +432,11 @@
                         }
                     });
                     
-                    // Listen for drag-drop events
+                    // Drag-drop handling
                     this.el.addEventListener('drag-drop', (evt) => {
-                        console.log('Drag-drop event', evt.detail);
                         const dropTarget = evt.detail.on;
                         if (dropTarget && dropTarget.components['drop-zone']) {
                             this.installComponent();
-                        }
-                    });
-                    
-                    // Hover feedback
-                    this.el.addEventListener('hover-start', () => {
-                        if (!this.isGrabbed) {
-                            debugInfo.innerHTML = `Hovering: ${this.data.type}`;
-                        }
-                    });
-                    
-                    this.el.addEventListener('hover-end', () => {
-                        if (!this.isGrabbed) {
-                            debugInfo.innerHTML = 'Grab Status: Ready';
                         }
                     });
                 },
@@ -435,6 +445,7 @@
                     if (this.isInstalled) return;
                     
                     this.isInstalled = true;
+                    debugInfo.innerHTML = `Status: Installing<br>Component: ${this.data.type}`;
                     
                     // Remove physics and interactivity
                     this.el.removeAttribute('dynamic-body');
@@ -452,7 +463,6 @@
                         easing: 'easeInOutQuad'
                     });
                     
-                    // Scale down and hide
                     this.el.setAttribute('animation__scale', {
                         property: 'scale',
                         to: '0.1 0.1 0.1',
@@ -464,7 +474,6 @@
                         this.el.setAttribute('visible', false);
                     }, 500);
                     
-                    // Update progress
                     updateProgress(this.data.type);
                 }
             });
@@ -481,10 +490,6 @@
                         document.querySelector('#pc-case').setAttribute('material', 'emissive', '#000000');
                         document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', 0);
                     });
-                    
-                    this.el.addEventListener('drag-drop', (evt) => {
-                        console.log('Drop zone received:', evt.detail);
-                    });
                 }
             });
 
@@ -498,7 +503,7 @@
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 
                 if (installedComponents.size === totalComponents) {
-                    debugInfo.innerHTML = '🎉 PC Complete! Press R to reset';
+                    debugInfo.innerHTML = '🎉 PC Complete!<br>Press R to reset';
                     setTimeout(() => {
                         document.querySelector('#pc-case').setAttribute('animation__victory', {
                             property: 'rotation',
@@ -514,7 +519,7 @@
             function resetGame() {
                 installedComponents.clear();
                 document.getElementById('progress-fill').style.width = '0%';
-                debugInfo.innerHTML = 'Grab Status: Ready';
+                debugInfo.innerHTML = 'Status: Ready<br>Grabbed: None';
                 
                 document.querySelectorAll('[pc-component]').forEach(el => {
                     el.setAttribute('visible', true);
@@ -524,12 +529,12 @@
                     el.components['pc-component'].isInstalled = false;
                     el.object3D.position.copy(el.components['pc-component'].initialPosition);
                     
-                    // Re-add interactivity
+                    // Re-add all components
                     el.setAttribute('hoverable', '');
-                    el.setAttribute('grabbable', '');
+                    el.setAttribute('grabbable', 'usePhysics: true');
                     el.setAttribute('draggable', '');
                     el.setAttribute('droppable', '');
-                    el.setAttribute('dynamic-body', 'linearDamping: 0.5; angularDamping: 0.5');
+                    el.setAttribute('dynamic-body', 'mass: 0.5; linearDamping: 0.4; angularDamping: 0.4');
                 });
                 
                 document.querySelector('#pc-case').removeAttribute('animation__victory');
@@ -541,6 +546,13 @@
                     resetGame();
                 }
             });
+
+            // Log controller button events for debugging
+            ['gripdown', 'gripup', 'triggerdown', 'triggerup'].forEach(eventName => {
+                document.addEventListener(eventName, (evt) => {
+                    console.log(`Controller event: ${eventName}`, evt);
+                });
+            });
         </script>
     </a-scene>
 
@@ -548,13 +560,14 @@
         <strong>VR PC Builder - Quest Touch</strong><br><br>
         <strong>VR Controls:</strong><br>
         • Right thumbstick - Move around<br>
-        • Grip button - Grab/release objects<br>
-        • Get close to objects to grab them<br>
-        • Green outline shows when grabbed<br><br>
+        • Grip OR Trigger - Grab objects<br>
+        • Point laser or get close to grab<br>
+        • Green outline = grabbed<br><br>
         <strong>Desktop:</strong><br>
-        • WASD - Move, Mouse - Look<br>
-        • Click cursor on objects to grab<br><br>
-        Press 'R' to reset game
+        • WASD/Arrow keys - Move<br>
+        • Mouse click - Grab/drop<br><br>
+        Press 'R' to reset game<br>
+        Check debug info (top-right)
     </div>
 </body>
 </html>

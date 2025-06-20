@@ -136,11 +136,11 @@
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
 
-        <!-- Виправлене освітлення -->
-        <a-light type="ambient" color="#505050" intensity="0.6"></a-light>
-        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.8"></a-light>
-        <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.5"></a-light>
-        <a-light type="point" color="#ffffff" intensity="0.6" position="0 2 0"></a-light>
+        <!-- Виправлене освітлення з підвищеною яскравістю -->
+        <a-light type="ambient" color="#505050" intensity="0.8"></a-light>
+        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="1.0"></a-light>
+        <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.7"></a-light>
+        <a-light type="point" color="#ffffff" intensity="0.8" position="0 2 0"></a-light>
 
         <a-entity id="rig">
             <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="fly: true">
@@ -235,7 +235,7 @@
                 checkCollisions: function () {
                     this.slots.forEach(slot => {
                         const slotType = slot.getAttribute('data-accepts');
-                        const component = document.querySelector([data-type="${slotType}"]:not(.installed));
+                        const component = document.querySelector(`[data-type="${slotType}"]:not(.installed)`);
                         if (!component || component.is('grabbed')) return;
 
                         const slotPos = new THREE.Vector3();
@@ -262,7 +262,7 @@
 
                 updateProgress: function () {
                     installedComponents = this.installedComponents.size;
-                    progressFill.style.width = ${(installedComponents / totalComponents) * 100}%;
+                    progressFill.style.width = `${(installedComponents / totalComponents) * 100}%`;
 
                     if (installedComponents >= totalComponents) {
                         setTimeout(() => {
@@ -337,7 +337,7 @@
             
             AFRAME.registerComponent('toggle-physics-on-grab', {
                 schema: {
-                    shape: {type: 'string', default: 'box'}, // Змінено на box для всіх
+                    shape: {type: 'string', default: 'box'},
                     mass: {type: 'number', default: 2},
                     angularDamping: {type: 'number', default: 0.8},
                     linearDamping: {type: 'number', default: 0.5}
@@ -346,7 +346,6 @@
                     const data = this.data;
                     const el = this.el;
             
-                    // Зберегти початкову позицію для відновлення
                     this.originalPosition = el.object3D.position.clone();
                     
                     el.addEventListener('grab-start', () => {
@@ -354,9 +353,8 @@
                     });
             
                     el.addEventListener('grab-end', () => {
-                        // Якщо компонент ще не встановлений, додати фізику назад
                         if (!el.classList.contains('installed')) {
-                            const dyn = shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping};
+                            const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
                             el.setAttribute('dynamic-body', dyn);
                         }
                     });

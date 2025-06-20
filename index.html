@@ -40,26 +40,12 @@
             border-radius: 10px;
             transition: width 0.3s;
         }
-        .completion-message {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 24px;
-            background: rgba(0,128,0,0.9);
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 10000;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
     </div>
-    <div class="completion-message" id="completion-message">🎉 PC Successfully Built!</div>
 
     <a-scene>
         <a-assets>
@@ -69,11 +55,7 @@
                      grabbable
                      stretchable
                      draggable
-                     droppable
-                     event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
-                     event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0"
-                     event-set__grabon="_event: grab-start; material.emissive: #ffff22; material.emissiveIntensity: 0.3"
-                     event-set__graboff="_event: grab-end; material.emissive: #000000; material.emissiveIntensity: 0">
+                     droppable>
             </a-mixin>
         </a-assets>
 
@@ -85,8 +67,17 @@
                  rotation="-90 0 0" 
                  width="20" 
                  height="20" 
+                 color="#16213e">
+        </a-plane>
+
+        <!-- Grid pattern on ground -->
+        <a-plane position="0 0.01 0" 
+                 rotation="-90 0 0" 
+                 width="20" 
+                 height="20" 
                  color="#16213e"
-                 shadow="receive: true">
+                 wireframe="true"
+                 material="opacity: 0.2">
         </a-plane>
 
         <!-- Work table -->
@@ -95,8 +86,7 @@
                width="3" 
                height="0.8" 
                depth="1.5" 
-               color="#2c3e50"
-               shadow>
+               color="#2c3e50">
             <a-text value="Build Table" 
                     position="0 0.5 0" 
                     align="center" 
@@ -104,16 +94,17 @@
             </a-text>
         </a-box>
 
-        <!-- PC Components -->
+        <!-- PC Components with outline capability -->
         
         <!-- Motherboard -->
         <a-entity id="motherboard" 
                   position="-1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: motherboard"
-                  geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4"
-                  material="color: #2a7f2a; metalness: 0.6"
-                  shadow>
+                  outline-component>
+            <a-box width="0.4" height="0.02" depth="0.4"
+                   material="color: #2a7f2a; metalness: 0.6">
+            </a-box>
             <a-text value="Motherboard" 
                     position="0 0.1 0" 
                     align="center" 
@@ -126,9 +117,10 @@
                   position="-0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: cpu"
-                  geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08"
-                  material="color: #4169e1; metalness: 0.8"
-                  shadow>
+                  outline-component>
+            <a-box width="0.08" height="0.05" depth="0.08"
+                   material="color: #4169e1; metalness: 0.8">
+            </a-box>
             <a-text value="CPU" 
                     position="0 0.08 0" 
                     align="center" 
@@ -141,9 +133,10 @@
                   position="0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: gpu"
-                  geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05"
-                  material="color: #ff4500; metalness: 0.7"
-                  shadow>
+                  outline-component>
+            <a-box width="0.3" height="0.15" depth="0.05"
+                   material="color: #ff4500; metalness: 0.7">
+            </a-box>
             <a-text value="Graphics Card" 
                     position="0 0.12 0" 
                     align="center" 
@@ -156,9 +149,10 @@
                   position="1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: ram"
-                  geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02"
-                  material="color: #32cd32; metalness: 0.5"
-                  shadow>
+                  outline-component>
+            <a-box width="0.25" height="0.04" depth="0.02"
+                   material="color: #32cd32; metalness: 0.5">
+            </a-box>
             <a-text value="RAM" 
                     position="0 0.08 0" 
                     align="center" 
@@ -171,9 +165,10 @@
                   position="-1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: psu"
-                  geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2"
-                  material="color: #696969; metalness: 0.9"
-                  shadow>
+                  outline-component>
+            <a-box width="0.2" height="0.2" depth="0.2"
+                   material="color: #696969; metalness: 0.9">
+            </a-box>
             <a-text value="Power Supply" 
                     position="0 0.15 0" 
                     align="center" 
@@ -186,9 +181,10 @@
                   position="1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: ssd"
-                  geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1"
-                  material="color: #ff69b4; metalness: 0.4"
-                  shadow>
+                  outline-component>
+            <a-box width="0.15" height="0.02" depth="0.1"
+                   material="color: #ff69b4; metalness: 0.4">
+            </a-box>
             <a-text value="SSD" 
                     position="0 0.05 0" 
                     align="center" 
@@ -198,14 +194,12 @@
 
         <!-- PC Case (Drop Target) -->
         <a-entity id="pc-case-group" position="0 0.8 -2">
-            <!-- Visual case -->
             <a-box id="pc-case"
                    width="0.6"
                    height="0.8"
                    depth="0.6"
                    color="#1a1a1a"
-                   opacity="0.9"
-                   shadow>
+                   opacity="0.9">
                 <a-text value="PC CASE" 
                         position="0 0.5 0" 
                         align="center" 
@@ -214,7 +208,7 @@
                 </a-text>
             </a-box>
             
-            <!-- Drop zone indicators -->
+            <!-- Drop zone -->
             <a-box id="drop-zone"
                    position="0 0 0"
                    width="0.8"
@@ -228,51 +222,145 @@
 
         <!-- Lighting -->
         <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
-        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6" castShadow="true"></a-light>
+        <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6"></a-light>
 
-        <!-- Camera Rig -->
-        <a-entity id="rig" position="0 0 1.5" movement-controls="fly: true">
+        <!-- Camera Rig with thumbstick movement -->
+        <a-entity id="rig" position="0 0 1.5" thumbstick-movement>
             <a-camera id="camera" 
                       position="0 1.6 0" 
                       look-controls 
                       wasd-controls>
-                <!-- Desktop cursor -->
-                <a-cursor position="0 0 -1"
-                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                          material="color: white; shader: flat"
-                          raycaster="objects: [hoverable]"
-                          super-hands="colliderEvent: raycaster-intersection;
-                                       colliderEventProperty: els;
-                                       colliderEndEvent: raycaster-intersection-cleared;
-                                       colliderEndEventProperty: clearedEls">
-                </a-cursor>
             </a-camera>
             
-            <!-- VR Controllers -->
+            <!-- Left Controller -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
-                      laser-controls="hand: left"
-                      raycaster="objects: [hoverable]; far: 2"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls"
-                      sphere-collider="objects: [hoverable]; radius: 0.05">
+                      sphere-collider="objects: [hoverable]; radius: 0.05"
+                      super-hands>
+                <!-- Visual feedback for grabbing -->
+                <a-sphere radius="0.03" 
+                          color="#00ff00" 
+                          opacity="0.3"
+                          visible="false"
+                          id="left-grab-indicator">
+                </a-sphere>
             </a-entity>
             
+            <!-- Right Controller -->
             <a-entity id="rightHand"
                       hand-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: [hoverable]; far: 2"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls"
-                      sphere-collider="objects: [hoverable]; radius: 0.05">
+                      sphere-collider="objects: [hoverable]; radius: 0.05"
+                      super-hands>
+                <!-- Visual feedback for grabbing -->
+                <a-sphere radius="0.03" 
+                          color="#00ff00" 
+                          opacity="0.3"
+                          visible="false"
+                          id="right-grab-indicator">
+                </a-sphere>
             </a-entity>
         </a-entity>
 
         <script>
+            // Thumbstick movement component
+            AFRAME.registerComponent('thumbstick-movement', {
+                init: function() {
+                    this.velocity = new THREE.Vector3();
+                    this.direction = new THREE.Vector3();
+                    
+                    // Listen for thumbstick events
+                    this.el.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
+                },
+                
+                onThumbstickMoved: function(evt) {
+                    const movement = evt.detail;
+                    
+                    // Use right thumbstick for movement (Quest convention)
+                    if (evt.target.id === 'rightHand') {
+                        this.velocity.x = movement.x * 0.05;
+                        this.velocity.z = movement.y * 0.05;
+                    }
+                },
+                
+                tick: function() {
+                    // Get camera rotation for forward/backward movement
+                    const camera = this.el.querySelector('[camera]');
+                    const rotation = camera.object3D.rotation;
+                    
+                    // Calculate movement based on camera direction
+                    const moveX = this.velocity.x * Math.cos(rotation.y) + this.velocity.z * Math.sin(rotation.y);
+                    const moveZ = -this.velocity.x * Math.sin(rotation.y) + this.velocity.z * Math.cos(rotation.y);
+                    
+                    // Apply movement
+                    this.el.object3D.position.x += moveX;
+                    this.el.object3D.position.z += moveZ;
+                    
+                    // Apply damping
+                    this.velocity.multiplyScalar(0.85);
+                }
+            });
+
+            // Green outline component
+            AFRAME.registerComponent('outline-component', {
+                init: function() {
+                    this.outlineBox = null;
+                    
+                    // Listen for grab events
+                    this.el.addEventListener('grab-start', this.showOutline.bind(this));
+                    this.el.addEventListener('grab-end', this.hideOutline.bind(this));
+                },
+                
+                showOutline: function(evt) {
+                    // Get the main geometry
+                    const box = this.el.querySelector('a-box');
+                    if (!box) return;
+                    
+                    // Create outline if it doesn't exist
+                    if (!this.outlineBox) {
+                        this.outlineBox = document.createElement('a-box');
+                        const geometry = box.getAttribute('geometry') || {};
+                        
+                        // Make outline slightly larger
+                        this.outlineBox.setAttribute('width', (parseFloat(box.getAttribute('width')) || 1) * 1.1);
+                        this.outlineBox.setAttribute('height', (parseFloat(box.getAttribute('height')) || 1) * 1.1);
+                        this.outlineBox.setAttribute('depth', (parseFloat(box.getAttribute('depth')) || 1) * 1.1);
+                        
+                        // Green wireframe material
+                        this.outlineBox.setAttribute('material', {
+                            color: '#00ff00',
+                            wireframe: true,
+                            opacity: 0.8
+                        });
+                        
+                        this.el.appendChild(this.outlineBox);
+                    }
+                    
+                    this.outlineBox.setAttribute('visible', true);
+                    
+                    // Show grab indicator on the hand
+                    const hand = evt.detail.hand;
+                    const indicator = hand.querySelector('a-sphere');
+                    if (indicator) {
+                        indicator.setAttribute('visible', true);
+                    }
+                },
+                
+                hideOutline: function(evt) {
+                    if (this.outlineBox) {
+                        this.outlineBox.setAttribute('visible', false);
+                    }
+                    
+                    // Hide grab indicator
+                    const hand = evt.detail.hand;
+                    if (hand) {
+                        const indicator = hand.querySelector('a-sphere');
+                        if (indicator) {
+                            indicator.setAttribute('visible', false);
+                        }
+                    }
+                }
+            });
+
             // PC Component tracking
             AFRAME.registerComponent('pc-component', {
                 schema: {
@@ -288,104 +376,87 @@
                         const dropTarget = evt.detail.on;
                         if (dropTarget && dropTarget.components['drop-zone']) {
                             this.installComponent();
-                        } else {
-                            // Return to initial position if not dropped on case
-                            this.el.object3D.position.copy(this.initialPosition);
                         }
+                    });
+                },
+                
+                installComponent: function() {
+                    if (this.isInstalled) return;
+                    
+                    this.isInstalled = true;
+                    
+                    // Animate to case then hide
+                    const casePos = document.querySelector('#pc-case').object3D.position;
+                    this.el.setAttribute('animation', {
+                        property: 'position',
+                        to: `${casePos.x} ${casePos.y} ${casePos.z}`,
+                        dur: 500,
+                        easing: 'easeInOutQuad'
                     });
                     
-                    // Make sure component returns to table if dropped elsewhere
-                    this.el.addEventListener('drag-end', (evt) => {
-                        if (!this.isInstalled) {
-                            setTimeout(() => {
-                                if (this.el.object3D.position.y < 0.5) {
-                                    this.el.object3D.position.copy(this.initialPosition);
-                                }
-                            }, 100);
-                        }
-                    });
+                    setTimeout(() => {
+                        this.el.setAttribute('visible', false);
+                    }, 500);
+                    
+                    // Update progress
+                    updateProgress(this.data.type);
                 }
             });
 
-            // Drop zone for PC case
+            // Drop zone component
             AFRAME.registerComponent('drop-zone', {
                 init: function() {
-                    this.el.addEventListener('drag-drop', (evt) => {
-                        const dropped = evt.detail.dropped;
-                        if (dropped && dropped.components['pc-component']) {
-                            const component = dropped.components['pc-component'];
-                            if (!component.isInstalled) {
-                                component.installComponent();
-                            }
-                        }
+                    // Visual feedback for hovering
+                    this.el.addEventListener('dragover-start', () => {
+                        document.querySelector('#pc-case').setAttribute('material', {
+                            emissive: '#00ff00',
+                            emissiveIntensity: 0.2
+                        });
                     });
                     
-                    // Visual feedback
-                    this.el.addEventListener('dragover-start', (evt) => {
-                        document.querySelector('#pc-case').setAttribute('material', 'emissive', '#00ff00');
-                        document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', '0.2');
-                    });
-                    
-                    this.el.addEventListener('dragover-end', (evt) => {
-                        document.querySelector('#pc-case').setAttribute('material', 'emissive', '#000000');
-                        document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', '0');
+                    this.el.addEventListener('dragover-end', () => {
+                        document.querySelector('#pc-case').setAttribute('material', {
+                            emissive: '#000000',
+                            emissiveIntensity: 0
+                        });
                     });
                 }
             });
-
-            // Extend pc-component to add install functionality
-            AFRAME.components['pc-component'].Component.prototype.installComponent = function() {
-                if (this.isInstalled) return;
-                
-                this.isInstalled = true;
-                
-                // Hide the component (simulate it being inside the case)
-                this.el.setAttribute('visible', false);
-                
-                // Update progress
-                installedComponents.add(this.data.type);
-                updateProgress();
-                
-                // Play success sound effect (if you want to add one)
-                // this.el.sceneEl.emit('play-sound', {src: 'success.mp3'});
-            };
 
             // Progress tracking
             let installedComponents = new Set();
             const totalComponents = 6;
             
-            function updateProgress() {
+            function updateProgress(componentType) {
+                installedComponents.add(componentType);
                 const progress = (installedComponents.size / totalComponents) * 100;
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 
                 if (installedComponents.size === totalComponents) {
+                    // Victory animation
                     setTimeout(() => {
-                        document.getElementById('completion-message').style.display = 'block';
-                        // Celebration effect
-                        document.querySelector('#pc-case').setAttribute('animation', 
-                            'property: rotation; to: 0 360 0; dur: 2000; easing: easeInOutQuad');
-                    }, 500);
+                        document.querySelector('#pc-case').setAttribute('animation', {
+                            property: 'rotation',
+                            to: '0 360 0',
+                            dur: 2000,
+                            easing: 'easeInOutQuad'
+                        });
+                    }, 600);
                 }
             }
 
-            // Reset function
-            function resetGame() {
-                installedComponents.clear();
-                updateProgress();
-                document.getElementById('completion-message').style.display = 'none';
-                
-                // Reset all components
-                document.querySelectorAll('[pc-component]').forEach(el => {
-                    el.setAttribute('visible', true);
-                    el.components['pc-component'].isInstalled = false;
-                    el.object3D.position.copy(el.components['pc-component'].initialPosition);
-                });
-            }
-
-            // Add reset button listener
+            // Reset on R key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'r' || e.key === 'R') {
-                    resetGame();
+                    installedComponents.clear();
+                    document.getElementById('progress-fill').style.width = '0%';
+                    
+                    document.querySelectorAll('[pc-component]').forEach(el => {
+                        el.setAttribute('visible', true);
+                        el.removeAttribute('animation');
+                        el.components['pc-component'].isInstalled = false;
+                        el.object3D.position.copy(el.components['pc-component'].initialPosition);
+                    });
                 }
             });
         </script>
@@ -393,16 +464,17 @@
 
     <div class="info">
         <strong>VR PC Builder - Quest Touch</strong><br><br>
+        <strong>VR Controls:</strong><br>
+        • Right thumbstick - Move around<br>
+        • Grip button - Grab objects<br>
+        • Rotate controller - Rotate held objects<br>
+        • Green outline shows grabbed items<br><br>
         <strong>How to Play:</strong><br>
-        1. Grab components with trigger<br>
-        2. Drag them to the PC case<br>
-        3. Drop to install<br>
-        4. Build all 6 components!<br><br>
-        <strong>Controls:</strong><br>
-        • Quest: Point & trigger to grab<br>
-        • Desktop: Click to grab/drop<br>
-        • Press 'R' to reset<br><br>
-        Components glow when you hover!
+        1. Move close to components<br>
+        2. Grab with grip button<br>
+        3. Drop in PC case to install<br>
+        4. Press 'R' to reset<br><br>
+        Components follow your hand rotation!
     </div>
 </body>
 </html>

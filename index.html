@@ -59,7 +59,7 @@
     </style>
 </head>
 <body>
-    <a-scene physics>
+    <a-scene physics="gravity: 0"> <!-- Гравітація вимкнена -->
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -72,7 +72,7 @@
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
             <a-mixin id="interactive"
-                     hoverable grabbable draggable>
+                     hoverable grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
@@ -119,24 +119,24 @@
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Об'єкти з kinematic body для руху без фізики падіння -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="type: kinematic" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <!-- Об'єкти з звичайним dynamic-body, але без гравітації -->
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="shape: box; mass: 2; linearDamping: 0.5; angularDamping: 0.5" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
         
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="type: kinematic" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
+        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1; linearDamping: 0.5; angularDamping: 0.5" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
             <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="type: kinematic" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
+        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 1; linearDamping: 0.5; angularDamping: 0.5" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
             <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="type: kinematic" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
+        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 3; linearDamping: 0.5; angularDamping: 0.5" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
             <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="type: kinematic" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
+        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 2; linearDamping: 0.5; angularDamping: 0.5" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
             <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="type: kinematic" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
+        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 1; linearDamping: 0.5; angularDamping: 0.5" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
 
@@ -293,6 +293,25 @@
                 }
             });
 
+            AFRAME.registerComponent('respawnable', {
+                init: function () { 
+                    this.initialPosition = this.el.object3D.position.clone(); 
+                },
+                tick: function () { 
+                    // Вимкнено автоматичний респавн, оскільки гравітація вимкнена
+                },
+                resetEntity: function() {
+                    const el = this.el;
+                    if (el.body) {
+                        el.body.position.copy(this.initialPosition);
+                        el.body.velocity.set(0, 0, 0);
+                        el.body.angularVelocity.set(0, 0, 0);
+                    } else {
+                        el.object3D.position.copy(this.initialPosition);
+                    }
+                }
+            });
+
             AFRAME.registerComponent('phase-shift', {
                 init: function () {
                     this.el.addEventListener('grab-start', () => this.el.setAttribute('collision-filter', {collisionForces: false}));
@@ -343,7 +362,8 @@
             
                     el.addEventListener('grab-end', () => {
                         if (!el.classList.contains('installed')) {
-                            el.setAttribute('dynamic-body', 'type: kinematic');
+                            const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
+                            el.setAttribute('dynamic-body', dyn);
                         }
                     });
                 }

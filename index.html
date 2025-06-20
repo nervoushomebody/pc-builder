@@ -259,6 +259,9 @@
                     clone.id = comp.id + '-clone';
                     clone.setAttribute('position', '0 0.1 0');
                     clone.setAttribute('visible', 'false');
+                    clone.setAttribute('mixin', 'interactive');
+                    clone.setAttribute('dynamic-body', 'shape: box; mass: 1');
+                    clone.setAttribute('class', 'component-clone');
                     
                     // Find the corresponding display position
                     const displayPos = document.getElementById(comp.id + '-display');
@@ -410,6 +413,14 @@
                     const clone = document.getElementById(component.id + '-clone');
                     if (clone) {
                         clone.setAttribute('visible', 'false');
+                        // Reset clone position when hidden
+                        const displayPos = document.getElementById(component.id + '-display');
+                        if (displayPos) {
+                            const worldPos = new THREE.Vector3();
+                            displayPos.object3D.getWorldPosition(worldPos);
+                            clone.object3D.position.set(0, 0.1, 0);
+                            clone.object3D.rotation.set(0, 0, 0);
+                        }
                     }
                 }
             });
@@ -520,7 +531,7 @@
         <strong>Desktop:</strong> WASD to move, mouse to look.
         <br><br>
         <strong>Goal:</strong> Remove and reinstall PC components!<br>
-        <strong>Inspection Platform:</strong> On the right - shows component clones when grabbed.
+        <strong>Inspection Platform:</strong> On the right - shows component clones that can be grabbed and examined.
     </div>
 </body>
 </html>

@@ -89,19 +89,13 @@
         <a-sky src="#sky"></a-sky>
         <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
         
-        <!-- Стіл -->
-        <a-entity position="0 0.5 -1">
-            <a-box position="0 0.25 0" width="2" height="0.5" depth="1.5" color="#8B4513" static-body></a-box>
-            <a-box position="0 0.01 0" width="1.8" height="0.02" depth="1.3" color="#D2B48C" static-body></a-box>
-        </a-entity>
-        
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
         </div>
         <div class="completion-message" id="completion-message">ПК успішно зібрано!</div>
         
-        <!-- ПК корпус на столі -->
-        <a-entity id="pc-case-station" position="0 0.8 -1" pc-builder>
+        <!-- ПК корпус -->
+        <a-entity id="pc-case-station" position="0 0.8 -1.5" pc-builder>
             <!-- Зменшена підставка -->
             <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d" static-body></a-box>
             
@@ -126,7 +120,7 @@
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Компоненти на столі з підписами -->
+        <!-- Компоненти з підписами -->
         <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="shape: box; mass: 2" side-description="description: Материнська плата - основа системи; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="Материнська плата" position="0 0.1 0" align="center" color="black" width="2"></a-text>
@@ -157,7 +151,7 @@
             <a-text value="SSD" position="0 0.1 0" align="center" color="black" width="2"></a-text>
         </a-entity>
 
-        <!-- Виправлене освітлення -->
+        <!-- Освітлення -->
         <a-light type="ambient" color="#505050" intensity="0.6"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.8"></a-light>
         <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.5"></a-light>
@@ -402,7 +396,7 @@
 
     <div class="info">
         <strong>Керування:</strong><br>
-        Корпус ПК перед вами. Компоненти розташовані на столі.<br><br>
+        Корпус ПК перед вами. Компоненти розташовані навколо.<br><br>
         <strong>VR:</strong><br>
          - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
          - <strong>Політ/Рух:</strong> Лівий джойстик для плавного пересування в напрямку погляду.<br>

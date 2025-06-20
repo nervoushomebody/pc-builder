@@ -1,219 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>PC Builder Simulator - Desktop Mouse</title>
+  <meta charset="UTF-8">
+  <title>PC Builder — Desktop Edition</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-      background: #111;
-    }
-    #instructions {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 12px;
-      border-radius: 6px;
-      max-width: 280px;
-      font-size: 14px;
-      user-select: none;
-      z-index: 1000;
+    body { margin: 0; overflow: hidden; }
+    #info {
+      position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.6);
+      padding: 10px; font-family: sans-serif;
     }
   </style>
 </head>
 <body>
-  <div id="instructions">
-    <b>Controls:</b><br />
-    WASD - Move camera<br />
-    Mouse drag - Move selected component<br />
-    Hover - Glow green<br />
-    1 / 2 / 3 - Rotate selected component 45° on X / Y / Z<br />
-  </div>
+<div id="info">
+  WASD: Move | Click + drag: Move parts | 1/2/3: Rotate X/Y/Z
+</div>
+<a-scene>
+  <a-assets>
+    <a-asset-item id="mb" src="models/motherboard.glb"></a-asset-item>
+    <a-asset-item id="cpu" src="models/cpu.glb"></a-asset-item>
+    <a-asset-item id="gpu" src="models/gpu.glb"></a-asset-item>
+    <a-asset-item id="ram" src="models/ram.glb"></a-asset-item>
+    <a-asset-item id="psu" src="models/psu.glb"></a-asset-item>
+    <a-asset-item id="fan" src="models/fan.glb"></a-asset-item>
+    <a-asset-item id="ssd" src="models/ssd.glb"></a-asset-item>
+    <a-asset-item id="case" src="models/case.glb"></a-asset-item>
+  </a-assets>
 
-  <a-scene background="color: #222" cursor="rayOrigin: mouse">
-    <a-assets>
-      <a-asset-item id="motherboard" src="models/motherboard.glb"></a-asset-item>
-      <a-asset-item id="cpu" src="models/cpu.glb"></a-asset-item>
-      <a-asset-item id="gpu" src="models/gpu.glb"></a-asset-item>
-      <a-asset-item id="ram" src="models/ram.glb"></a-asset-item>
-      <a-asset-item id="psu" src="models/psu.glb"></a-asset-item>
-      <a-asset-item id="fan" src="models/fan.glb"></a-asset-item>
-      <a-asset-item id="case" src="models/case.glb"></a-asset-item>
-      <a-asset-item id="ssd" src="models/ssd.glb"></a-asset-item>
-    </a-assets>
+  <a-entity camera look-controls wasd-controls position="0 1.6 5"></a-entity>
 
-    <!-- Lights -->
-    <a-entity light="type: ambient; color: #666"></a-entity>
-    <a-entity light="type: directional; color: #fff; intensity: 0.7" position="0 5 3"></a-entity>
-    <a-entity light="type: point; color: #fff; intensity: 0.6" position="0 3 0"></a-entity>
+  <!-- Lighting -->
+  <a-light type="directional" position="0 5 0" intensity="1.5" color="#ffffff"></a-light>
+  <a-light type="ambient" intensity="0.4"></a-light>
 
-    <!-- Ground -->
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#333"></a-plane>
+  <a-box position="0 0 -2" width="3" height="0.05" depth="3" color="#555"></a-box>
 
-    <!-- Camera rig -->
-    <a-entity id="rig" position="0 1.6 5">
-      <a-entity camera look-controls wasd-controls></a-entity>
-    </a-entity>
+  <!-- Components -->
+  <a-entity id="mb-entity" gltf-model="#mb" position="-3 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="cpu-entity" gltf-model="#cpu" position="-2 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="gpu-entity" gltf-model="#gpu" position="-1 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="ram-entity" gltf-model="#ram" position="0 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="psu-entity" gltf-model="#psu" position="1 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="fan-entity" gltf-model="#fan" position="2 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="ssd-entity" gltf-model="#ssd" position="3 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  <a-entity id="case-entity" gltf-model="#case" position="0 0.5 0" scale="0.5 0.5 0.5"></a-entity>
 
-    <!-- Component drop spots (grey translucent boxes) -->
-    <a-box position="-3 0.01 -2" width="1" height="0.05" depth="1" color="#555" opacity="0.3"></a-box> <!-- Motherboard -->
-    <a-box position="-1 0.01 -2" width="0.6" height="0.05" depth="0.6" color="#555" opacity="0.3"></a-box> <!-- CPU -->
-    <a-box position="0.5 0.01 -2" width="1" height="0.05" depth="0.4" color="#555" opacity="0.3"></a-box> <!-- GPU -->
-    <a-box position="2 0.01 -2" width="0.8" height="0.05" depth="0.2" color="#555" opacity="0.3"></a-box> <!-- RAM -->
-    <a-box position="3.5 0.01 -2" width="0.6" height="0.05" depth="0.6" color="#555" opacity="0.3"></a-box> <!-- PSU -->
-    <a-box position="5 0.01 -2" width="0.4" height="0.05" depth="0.4" color="#555" opacity="0.3"></a-box> <!-- FAN -->
-    <a-box position="6.5 0.01 -2" width="1" height="0.05" depth="1" color="#555" opacity="0.3"></a-box> <!-- CASE -->
-    <a-box position="8 0.01 -2" width="0.5" height="0.05" depth="0.3" color="#555" opacity="0.3"></a-box> <!-- SSD -->
+  <a-plane rotation="-90 0 0" width="20" height="20" color="#222"></a-plane>
+</a-scene>
+<script>
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selected = null;
 
-    <!-- Components, scaled to 0.5 -->
-    <a-entity id="motherboard" class="draggable" 
-              gltf-model="#motherboard" 
-              position="-3 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  window.addEventListener('mousedown', e => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    const camera = document.querySelector('[camera]').getObject3D('camera');
+    raycaster.setFromCamera(mouse, camera);
+    const selectable = Array.from(document.querySelectorAll('[gltf-model]')).map(el => el.getObject3D('mesh')).filter(m => m);
+    const intersects = raycaster.intersectObjects(selectable, true);
+    if (intersects.length) selected = intersects[0].object.el;
+  });
 
-    <a-entity id="cpu" class="draggable" 
-              gltf-model="#cpu" 
-              position="-1 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
+  window.addEventListener('mouseup', () => selected = null);
 
-    <a-entity id="gpu" class="draggable" 
-              gltf-model="#gpu" 
-              position="0.5 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-    <a-entity id="ram" class="draggable" 
-              gltf-model="#ram" 
-              position="2 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-    <a-entity id="psu" class="draggable" 
-              gltf-model="#psu" 
-              position="3.5 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-    <a-entity id="fan" class="draggable" 
-              gltf-model="#fan" 
-              position="5 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-    <a-entity id="case" class="draggable" 
-              gltf-model="#case" 
-              position="6.5 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-    <a-entity id="ssd" class="draggable" 
-              gltf-model="#ssd" 
-              position="8 0.5 -2" scale="0.5 0.5 0.5"></a-entity>
-
-  </a-scene>
-
-  <script>
-    // Setup dragging and hover glow without super-hands
-    const scene = document.querySelector('a-scene');
-    let selected = null;
-    let dragOffset = new THREE.Vector3();
-
-    // Raycaster and mouse vector for picking
-    const camera = scene.camera;
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    // Convert mouse event to normalized device coordinates
-    function onMouseMove(event) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  window.addEventListener('mousemove', e => {
+    if (!selected) return;
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    const camera = document.querySelector('[camera]').getObject3D('camera');
+    raycaster.setFromCamera(mouse, camera);
+    const plane = document.querySelector('a-plane').getObject3D('mesh');
+    const intersect = raycaster.intersectObject(plane);
+    if (intersect.length) {
+      selected.object3D.position.set(intersect[0].point.x, 0.5, intersect[0].point.z);
     }
+  });
 
-    // Find intersected draggable entity under mouse
-    function getIntersectedDraggable() {
-      raycaster.setFromCamera(mouse, camera);
-      const draggableEls = [...document.querySelectorAll('.draggable')].map(e => e.object3D);
-      const intersects = raycaster.intersectObjects(draggableEls, true);
-      if (intersects.length > 0) {
-        // Find closest draggable ancestor
-        let obj = intersects[0].object;
-        while (obj && !obj.el?.classList.contains('draggable')) {
-          obj = obj.parent;
-        }
-        return obj ? obj.el : null;
-      }
-      return null;
-    }
-
-    // Handle hover glow
-    let lastHovered = null;
-    window.addEventListener('mousemove', event => {
-      onMouseMove(event);
-      const hovered = getIntersectedDraggable();
-      if (hovered !== lastHovered) {
-        if (lastHovered) {
-          lastHovered.setAttribute('material', 'emissive', '#000000');
-          lastHovered.setAttribute('material', 'emissiveIntensity', 0);
-        }
-        if (hovered) {
-          hovered.setAttribute('material', 'emissive', '#22ff22');
-          hovered.setAttribute('material', 'emissiveIntensity', 0.3);
-        }
-        lastHovered = hovered;
-      }
-    });
-
-    // Drag logic
-    let dragging = false;
-    let planeY = 0.5; // fixed height for dragging on the ground plane
-
-    window.addEventListener('mousedown', event => {
-      onMouseMove(event);
-      const picked = getIntersectedDraggable();
-      if (picked) {
-        selected = picked;
-        dragging = true;
-
-        // Calculate offset between intersection point and model position
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObject(selected.object3D, true);
-        if (intersects.length > 0) {
-          dragOffset.copy(intersects[0].point).sub(selected.object3D.position);
-        } else {
-          dragOffset.set(0,0,0);
-        }
-      }
-    });
-
-    window.addEventListener('mouseup', () => {
-      dragging = false;
-      selected = null;
-    });
-
-    window.addEventListener('mousemove', event => {
-      if (!dragging || !selected) return;
-      onMouseMove(event);
-      raycaster.setFromCamera(mouse, camera);
-      // Intersect with horizontal plane at planeY height
-      const plane = new THREE.Plane(new THREE.Vector3(0,1,0), -planeY);
-      const intersectPoint = new THREE.Vector3();
-      raycaster.ray.intersectPlane(plane, intersectPoint);
-      if (intersectPoint) {
-        selected.object3D.position.copy(intersectPoint.sub(dragOffset));
-        selected.object3D.position.y = planeY; // keep at fixed height
-      }
-    });
-
-    // Rotation on keypress 1/2/3 for selected component
-    window.addEventListener('keydown', event => {
-      if (!selected) return;
-      const rotation = selected.getAttribute('rotation');
-      switch(event.key) {
-        case '1':
-          rotation.x = (rotation.x + 45) % 360;
-          break;
-        case '2':
-          rotation.y = (rotation.y + 45) % 360;
-          break;
-        case '3':
-          rotation.z = (rotation.z + 45) % 360;
-          break;
-      }
-      selected.setAttribute('rotation', rotation);
-    });
-  </script>
+  window.addEventListener('keydown', e => {
+    if (!selected) return;
+    const rot = selected.object3D.rotation;
+    if (e.key === '1') rot.x += Math.PI / 4;
+    if (e.key === '2') rot.y += Math.PI / 4;
+    if (e.key === '3') rot.z += Math.PI / 4;
+  });
+</script>
 </body>
 </html>

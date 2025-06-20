@@ -60,13 +60,12 @@
     </div>
     
     <div class="debug-info" id="debug-info">
-        Status: Ready<br>
-        Grabbed: None
+        Grab Status: Ready
     </div>
 
     <a-scene physics="driver: local; debug: false; gravity: -9.8">
         <a-assets>
-            <!-- Component mixin with proper grabbable setup -->
+            <!-- Updated component mixin with proper grab settings -->
             <a-mixin id="pc-component"
                      hoverable 
                      grabbable="startButtons: gripdown; endButtons: gripup"
@@ -112,7 +111,6 @@
                   position="-1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: motherboard"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.4; height: 0.02; depth: 0.4"
                   material="color: #2a7f2a; metalness: 0.6">
             <a-text value="Motherboard" 
@@ -120,7 +118,7 @@
                     align="center" 
                     scale="0.3 0.3 0.3">
             </a-text>
-            <!-- Green outline box -->
+            <!-- Green outline box (hidden by default) -->
             <a-box class="outline"
                    width="0.42" height="0.04" depth="0.42"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -133,7 +131,6 @@
                   position="-0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: cpu"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.08; height: 0.05; depth: 0.08"
                   material="color: #4169e1; metalness: 0.8">
             <a-text value="CPU" 
@@ -153,7 +150,6 @@
                   position="0.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: gpu"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.3; height: 0.15; depth: 0.05"
                   material="color: #ff4500; metalness: 0.7">
             <a-text value="Graphics Card" 
@@ -173,7 +169,6 @@
                   position="1.5 1.2 -0.5"
                   mixin="pc-component"
                   pc-component="type: ram"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.25; height: 0.04; depth: 0.02"
                   material="color: #32cd32; metalness: 0.5">
             <a-text value="RAM" 
@@ -193,7 +188,6 @@
                   position="-1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: psu"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.2; height: 0.2; depth: 0.2"
                   material="color: #696969; metalness: 0.9">
             <a-text value="Power Supply" 
@@ -213,7 +207,6 @@
                   position="1 1.2 0.5"
                   mixin="pc-component"
                   pc-component="type: ssd"
-                  enhanced-grabbable
                   geometry="primitive: box; width: 0.15; height: 0.02; depth: 0.1"
                   material="color: #ff69b4; metalness: 0.4">
             <a-text value="SSD" 
@@ -268,22 +261,19 @@
                       look-controls 
                       wasd-controls>
                 <!-- Desktop cursor -->
-                <a-entity cursor="rayOrigin: mouse"
+                <a-cursor position="0 0 -1"
                           geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                           material="color: white; shader: flat"
-                          position="0 0 -1"
-                          raycaster="objects: [hoverable]"
+                          raycaster="objects: [hoverable]; showLine: true; lineColor: white; lineOpacity: 0.5"
                           super-hands="
                             colliderEvent: raycaster-intersection;
                             colliderEventProperty: els;
                             colliderEndEvent: raycaster-intersection-cleared;
-                            colliderEndEventProperty: clearedEls;
-                            grabStartButtons: mousedown;
-                            grabEndButtons: mouseup">
-                </a-entity>
+                            colliderEndEventProperty: clearedEls">
+                </a-cursor>
             </a-camera>
             
-            <!-- Left Controller -->
+            <!-- Updated Left Controller with proper grab settings -->
             <a-entity id="leftHand"
                       hand-controls="hand: left; model: false"
                       oculus-touch-controls="hand: left"
@@ -305,7 +295,7 @@
                 </a-sphere>
             </a-entity>
             
-            <!-- Right Controller -->
+            <!-- Updated Right Controller with proper grab settings -->
             <a-entity id="rightHand"
                       hand-controls="hand: right; model: false"
                       oculus-touch-controls="hand: right"
@@ -332,17 +322,43 @@
             // Debug info
             const debugInfo = document.getElementById('debug-info');
             
-            // Enhanced grabbable component with physics
-            AFRAME.registerComponent('enhanced-grabbable', {
-                dependencies: ['grabbable'],
+            // Thumbstick movement component
+            AFRAME.registerComponent('thumbstick-movement', {
                 init: function() {
-                    this.originalParent = this.el.parentEl;
-                    this.originalPosition = new THREE.Vector3();
-                    this.originalRotation = new THREE.Euler();
+                    this.velocity = new THREE.Vector3();
                     
+                    // Listen for thumbstick events
+                    document.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
+                },
+                
+                onThumbstickMoved: function(evt) {
+                    // Right thumbstick for movement
+                    if (evt.target.id === 'rightHand') {
+                        const camera = this.el.querySelector('[camera]');
+                        const rotation = camera.object3D.rotation.y;
+                        
+                        // Calculate movement
+                        const moveX = evt.detail.x * 0.05;
+                        const moveZ = evt.detail.y * 0.05;
+                        
+                        // Apply rotation to movement
+                        this.velocity.x = moveX * Math.cos(rotation) + moveZ * Math.sin(rotation);
+                        this.velocity.z = -moveX * Math.sin(rotation) + moveZ * Math.cos(rotation);
+                    }
+                },
+                
+                tick: function() {
+                    this.el.object3D.position.add(this.velocity);
+                    this.velocity.multiplyScalar(0.85); // Damping
+                }
+            });
+
+            // Physics constraints for grabbing
+            AFRAME.registerComponent('grabbable', {
+                dependencies: ['super-hands'],
+                init: function() {
                     this.onGrabStart = this.onGrabStart.bind(this);
                     this.onGrabEnd = this.onGrabEnd.bind(this);
-                    
                     this.el.addEventListener('grab-start', this.onGrabStart);
                     this.el.addEventListener('grab-end', this.onGrabEnd);
                 },
@@ -351,81 +367,49 @@
                     const hand = evt.detail.hand;
                     const el = this.el;
                     
-                    // Store world position before parenting
-                    el.object3D.getWorldPosition(this.originalPosition);
-                    el.object3D.getWorldQuaternion(new THREE.Quaternion());
+                    // Disable physics temporarily during grab
+                    el.body.sleep();
+                    el.body.angularVelocity.set(0, 0, 0);
+                    el.body.linearVelocity.set(0, 0, 0);
                     
-                    // Disable physics temporarily
-                    if (el.body) {
-                        el.body.sleep();
-                        el.body.angularVelocity.set(0, 0, 0);
-                        el.body.velocity.set(0, 0, 0);
-                    }
+                    // Parent the object to the hand
+                    el.object3D.position.set(0, 0, 0);
+                    hand.appendChild(el);
                     
-                    // Parent to hand
-                    hand.object3D.add(el.object3D);
+                    // Offset position based on object size
+                    const bbox = new THREE.Box3().setFromObject(el.object3D);
+                    const size = bbox.getSize(new THREE.Vector3());
+                    el.object3D.position.z = -size.z * 0.5;
                     
-                    // Adjust position relative to hand
-                    el.object3D.position.set(0, 0, -0.1);
-                    el.object3D.rotation.set(0, 0, 0);
+                    // Enable rotation
+                    el.setAttribute('rotation', {
+                        x: 0,
+                        y: hand.object3D.rotation.y,
+                        z: 0
+                    });
                 },
                 
                 onGrabEnd: function(evt) {
                     const el = this.el;
                     const hand = evt.detail.hand;
                     
-                    // Get world position before unparenting
-                    const worldPos = new THREE.Vector3();
-                    const worldQuat = new THREE.Quaternion();
-                    el.object3D.getWorldPosition(worldPos);
-                    el.object3D.getWorldQuaternion(worldQuat);
-                    
-                    // Return to original parent
-                    this.originalParent.object3D.add(el.object3D);
-                    
-                    // Set world position
-                    el.object3D.position.copy(worldPos);
-                    el.object3D.quaternion.copy(worldQuat);
+                    // Unparent the object
+                    this.el.sceneEl.appendChild(el);
                     
                     // Re-enable physics
-                    if (el.body) {
-                        el.body.wakeUp();
-                        
-                        // Apply velocity based on controller movement
-                        const velocity = hand.object3D.userData.velocity || new THREE.Vector3();
+                    el.body.wakeUp();
+                    
+                    // Apply slight force in the direction the hand was moving
+                    const controller = hand.components['oculus-touch-controls'] || 
+                                    hand.components['hand-controls'];
+                    if (controller && controller.velocity) {
+                        const velocity = controller.velocity;
                         el.body.velocity.set(velocity.x * 5, velocity.y * 5, velocity.z * 5);
                     }
                 }
             });
-            
-            // Thumbstick movement component
-            AFRAME.registerComponent('thumbstick-movement', {
-                init: function() {
-                    this.velocity = new THREE.Vector3();
-                    
-                    document.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
-                },
-                
-                onThumbstickMoved: function(evt) {
-                    if (evt.target.id === 'rightHand') {
-                        const camera = this.el.querySelector('[camera]');
-                        const rotation = camera.object3D.rotation.y;
-                        
-                        const moveX = evt.detail.x * 0.05;
-                        const moveZ = evt.detail.y * 0.05;
-                        
-                        this.velocity.x = moveX * Math.cos(rotation) + moveZ * Math.sin(rotation);
-                        this.velocity.z = -moveX * Math.sin(rotation) + moveZ * Math.cos(rotation);
-                    }
-                },
-                
-                tick: function() {
-                    this.el.object3D.position.add(this.velocity);
-                    this.velocity.multiplyScalar(0.85);
-                }
-            });
 
-            // PC Component tracking
+            // PC Component with proper grab handling
             AFRAME.registerComponent('pc-component', {
                 schema: {
                     type: {type: 'string'}
@@ -440,7 +424,7 @@
                     // Listen for grab events
                     this.el.addEventListener('grab-start', (evt) => {
                         console.log('Grab started on', this.data.type);
-                        debugInfo.innerHTML = `Status: Grabbing<br>Component: ${this.data.type}`;
+                        debugInfo.innerHTML = `Grabbing: ${this.data.type}`;
                         this.isGrabbed = true;
                         
                         // Show outline
@@ -460,11 +444,16 @@
                                 indicator.setAttribute('visible', true);
                             }
                         }
+                        
+                        // Disable physics while grabbed
+                        if (this.el.body) {
+                            this.el.body.sleep();
+                        }
                     });
                     
                     this.el.addEventListener('grab-end', (evt) => {
                         console.log('Grab ended on', this.data.type);
-                        debugInfo.innerHTML = `Status: Ready<br>Grabbed: None`;
+                        debugInfo.innerHTML = 'Grab Status: Ready';
                         this.isGrabbed = false;
                         
                         // Hide outline
@@ -484,10 +473,16 @@
                                 indicator.setAttribute('visible', false);
                             }
                         }
+                        
+                        // Re-enable physics
+                        if (this.el.body) {
+                            this.el.body.wakeUp();
+                        }
                     });
                     
                     // Listen for drag-drop events
                     this.el.addEventListener('drag-drop', (evt) => {
+                        console.log('Drag-drop event', evt.detail);
                         const dropTarget = evt.detail.on;
                         if (dropTarget && dropTarget.components['drop-zone']) {
                             this.installComponent();
@@ -497,13 +492,13 @@
                     // Hover feedback
                     this.el.addEventListener('hover-start', () => {
                         if (!this.isGrabbed) {
-                            debugInfo.innerHTML = `Status: Hovering<br>Component: ${this.data.type}`;
+                            debugInfo.innerHTML = `Hovering: ${this.data.type}`;
                         }
                     });
                     
                     this.el.addEventListener('hover-end', () => {
                         if (!this.isGrabbed) {
-                            debugInfo.innerHTML = `Status: Ready<br>Grabbed: None`;
+                            debugInfo.innerHTML = 'Grab Status: Ready';
                         }
                     });
                 },
@@ -512,7 +507,6 @@
                     if (this.isInstalled) return;
                     
                     this.isInstalled = true;
-                    debugInfo.innerHTML = `Status: Installing<br>Component: ${this.data.type}`;
                     
                     // Remove physics and interactivity
                     this.el.removeAttribute('dynamic-body');
@@ -520,7 +514,6 @@
                     this.el.removeAttribute('grabbable');
                     this.el.removeAttribute('draggable');
                     this.el.removeAttribute('droppable');
-                    this.el.removeAttribute('enhanced-grabbable');
                     
                     // Animate to case
                     const casePos = document.querySelector('#pc-case').object3D.position;
@@ -531,6 +524,7 @@
                         easing: 'easeInOutQuad'
                     });
                     
+                    // Scale down and hide
                     this.el.setAttribute('animation__scale', {
                         property: 'scale',
                         to: '0.1 0.1 0.1',
@@ -542,6 +536,7 @@
                         this.el.setAttribute('visible', false);
                     }, 500);
                     
+                    // Update progress
                     updateProgress(this.data.type);
                 }
             });
@@ -558,6 +553,10 @@
                         document.querySelector('#pc-case').setAttribute('material', 'emissive', '#000000');
                         document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', 0);
                     });
+                    
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        console.log('Drop zone received:', evt.detail);
+                    });
                 }
             });
 
@@ -571,7 +570,7 @@
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 
                 if (installedComponents.size === totalComponents) {
-                    debugInfo.innerHTML = '🎉 PC Complete!<br>Press R to reset';
+                    debugInfo.innerHTML = '🎉 PC Complete! Press R to reset';
                     setTimeout(() => {
                         document.querySelector('#pc-case').setAttribute('animation__victory', {
                             property: 'rotation',
@@ -587,7 +586,7 @@
             function resetGame() {
                 installedComponents.clear();
                 document.getElementById('progress-fill').style.width = '0%';
-                debugInfo.innerHTML = 'Status: Ready<br>Grabbed: None';
+                debugInfo.innerHTML = 'Grab Status: Ready';
                 
                 document.querySelectorAll('[pc-component]').forEach(el => {
                     el.setAttribute('visible', true);
@@ -597,13 +596,12 @@
                     el.components['pc-component'].isInstalled = false;
                     el.object3D.position.copy(el.components['pc-component'].initialPosition);
                     
-                    // Re-add all components
+                    // Re-add interactivity
                     el.setAttribute('hoverable', '');
-                    el.setAttribute('grabbable', 'startButtons: gripdown; endButtons: gripup');
-                    el.setAttribute('enhanced-grabbable', '');
+                    el.setAttribute('grabbable', '');
                     el.setAttribute('draggable', '');
                     el.setAttribute('droppable', '');
-                    el.setAttribute('dynamic-body', 'linearDamping: 0.5; angularDamping: 0.5; mass: 1');
+                    el.setAttribute('dynamic-body', 'linearDamping: 0.5; angularDamping: 0.5');
                 });
                 
                 document.querySelector('#pc-case').removeAttribute('animation__victory');
@@ -615,27 +613,6 @@
                     resetGame();
                 }
             });
-
-            // Track controller velocity for physics
-            AFRAME.registerComponent('track-controller-velocity', {
-                init: function() {
-                    this.previousPosition = new THREE.Vector3();
-                    this.velocity = new THREE.Vector3();
-                },
-                
-                tick: function(time, deltaTime) {
-                    if (deltaTime > 0) {
-                        this.velocity.copy(this.el.object3D.position).sub(this.previousPosition);
-                        this.velocity.multiplyScalar(1000 / deltaTime); // Convert to per second
-                        this.el.object3D.userData.velocity = this.velocity;
-                        this.previousPosition.copy(this.el.object3D.position);
-                    }
-                }
-            });
-            
-            // Add velocity tracking to controllers
-            document.querySelector('#leftHand').setAttribute('track-controller-velocity', '');
-            document.querySelector('#rightHand').setAttribute('track-controller-velocity', '');
         </script>
     </a-scene>
 
@@ -644,11 +621,11 @@
         <strong>VR Controls:</strong><br>
         • Right thumbstick - Move around<br>
         • Grip button - Grab/release objects<br>
-        • Objects rotate with your hand<br>
-        • Green outline = grabbed<br><br>
+        • Get close to objects to grab them<br>
+        • Green outline shows when grabbed<br><br>
         <strong>Desktop:</strong><br>
-        • WASD - Move<br>
-        • Mouse click - Grab/drop<br><br>
+        • WASD - Move, Mouse - Look<br>
+        • Click cursor on objects to grab<br><br>
         Press 'R' to reset game
     </div>
 </body>

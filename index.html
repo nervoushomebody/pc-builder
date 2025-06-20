@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="uk"><head>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
     <meta charset="UTF-8">
     <title>VR Збирач ПК</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -54,8 +56,10 @@
             z-index: 10000;
             display: none;
         }
-    </style></head><body>
-    <a-scene physics="gravity: 0">
+    </style>
+</head>
+<body>
+    <a-scene physics>
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -68,7 +72,7 @@
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
             <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable>
+                     hoverable grabbable draggable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
@@ -115,38 +119,28 @@
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Компоненти ПК з фізичними оболонками -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <!-- Об'єкти з kinematic body для руху без фізики падіння -->
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="type: kinematic" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.3" height="0.01" depth="0.2" visible="false"></a-box>
         </a-entity>
         
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
+        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="type: kinematic" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
             <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.1" height="0.01" depth="0.1" visible="false"></a-box>
         </a-entity>
-        
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
+        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="type: kinematic" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
             <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.15" height="0.01" depth="0.05" visible="false"></a-box>
         </a-entity>
-        
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
+        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="type: kinematic" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
             <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.2" height="0.01" depth="0.1" visible="false"></a-box>
         </a-entity>
-        
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
+        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="type: kinematic" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
             <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.25" height="0.01" depth="0.25" visible="false"></a-box>
         </a-entity>
-        
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 0.1; linearDamping: 0.9; angularDamping: 0.9" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
+        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="type: kinematic" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
-            <a-box static-body="shape: box" position="0 0 0" width="0.15" height="0.01" depth="0.1" visible="false"></a-box>
         </a-entity>
 
-        <!-- Освітлення -->
+        <!-- Виправлене освітлення з підвищеною яскравістю -->
         <a-light type="ambient" color="#505050" intensity="0.8"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="1.0"></a-light>
         <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.7"></a-light>
@@ -262,22 +256,9 @@
                 installComponent: function (component, slot, position) {
                     component.classList.add('installed');
                     component.removeAttribute('dynamic-body');
-                    
-                    // Додаємо статичне тіло для кращої фіксації
-                    component.setAttribute('static-body', 'shape: box');
-                    
-                    // Фіксуємо позицію та обертання
+                    component.setAttribute('static-body', '');
                     component.object3D.position.copy(position);
                     component.object3D.rotation.set(0,0,0);
-                    
-                    // Додаємо обмежувальний бокс
-                    const box = component.querySelector('[static-body]');
-                    if (box) {
-                        box.setAttribute('static-body', 'shape: box');
-                    }
-                    
-                    // Фіксуємо компонент до корпусу
-                    component.setAttribute('constraint', 'target: #pc-case; type: lock');
                     
                     this.installedComponents.add(component.id);
                     this.el.sceneEl.emit('component-installed');
@@ -291,36 +272,6 @@
                         setTimeout(() => {
                             completionMessage.style.display = 'block';
                         }, 1000);
-                    }
-                }
-            });
-
-            // Компонент для фіксації
-            AFRAME.registerComponent('constraint', {
-                schema: {
-                    target: {type: 'selector'},
-                    type: {type: 'string', default: 'lock'}
-                },
-                
-                init: function () {
-                    if (this.data.type === 'lock') {
-                        this.el.addEventListener('body-loaded', () => {
-                            const bodyA = this.el.body;
-                            const bodyB = this.data.target.body;
-                            
-                            if (bodyA && bodyB) {
-                                // Створюємо фізичне з'єднання
-                                const constraint = new CANNON.LockConstraint(bodyA, bodyB);
-                                this.el.sceneEl.systems.physics.world.addConstraint(constraint);
-                                this.constraint = constraint;
-                            }
-                        });
-                    }
-                },
-                
-                remove: function () {
-                    if (this.constraint) {
-                        this.el.sceneEl.systems.physics.world.removeConstraint(this.constraint);
                     }
                 }
             });
@@ -339,21 +290,6 @@
 
                     this.el.addEventListener('grab-start', () => this.descriptionText.setAttribute('visible', true));
                     this.el.addEventListener('grab-end', () => this.descriptionText.setAttribute('visible', false));
-                }
-            });
-
-            AFRAME.registerComponent('respawnable', {
-                init: function () { this.initialPosition = this.el.object3D.position.clone(); },
-                tick: function () { if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) this.resetEntity(); },
-                resetEntity: function() {
-                    const el = this.el;
-                    if (el.body) {
-                        el.body.position.copy(this.initialPosition);
-                        el.body.velocity.set(0, 0, 0);
-                        el.body.angularVelocity.set(0, 0, 0);
-                    } else {
-                        el.object3D.position.copy(this.initialPosition);
-                    }
                 }
             });
 
@@ -391,7 +327,7 @@
             AFRAME.registerComponent('toggle-physics-on-grab', {
                 schema: {
                     shape: {type: 'string', default: 'box'},
-                    mass: {type: 'number', default: 0.1},
+                    mass: {type: 'number', default: 2},
                     angularDamping: {type: 'number', default: 0.8},
                     linearDamping: {type: 'number', default: 0.5}
                 },
@@ -407,8 +343,7 @@
             
                     el.addEventListener('grab-end', () => {
                         if (!el.classList.contains('installed')) {
-                            const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
-                            el.setAttribute('dynamic-body', dyn);
+                            el.setAttribute('dynamic-body', 'type: kinematic');
                         }
                     });
                 }
@@ -429,4 +364,6 @@
         <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
         <strong>Мета:</strong> Зібрати ПК, перетягуючи компоненти в корпус!
-    </div></body></html>
+    </div>
+</body>
+</html>

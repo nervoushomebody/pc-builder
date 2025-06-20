@@ -59,7 +59,7 @@
     </style>
 </head>
 <body>
-    <a-scene physics="gravity: -1.5"> <!-- Зменшена гравітація -->
+    <a-scene physics="gravity: -5">
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -72,17 +72,17 @@
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
             <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable
-                     super-hands="colliderEvent: collisions;
-                                colliderEventProperty: els;
-                                colliderEndEvent: collisions;
-                                colliderEndEventProperty: clearedEls;">
+                     hoverable grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
                      physics-collider phase-shift
                      collision-filter="collisionForces: false"
-                     static-body="shape: sphere; sphereRadius: 0.02">
+                     static-body="shape: sphere; sphereRadius: 0.02"
+                     super-hands="colliderEvent: collisions;
+                                  colliderEventProperty: els;
+                                  colliderEndEvent: collisions;
+                                  colliderEndEventProperty: clearedEls;">
             </a-mixin>
         </a-assets>
 
@@ -92,76 +92,70 @@
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
         </div>
-        <div class="completion-message" id="completion-message">PC successfully assembled!</div>
+        <div class="completion-message" id="completion-message">ПК успішно зібрано!</div>
         
         <a-entity id="pc-case-station" position="0 0.8 -1.5" pc-builder>
-            <!-- Base platform -->
-            <a-box position="0 -1 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d" static-body></a-box>
+            <!-- Зменшена підставка -->
+            <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d" static-body></a-box>
             
-            <!-- PC Case -->
+            <!-- Корпус зі статичним тілом -->
             <a-entity id="pc-case" static-body>
-                <a-gltf-model src="#case-model" scale="0.4 0.4 0.4" position="0 0 0"></a-gltf-model>
+                <a-gltf-model src="#case-model" scale="0.2 0.2 0.2" position="0 0 0"></a-gltf-model>
             </a-entity>
             
-            <!-- Components will be placed here automatically -->
+            <!-- Компоненти всередині корпусу -->
             <a-entity id="components-container">
-                <!-- Motherboard -->
+                <!-- Материнська плата -->
                 <a-entity id="motherboard" class="component" data-type="motherboard" 
                           position="0 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Материнська плата - основна плата системи"
-                          snap-zone="snapTo: 0 0.1 0; snapDistance: 0.15">
+                          side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25">
                     <a-gltf-model src="#motherboard-model"></a-gltf-model>
                 </a-entity>
                 
-                <!-- CPU -->
+                <!-- Процесор -->
                 <a-entity id="cpu" class="component" data-type="cpu" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Процесор - мозок комп'ютера"
-                          snap-zone="snapTo: 0 0.15 0; snapDistance: 0.1">
+                          position="0.1 0.15 -0.1" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0">
                     <a-gltf-model src="#cpu-model"></a-gltf-model>
                 </a-entity>
                 
-                <!-- RAM -->
+                <!-- Оперативна пам'ять -->
                 <a-entity id="ram" class="component" data-type="ram" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Оперативна пам'ять - тимчасова пам'ять"
-                          snap-zone="snapTo: 0 0.15 0.05; snapDistance: 0.1">
+                          position="-0.05 0.15 0.1" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0">
                     <a-gltf-model src="#ram-model"></a-gltf-model>
                 </a-entity>
                 
-                <!-- GPU -->
+                <!-- Відеокарта -->
                 <a-entity id="gpu" class="component" data-type="gpu" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Відеокарта - обробка графіки"
-                          snap-zone="snapTo: 0 0.1 -0.1; snapDistance: 0.15">
+                          position="0 0.1 -0.2" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2">
                     <a-gltf-model src="#gpu-model"></a-gltf-model>
                 </a-entity>
                 
-                <!-- PSU -->
+                <!-- Блок живлення -->
                 <a-entity id="psu" class="component" data-type="psu" 
-                          position="-0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Блок живлення - джерело енергії"
-                          snap-zone="snapTo: -0.2 0.1 0; snapDistance: 0.15">
+                          position="-0.2 0.1 -0.1" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0">
                     <a-gltf-model src="#psu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- SSD -->
                 <a-entity id="ssd" class="component" data-type="ssd" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: SSD - сховище даних"
-                          snap-zone="snapTo: 0.15 0.1 0; snapDistance: 0.1">
+                          position="0.15 0.1 0.1" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: SSD накопичувач.; offset: 0.15 0 0">
                     <a-gltf-model src="#ssd-model"></a-gltf-model>
                 </a-entity>
             </a-entity>
             
-            <!-- Invisible platform -->
+            <!-- Виправлена невидима платформа -->
             <a-box position="0 0.25 0" width="0.8" height="0.05" depth="0.8" static-body visible="false"></a-box>
             
-            <!-- Light inside the case -->
+            <!-- Світло всередині корпуса з меншою інтенсивністю -->
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Lighting -->
+        <!-- Виправлене освітлення -->
         <a-light type="ambient" color="#505050" intensity="0.6"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.8"></a-light>
         <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.5"></a-light>
@@ -187,55 +181,87 @@
         </a-entity>
 
         <script>
-            // Progress tracking
+            // Покажчик прогресу та повідомлення
             const progressFill = document.getElementById('progress-fill');
             const completionMessage = document.getElementById('completion-message');
             let installedComponents = 0;
             const totalComponents = 6;
 
-            // Make components interactive and movable
+            // Ініціалізація інтерактивних компонентів
             document.querySelector('a-scene').addEventListener('loaded', function() {
                 const components = document.querySelectorAll('.component');
                 components.forEach(comp => {
                     comp.setAttribute('mixin', 'interactive');
-                    comp.setAttribute('dynamic-body', 'shape: box; mass: 0.5; linearDamping: 0.5; angularDamping: 0.7');
+                    comp.setAttribute('dynamic-body', 'shape: box; mass: 1');
+                    
+                    // Зберігаємо початкову позицію для кожного компонента
+                    comp.setAttribute('original-position', comp.getAttribute('position'));
                 });
+                
+                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
+                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
             });
 
-            // Snap zone component for easy placement
-            AFRAME.registerComponent('snap-zone', {
+            // Компонент для магнітного притягування
+            AFRAME.registerComponent('magnet-attraction', {
                 schema: {
-                    snapTo: {type: 'vec3', default: {x: 0, y: 0, z: 0}},
-                    snapDistance: {type: 'number', default: 0.2}
+                    hand: {type: 'string', default: 'left'},
+                    strength: {type: 'number', default: 5},
+                    maxDistance: {type: 'number', default: 2}
                 },
-                init: function() {
-                    this.originalPos = new THREE.Vector3(
-                        this.el.getAttribute('position').x,
-                        this.el.getAttribute('position').y,
-                        this.el.getAttribute('position').z
-                    );
+                
+                init: function () {
+                    this.attractedObjects = [];
+                    this.raycaster = new THREE.Raycaster();
+                    this.direction = new THREE.Vector3();
+                    this.triggerPressed = false;
+                    
+                    this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
+                    this.el.addEventListener('triggerup', () => {
+                        this.triggerPressed = false;
+                        this.attractedObjects = [];
+                    });
                 },
-                tick: function() {
-                    if (this.el.is('grabbed') || this.el.classList.contains('installed')) return;
+                
+                tick: function () {
+                    if (!this.triggerPressed) return;
                     
-                    const currentPos = this.el.object3D.position;
-                    const distance = currentPos.distanceTo(this.originalPos);
+                    const handPosition = new THREE.Vector3();
+                    this.el.object3D.getWorldPosition(handPosition);
+                    this.el.object3D.getWorldDirection(this.direction);
+                    this.raycaster.set(handPosition, this.direction);
                     
-                    if (distance < this.data.snapDistance) {
-                        this.el.setAttribute('position', this.data.snapTo);
-                        this.el.body.velocity.set(0, 0, 0);
-                        this.el.body.angularVelocity.set(0, 0, 0);
+                    const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
+                    const interactiveObjects = interactiveEls.map(el => el.object3D);
+                    const intersects = this.raycaster.intersectObjects(interactiveObjects, true);
+                    
+                    if (intersects.length > 0) {
+                        const target = intersects[0].object.el;
+                        if (!this.attractedObjects.includes(target) && 
+                            target.components['dynamic-body'] && 
+                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
+                            
+                            this.attractedObjects.push(target);
+                        }
                     }
+                    
+                    this.attractedObjects.forEach(target => {
+                        if (!target || !target.body || target.is('grabbed')) return;
+                        
+                        const targetPos = new THREE.Vector3();
+                        target.object3D.getWorldPosition(targetPos);
+                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
+                        
+                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
+                    });
                 }
             });
 
-            // PC Builder component
+            // Компонент для збірки ПК
             AFRAME.registerComponent('pc-builder', {
                 init: function () {
                     this.installedComponents = new Set();
                     this.el.sceneEl.addEventListener('component-installed', this.updateProgress.bind(this));
-                    
-                    // Set up collision checking
                     this.tick = AFRAME.utils.throttleTick(this.checkComponents, 100, this);
                 },
 
@@ -245,12 +271,18 @@
                     components.forEach(comp => {
                         if (comp.is('grabbed')) return;
                         
-                        // Check if component is near its original position (inside case)
-                        const currentPos = comp.object3D.position;
-                        const originalPos = new THREE.Vector3();
-                        comp.object3D.parent.worldToLocal(originalPos.copy(comp.object3D.getWorldPosition(new THREE.Vector3())));
+                        // Отримуємо початкову позицію компонента
+                        const originalPos = comp.getAttribute('original-position');
+                        const currentPos = comp.getAttribute('position');
                         
-                        if (currentPos.distanceTo(originalPos) < 0.15) {
+                        // Перевіряємо, чи компонент повернувся на своє місце
+                        const distance = Math.sqrt(
+                            Math.pow(currentPos.x - originalPos.x, 2) +
+                            Math.pow(currentPos.y - originalPos.y, 2) +
+                            Math.pow(currentPos.z - originalPos.z, 2)
+                        );
+                        
+                        if (distance < 0.1) {
                             this.installComponent(comp);
                         }
                     });
@@ -261,13 +293,10 @@
                     component.removeAttribute('dynamic-body');
                     component.setAttribute('static-body', '');
                     
-                    // Reset to original position/rotation
-                    component.object3D.position.set(
-                        component.getAttribute('position').x,
-                        component.getAttribute('position').y,
-                        component.getAttribute('position').z
-                    );
-                    component.object3D.rotation.set(0, 0, 0);
+                    // Повертаємо компонент на початкову позицію
+                    const originalPos = component.getAttribute('original-position');
+                    component.setAttribute('position', originalPos);
+                    component.setAttribute('rotation', '0 0 0');
                     
                     this.installedComponents.add(component.id);
                     this.el.sceneEl.emit('component-installed');
@@ -285,7 +314,7 @@
                 }
             });
 
-            // Component description display
+            // Компонент для відображення опису
             AFRAME.registerComponent('side-description', {
                 schema: {
                     description: {type: 'string'},
@@ -295,7 +324,7 @@
                     this.descriptionText = document.createElement('a-text');
                     this.descriptionText.setAttribute('value', this.data.description);
                     this.descriptionText.setAttribute('align', 'left');
-                    this.descriptionText.setAttribute('position', '0.1 0.2 0');
+                    this.descriptionText.setAttribute('position', this.data.offset);
                     this.descriptionText.setAttribute('width', '2');
                     this.descriptionText.setAttribute('look-at', '#camera');
                     this.descriptionText.setAttribute('visible', 'false');
@@ -310,9 +339,10 @@
                 }
             });
 
-            // Respawn components if they fall
+            // Компонент для автоматичного повернення предметів
             AFRAME.registerComponent('respawnable', {
                 init: function() {
+                    // Зберігаємо початкову позицію
                     this.originalPosition = new THREE.Vector3(
                         this.el.getAttribute('position').x,
                         this.el.getAttribute('position').y,
@@ -320,6 +350,7 @@
                     );
                 },
                 tick: function() {
+                    // Якщо предмет впав нижче рівня підлоги і не в руці
                     if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) {
                         this.resetEntity();
                     }
@@ -327,30 +358,30 @@
                 resetEntity: function() {
                     const el = this.el;
                     if (el.body) {
+                        // Якщо є фізичне тіло
                         el.body.position.copy(this.originalPosition);
                         el.body.velocity.set(0, 0, 0);
                         el.body.angularVelocity.set(0, 0, 0);
                     } else {
+                        // Якщо фізичного тіла немає
                         el.object3D.position.copy(this.originalPosition);
                     }
                 }
             });
 
-            // Phase shift for better grabbing
+            // Компонент для кращого захоплення предметів
             AFRAME.registerComponent('phase-shift', {
                 init: function() {
                     this.el.addEventListener('grab-start', () => {
                         this.el.setAttribute('collision-filter', {collisionForces: false});
-                        this.el.setAttribute('dynamic-body', 'mass: 0.1'); // Легше рухати при триманні
                     });
                     this.el.addEventListener('grab-end', () => {
                         this.el.setAttribute('collision-filter', {collisionForces: true});
-                        this.el.setAttribute('dynamic-body', 'mass: 0.5');
                     });
                 }
             });
             
-            // Hover effects
+            // Компонент для ефектів при наведенні
             AFRAME.registerComponent('hoverable', {
                 init: function() {
                     this.el.addEventListener('hover-start', (evt) => {
@@ -382,16 +413,17 @@
 
     <div class="info">
         <strong>Керування:</strong><br>
-        Корпус ПК перед вами. Компоненти розміщені всередині.<br><br>
+        Корпус ПК перед вами. Компоненти розташовані всередині нього.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Брати:</strong> Протягніть руку та натисніть Trigger/Grip.<br>
-         - <strong>Літати/Рухатись:</strong> Лівий джойстик для плавного руху.<br>
-         - <strong>Телепортація:</strong> Натисніть trigger на контролері.<br>
-         - <strong>Обертання:</strong> Правий джойстик.<br>
-         - <strong>Інформація:</strong> Опис з'являється при триманні компонента.<br><br>
-        <strong>Десктоп:</strong> WASD для руху, миша для огляду.
+         - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
+         - <strong>Політ/Рух:</strong> Лівий джойстик для плавного пересування в напрямку погляду.<br>
+         - <strong>Телепортація:</strong> Натисніть тригер на лазерному контролері.<br>
+         - <strong>Притягування:</strong> Натисніть тригер на вільній руці у бік предмета.<br>
+         - <strong>Поворот:</strong> Правий джойстик.<br>
+         - <strong>Інфо:</strong> При захопленні предмета збоку з'явиться опис.<br><br>
+        <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Мета:</strong> Виймайте та встановлюйте компоненти ПК назад!
+        <strong>Мета:</strong> Виймайте та встановлюйте компоненти ПК назад у корпус!
     </div>
 </body>
 </html>

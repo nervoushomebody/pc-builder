@@ -59,7 +59,7 @@
     </style>
 </head>
 <body>
-    <a-scene physics="gravity: -5">
+    <a-scene physics="gravity: -9.8; restitution: 0.2">
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -108,42 +108,42 @@
                 <!-- Motherboard -->
                 <a-entity id="motherboard" class="component" data-type="motherboard" 
                           position="0 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Motherboard - main system board; offset: 0 0 0">
+                          side-description="description: Материнська плата - основна плата системи; offset: 0 0.1 0">
                     <a-gltf-model src="#motherboard-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- CPU -->
                 <a-entity id="cpu" class="component" data-type="cpu" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: CPU - computer's brain; offset: 0 0 0">
+                          position="0 0.15 0.05" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Процесор - мозок комп'ютера; offset: 0 0.05 0">
                     <a-gltf-model src="#cpu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- RAM -->
                 <a-entity id="ram" class="component" data-type="ram" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: RAM - temporary memory; offset: 0 0 0">
+                          position="0 0.15 -0.05" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Оперативна пам'ять - тимчасова пам'ять; offset: 0 0.05 0">
                     <a-gltf-model src="#ram-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- GPU -->
                 <a-entity id="gpu" class="component" data-type="gpu" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: GPU - graphics processing; offset: 0 0 0">
+                          position="0.1 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Відеокарта - обробка графіки; offset: 0.1 0.1 0">
                     <a-gltf-model src="#gpu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- PSU -->
                 <a-entity id="psu" class="component" data-type="psu" 
-                          position="-0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: PSU - power supply; offset: 0 0 0">
+                          position="-0.1 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Блок живлення - джерело енергії; offset: -0.1 0.1 0">
                     <a-gltf-model src="#psu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- SSD -->
                 <a-entity id="ssd" class="component" data-type="ssd" 
-                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: SSD - storage; offset: 0 0 0">
+                          position="0 0.05 0.1" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: SSD - накопичувач даних; offset: 0 0.05 0.1">
                     <a-gltf-model src="#ssd-model"></a-gltf-model>
                 </a-entity>
             </a-entity>
@@ -192,19 +192,24 @@
                 const components = document.querySelectorAll('.component');
                 components.forEach(comp => {
                     comp.setAttribute('mixin', 'interactive');
-                    comp.setAttribute('dynamic-body', 'shape: box; mass: 1');
+                    comp.setAttribute('dynamic-body', 'shape: box; mass: 0.5; linearDamping: 0.5; angularDamping: 0.5');
+                    
+                    // Store original position for respawn
+                    const pos = comp.getAttribute('position');
+                    comp.setAttribute('original-position', {x: pos.x, y: pos.y, z: pos.z});
                 });
                 
-                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
-                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
+                document.querySelector('#leftHand').setAttribute('magnet-attraction', 'hand: left');
+                document.querySelector('#rightHand').setAttribute('magnet-attraction', 'hand: right');
             });
 
-            // Magnet attraction component
+            // Magnet attraction component - improved version
             AFRAME.registerComponent('magnet-attraction', {
                 schema: {
                     hand: {type: 'string', default: 'left'},
-                    strength: {type: 'number', default: 5},
-                    maxDistance: {type: 'number', default: 2}
+                    strength: {type: 'number', default: 15},
+                    maxDistance: {type: 'number', default: 1.5},
+                    pullSpeed: {type: 'number', default: 5}
                 },
                 
                 init: function () {
@@ -212,6 +217,7 @@
                     this.raycaster = new THREE.Raycaster();
                     this.direction = new THREE.Vector3();
                     this.triggerPressed = false;
+                    this.handPosition = new THREE.Vector3();
                     
                     this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
                     this.el.addEventListener('triggerup', () => {
@@ -223,10 +229,9 @@
                 tick: function () {
                     if (!this.triggerPressed) return;
                     
-                    const handPosition = new THREE.Vector3();
-                    this.el.object3D.getWorldPosition(handPosition);
+                    this.el.object3D.getWorldPosition(this.handPosition);
                     this.el.object3D.getWorldDirection(this.direction);
-                    this.raycaster.set(handPosition, this.direction);
+                    this.raycaster.set(this.handPosition, this.direction);
                     
                     const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
                     const interactiveObjects = interactiveEls.map(el => el.object3D);
@@ -236,7 +241,7 @@
                         const target = intersects[0].object.el;
                         if (!this.attractedObjects.includes(target) && 
                             target.components['dynamic-body'] && 
-                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
+                            target.object3D.position.distanceTo(this.handPosition) < this.data.maxDistance) {
                             
                             this.attractedObjects.push(target);
                         }
@@ -247,35 +252,66 @@
                         
                         const targetPos = new THREE.Vector3();
                         target.object3D.getWorldPosition(targetPos);
-                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
                         
-                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
+                        // Calculate direction to hand
+                        const direction = new THREE.Vector3().subVectors(this.handPosition, targetPos);
+                        const distance = direction.length();
+                        
+                        if (distance > this.data.maxDistance) {
+                            // Remove if too far
+                            this.attractedObjects = this.attractedObjects.filter(obj => obj !== target);
+                            return;
+                        }
+                        
+                        // Normalize direction and apply force
+                        direction.normalize();
+                        
+                        // Apply force based on distance (stronger when closer)
+                        const forceMagnitude = this.data.strength * (1 - distance / this.data.maxDistance);
+                        const force = direction.multiplyScalar(forceMagnitude);
+                        
+                        // Apply force to physics body
+                        target.body.velocity.set(
+                            force.x * this.data.pullSpeed,
+                            force.y * this.data.pullSpeed,
+                            force.z * this.data.pullSpeed
+                        );
                     });
                 }
             });
 
-            // PC Builder component
+            // PC Builder component with improved installation/removal
             AFRAME.registerComponent('pc-builder', {
                 init: function () {
                     this.installedComponents = new Set();
                     this.el.sceneEl.addEventListener('component-installed', this.updateProgress.bind(this));
+                    this.el.sceneEl.addEventListener('component-removed', this.updateProgress.bind(this));
                     
                     // Set up collision checking
                     this.tick = AFRAME.utils.throttleTick(this.checkComponents, 100, this);
                 },
 
                 checkComponents: function() {
-                    const components = document.querySelectorAll('.component:not(.installed)');
+                    const components = document.querySelectorAll('.component');
                     
                     components.forEach(comp => {
-                        if (comp.is('grabbed')) return;
+                        if (comp.is('grabbed')) {
+                            // If component is grabbed and was installed, consider it removed
+                            if (comp.classList.contains('installed')) {
+                                this.removeComponent(comp);
+                            }
+                            return;
+                        }
                         
                         // Check if component is near its original position (inside case)
                         const currentPos = comp.object3D.position;
-                        const originalPos = new THREE.Vector3();
-                        comp.object3D.parent.worldToLocal(originalPos.copy(comp.object3D.getWorldPosition(new THREE.Vector3())));
+                        const originalPos = new THREE.Vector3(
+                            comp.getAttribute('original-position').x,
+                            comp.getAttribute('original-position').y,
+                            comp.getAttribute('original-position').z
+                        );
                         
-                        if (currentPos.distanceTo(originalPos) < 0.1) {
+                        if (currentPos.distanceTo(originalPos) < 0.15 && !comp.classList.contains('installed')) {
                             this.installComponent(comp);
                         }
                     });
@@ -284,18 +320,37 @@
                 installComponent: function(component) {
                     component.classList.add('installed');
                     component.removeAttribute('dynamic-body');
-                    component.setAttribute('static-body', '');
+                    component.setAttribute('static-body', 'shape: box');
                     
                     // Reset to original position/rotation
                     component.object3D.position.set(
-                        component.getAttribute('position').x,
-                        component.getAttribute('position').y,
-                        component.getAttribute('position').z
+                        component.getAttribute('original-position').x,
+                        component.getAttribute('original-position').y,
+                        component.getAttribute('original-position').z
                     );
                     component.object3D.rotation.set(0, 0, 0);
                     
                     this.installedComponents.add(component.id);
                     this.el.sceneEl.emit('component-installed');
+                    
+                    // Add slight animation for feedback
+                    component.setAttribute('animation', {
+                        property: 'scale',
+                        to: '0.32 0.32 0.32',
+                        dur: 200,
+                        easing: 'easeOutElastic',
+                        startEvents: 'installed'
+                    });
+                    component.emit('installed');
+                },
+                
+                removeComponent: function(component) {
+                    component.classList.remove('installed');
+                    component.removeAttribute('static-body');
+                    component.setAttribute('dynamic-body', 'shape: box; mass: 0.5');
+                    
+                    this.installedComponents.delete(component.id);
+                    this.el.sceneEl.emit('component-removed');
                 },
 
                 updateProgress: function() {
@@ -305,6 +360,9 @@
                     if (installedComponents >= totalComponents) {
                         setTimeout(() => {
                             completionMessage.style.display = 'block';
+                            setTimeout(() => {
+                                completionMessage.style.display = 'none';
+                            }, 3000);
                         }, 1000);
                     }
                 }
@@ -324,6 +382,7 @@
                     this.descriptionText.setAttribute('width', '2');
                     this.descriptionText.setAttribute('look-at', '#camera');
                     this.descriptionText.setAttribute('visible', 'false');
+                    this.descriptionText.setAttribute('color', '#FFFF00');
                     this.el.appendChild(this.descriptionText);
 
                     this.el.addEventListener('grab-start', () => {
@@ -345,7 +404,7 @@
                     );
                 },
                 tick: function() {
-                    if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) {
+                    if (this.el.object3D.position.y < -2 && !this.el.is('grabbed')) {
                         this.resetEntity();
                     }
                 },
@@ -358,6 +417,7 @@
                     } else {
                         el.object3D.position.copy(this.originalPosition);
                     }
+                    el.object3D.rotation.set(0, 0, 0);
                 }
             });
 
@@ -404,18 +464,18 @@
     </a-scene>
 
     <div class="info">
-        <strong>Controls:</strong><br>
-        PC case is in front of you. Components are placed inside it.<br><br>
+        <strong>Керування:</strong><br>
+        Корпус ПК знаходиться перед вами. Компоненти розміщені всередині нього.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Grab:</strong> Extend hand and press Trigger/Grip.<br>
-         - <strong>Fly/Move:</strong> Left thumbstick for smooth movement.<br>
-         - <strong>Teleport:</strong> Press trigger on laser controller.<br>
-         - <strong>Attract:</strong> Press trigger while pointing at object.<br>
-         - <strong>Rotate:</strong> Right thumbstick.<br>
-         - <strong>Info:</strong> Description appears when holding component.<br><br>
-        <strong>Desktop:</strong> WASD to move, mouse to look.
+         - <strong>Взяти:</strong> Протягніть руку та натисніть Trigger/Grip.<br>
+         - <strong>Рух:</strong> Лівий джойстик для плавного переміщення.<br>
+         - <strong>Телепортація:</strong> Натисніть trigger на контролері з лазером.<br>
+         - <strong>Притягнути:</strong> Натисніть trigger, наводячи на об'єкт.<br>
+         - <strong>Обертання:</strong> Правий джойстик.<br>
+         - <strong>Інформація:</strong> Опис з'являється при утриманні компонента.<br><br>
+        <strong>Десктоп:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Goal:</strong> Remove and reinstall PC components!
+        <strong>Мета:</strong> Виймайте та встановлюйте компоненти ПК!
     </div>
 </body>
 </html>

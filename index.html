@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="uk"><head>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
     <meta charset="UTF-8">
     <title>VR Збирач ПК</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -54,7 +56,9 @@
             z-index: 10000;
             display: none;
         }
-    </style></head><body>
+    </style>
+</head>
+<body>
     <a-scene physics="gravity: -5">
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
@@ -115,24 +119,24 @@
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Виправлення для материнської плати: змінено тип фізичного тіла -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: box; mass: 2" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <!-- Компоненти вже розміщені в кейсі, але не встановлені -->
+        <a-entity id="motherboard" mixin="interactive" position="0 0.1 0" static-body side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
         
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
+        <a-entity id="cpu" mixin="interactive" position="0.1 0.15 -0.1" static-body side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
             <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
+        <a-entity id="ram" mixin="interactive" position="-0.05 0.15 0.1" static-body side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
             <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 3" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
+        <a-entity id="gpu" mixin="interactive" position="0 0.1 -0.2" static-body side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
             <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 2" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
+        <a-entity id="psu" mixin="interactive" position="-0.2 0.1 -0.1" static-body side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
             <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
+        <a-entity id="ssd" mixin="interactive" position="0.15 0.1 0.1" static-body side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
         </a-entity>
 
@@ -230,12 +234,25 @@
                     this.slots = Array.from(this.el.querySelectorAll('.slot'));
                     this.el.sceneEl.addEventListener('component-installed', this.updateProgress.bind(this));
                     this.tick = AFRAME.utils.throttleTick(this.checkCollisions, 100, this);
+                    
+                    // Додаємо клас "installed" до всіх компонентів, які вже на місці
+                    const components = ['motherboard', 'cpu', 'ram', 'gpu', 'psu', 'ssd'];
+                    components.forEach(compId => {
+                        const comp = document.getElementById(compId);
+                        if (comp) {
+                            comp.classList.add('installed');
+                            this.installedComponents.add(compId);
+                        }
+                    });
+                    
+                    // Оновлюємо прогрес бар
+                    this.updateProgress();
                 },
 
                 checkCollisions: function () {
                     this.slots.forEach(slot => {
                         const slotType = slot.getAttribute('data-accepts');
-                        const component = document.querySelector([data-type="${slotType}"]:not(.installed));
+                        const component = document.querySelector(`[data-type="${slotType}"]:not(.installed)`);
                         if (!component || component.is('grabbed')) return;
 
                         const slotPos = new THREE.Vector3();
@@ -262,7 +279,7 @@
 
                 updateProgress: function () {
                     installedComponents = this.installedComponents.size;
-                    progressFill.style.width = ${(installedComponents / totalComponents) * 100}%;
+                    progressFill.style.width = `${(installedComponents / totalComponents) * 100}%`;
 
                     if (installedComponents >= totalComponents) {
                         setTimeout(() => {
@@ -290,8 +307,12 @@
             });
 
             AFRAME.registerComponent('respawnable', {
-                init: function () { this.initialPosition = this.el.object3D.position.clone(); },
-                tick: function () { if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) this.resetEntity(); },
+                init: function () { 
+                    this.initialPosition = this.el.object3D.position.clone(); 
+                },
+                tick: function () { 
+                    if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) this.resetEntity(); 
+                },
                 resetEntity: function() {
                     const el = this.el;
                     if (el.body) {
@@ -333,11 +354,29 @@
             document.querySelector('a-scene').addEventListener('loaded', () => {
                 document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
                 document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
+                
+                // Ініціалізуємо всі компоненти як встановлені, але дозволяємо їх виймати
+                const components = ['motherboard', 'cpu', 'ram', 'gpu', 'psu', 'ssd'];
+                components.forEach(compId => {
+                    const comp = document.getElementById(compId);
+                    if (comp) {
+                        comp.addEventListener('grab-start', function() {
+                            this.classList.remove('installed');
+                            this.removeAttribute('static-body');
+                            this.setAttribute('dynamic-body', 'shape: box; mass: 2');
+                            
+                            // Оновлюємо прогрес бар
+                            const pcBuilder = document.querySelector('[pc-builder]').components['pc-builder'];
+                            pcBuilder.installedComponents.delete(compId);
+                            pcBuilder.updateProgress();
+                        });
+                    }
+                });
             });
             
             AFRAME.registerComponent('toggle-physics-on-grab', {
                 schema: {
-                    shape: {type: 'string', default: 'box'}, // Змінено на box для всіх
+                    shape: {type: 'string', default: 'box'},
                     mass: {type: 'number', default: 2},
                     angularDamping: {type: 'number', default: 0.8},
                     linearDamping: {type: 'number', default: 0.5}
@@ -356,7 +395,7 @@
                     el.addEventListener('grab-end', () => {
                         // Якщо компонент ще не встановлений, додати фізику назад
                         if (!el.classList.contains('installed')) {
-                            const dyn = shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping};
+                            const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
                             el.setAttribute('dynamic-body', dyn);
                         }
                     });
@@ -367,7 +406,7 @@
 
     <div class="info">
         <strong>Керування:</strong><br>
-        Корпус ПК перед вами. Компоненти розташовані навколо вас.<br><br>
+        Корпус ПК перед вами. Компоненти вже розміщені в кейсі, але їх можна виймати.<br><br>
         <strong>VR:</strong><br>
          - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
          - <strong>Політ/Рух:</strong> Лівий джойстик для плавного пересування в напрямку погляду.<br>
@@ -377,5 +416,7 @@
          - <strong>Інфо:</strong> При захопленні предмета збоку з'явиться опис.<br><br>
         <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Мета:</strong> Зібрати ПК, перетягуючи компоненти в корпус!
-    </div></body></html>
+        <strong>Мета:</strong> Вийміть і знову встановіть компоненти ПК в корпус!
+    </div>
+</body>
+</html>

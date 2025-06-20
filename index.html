@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
+<!DOCTYPE html><html lang="uk"><head>
     <meta charset="UTF-8">
     <title>VR Збирач ПК</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -56,10 +54,8 @@
             z-index: 10000;
             display: none;
         }
-    </style>
-</head>
-<body>
-    <a-scene physics="gravity: 0">
+    </style></head><body>
+    <a-scene physics="gravity: -5">
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -72,11 +68,13 @@
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
             <a-mixin id="interactive"
-                     hoverable grabbable draggable>
+                     hoverable grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
-                     collision-filter="collisionForces: false; group: hands; mask: none"
+                     physics-collider phase-shift
+                     collision-filter="collisionForces: false"
+                     static-body="shape: sphere; sphereRadius: 0.02"
                      super-hands="colliderEvent: collisions;
                                   colliderEventProperty: els;
                                   colliderEndEvent: collisions;
@@ -85,7 +83,7 @@
         </a-assets>
 
         <a-sky src="#sky"></a-sky>
-        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" visible="false"></a-plane>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
         
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
@@ -94,10 +92,10 @@
         
         <a-entity id="pc-case-station" position="0 0.8 -1.5" pc-builder>
             <!-- Зменшена підставка -->
-            <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d"></a-box>
+            <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d" static-body></a-box>
             
-            <!-- Корпус без фізики -->
-            <a-entity id="pc-case">
+            <!-- Корпус зі статичним тілом -->
+            <a-entity id="pc-case" static-body>
                 <a-gltf-model src="#case-model" scale="0.5 0.5 0.5" position="0 0 0"></a-gltf-model>
             </a-entity>
             
@@ -110,35 +108,35 @@
                 <a-entity class="slot" data-accepts="ssd" position="0.15 0.1 0.1" rotation="0 0 0" scale="0.225 0.0925 0.175" visible="false"></a-entity>
             </a-entity>
             
-            <!-- Невидима платформа -->
-            <a-box position="0 0.25 0" width="0.8" height="0.05" depth="0.8" visible="false"></a-box>
+            <!-- Виправлена невидима платформа -->
+            <a-box position="0 0.25 0" width="0.8" height="0.05" depth="0.8" static-body visible="false"></a-box>
             
-            <!-- Світло всередині корпуса -->
+            <!-- Світло всередині корпуса з меншою інтенсивністю -->
             <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
 
-        <!-- Компоненти ПК без фізики -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
+        <!-- Виправлення для материнської плати: змінено тип фізичного тіла -->
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"  dynamic-body="shape: box; mass: 2" side-description="description: Материнська плата - основа системи.; offset: 0 0.1 -0.25" data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
         
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
+        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1" side-description="description: Процесор (CPU) - мозок комп'ютера.; offset: 0.15 0 0" data-type="cpu">
             <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
+        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: Оперативна пам'ять (RAM).; offset: 0.16 0 0" data-type="ram">
             <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
+        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 3" side-description="description: Відеокарта (GPU).; offset: 0 0.05 0.2" data-type="gpu">
             <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
+        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 2" side-description="description: Блок живлення (PSU).; offset: 0.18 0.05 0" data-type="psu">
             <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
+        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: SSD накопичувач.; offset: 0.15 0 0" data-type="ssd">
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.5 0.5 0.5"></a-gltf-model>
         </a-entity>
 
-        <!-- Освітлення -->
+        <!-- Виправлене освітлення з підвищеною яскравістю -->
         <a-light type="ambient" color="#505050" intensity="0.8"></a-light>
         <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="1.0"></a-light>
         <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.7"></a-light>
@@ -170,6 +168,61 @@
             let installedComponents = 0;
             const totalComponents = 6;
 
+            // Компонент для магнітного притягування
+            AFRAME.registerComponent('magnet-attraction', {
+                schema: {
+                    hand: {type: 'string', default: 'left'},
+                    strength: {type: 'number', default: 5},
+                    maxDistance: {type: 'number', default: 2}
+                },
+                
+                init: function () {
+                    this.attractedObjects = [];
+                    this.raycaster = new THREE.Raycaster();
+                    this.direction = new THREE.Vector3();
+                    this.triggerPressed = false;
+                    
+                    this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
+                    this.el.addEventListener('triggerup', () => {
+                        this.triggerPressed = false;
+                        this.attractedObjects = [];
+                    });
+                },
+                
+                tick: function () {
+                    if (!this.triggerPressed) return;
+                    
+                    const handPosition = new THREE.Vector3();
+                    this.el.object3D.getWorldPosition(handPosition);
+                    this.el.object3D.getWorldDirection(this.direction);
+                    this.raycaster.set(handPosition, this.direction);
+                    
+                    const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
+                    const interactiveObjects = interactiveEls.map(el => el.object3D);
+                    const intersects = this.raycaster.intersectObjects(interactiveObjects, true);
+                    
+                    if (intersects.length > 0) {
+                        const target = intersects[0].object.el;
+                        if (!this.attractedObjects.includes(target) && 
+                            target.components['dynamic-body'] && 
+                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
+                            
+                            this.attractedObjects.push(target);
+                        }
+                    }
+                    
+                    this.attractedObjects.forEach(target => {
+                        if (!target || !target.body || target.is('grabbed')) return;
+                        
+                        const targetPos = new THREE.Vector3();
+                        target.object3D.getWorldPosition(targetPos);
+                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
+                        
+                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
+                    });
+                }
+            });
+
             // Компонент для збірки ПК
             AFRAME.registerComponent('pc-builder', {
                 init: function () {
@@ -198,6 +251,8 @@
                 
                 installComponent: function (component, slot, position) {
                     component.classList.add('installed');
+                    component.removeAttribute('dynamic-body');
+                    component.setAttribute('static-body', '');
                     component.object3D.position.copy(position);
                     component.object3D.rotation.set(0,0,0);
                     
@@ -233,6 +288,28 @@
                     this.el.addEventListener('grab-end', () => this.descriptionText.setAttribute('visible', false));
                 }
             });
+
+            AFRAME.registerComponent('respawnable', {
+                init: function () { this.initialPosition = this.el.object3D.position.clone(); },
+                tick: function () { if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) this.resetEntity(); },
+                resetEntity: function() {
+                    const el = this.el;
+                    if (el.body) {
+                        el.body.position.copy(this.initialPosition);
+                        el.body.velocity.set(0, 0, 0);
+                        el.body.angularVelocity.set(0, 0, 0);
+                    } else {
+                        el.object3D.position.copy(this.initialPosition);
+                    }
+                }
+            });
+
+            AFRAME.registerComponent('phase-shift', {
+                init: function () {
+                    this.el.addEventListener('grab-start', () => this.el.setAttribute('collision-filter', {collisionForces: false}));
+                    this.el.addEventListener('grab-end', () => this.el.setAttribute('collision-filter', {collisionForces: true}));
+                }
+            });
             
             AFRAME.registerComponent('hoverable', {
               init: function () {
@@ -253,28 +330,35 @@
               }
             });
 
-            // Спрощений компонент для переміщення об'єктів
-            AFRAME.registerComponent('grabbable', {
+            document.querySelector('a-scene').addEventListener('loaded', () => {
+                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
+                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
+            });
+            
+            AFRAME.registerComponent('toggle-physics-on-grab', {
+                schema: {
+                    shape: {type: 'string', default: 'box'},
+                    mass: {type: 'number', default: 2},
+                    angularDamping: {type: 'number', default: 0.8},
+                    linearDamping: {type: 'number', default: 0.5}
+                },
                 init: function () {
-                    this.grabbed = false;
-                    this.originalParent = this.el.parentNode;
+                    const data = this.data;
+                    const el = this.el;
+            
+                    this.originalPosition = el.object3D.position.clone();
                     
-                    this.el.addEventListener('grab-start', (evt) => {
-                        this.grabbed = true;
-                        this.grabber = evt.detail.hand;
-                        this.el.object3D.position.y += 0.1; // Піднімаємо трохи при захопленні
-                        this.grabber.appendChild(this.el);
+                    el.addEventListener('grab-start', () => {
+                        el.removeAttribute('dynamic-body');
                     });
-                    
-                    this.el.addEventListener('grab-end', (evt) => {
-                        this.grabbed = false;
-                        this.originalParent.appendChild(this.el);
+            
+                    el.addEventListener('grab-end', () => {
+                        if (!el.classList.contains('installed')) {
+                            const dyn = `shape: ${data.shape}; mass: ${data.mass}; angularDamping: ${data.angularDamping}; linearDamping: ${data.linearDamping}`;
+                            el.setAttribute('dynamic-body', dyn);
+                        }
                     });
                 }
-            });
-
-            document.querySelector('a-scene').addEventListener('loaded', () => {
-                // Ініціалізація не потрібна, оскільки фізика вимкнена
             });
         </script>
     </a-scene>
@@ -286,11 +370,10 @@
          - <strong>Взяти:</strong> Простягніть руку і натисніть Тригер/Grip.<br>
          - <strong>Політ/Рух:</strong> Лівий джойстик для плавного пересування в напрямку погляду.<br>
          - <strong>Телепортація:</strong> Натисніть тригер на лазерному контролері.<br>
+         - <strong>Притягування:</strong> Натисніть тригер на вільній руці у бік предмета.<br>
          - <strong>Поворот:</strong> Правий джойстик.<br>
          - <strong>Інфо:</strong> При захопленні предмета збоку з'явиться опис.<br><br>
         <strong>Desktop:</strong> WASD для руху, миша для огляду.
         <br><br>
         <strong>Мета:</strong> Зібрати ПК, перетягуючи компоненти в корпус!
-    </div>
-</body>
-</html>
+    </div></body></html>

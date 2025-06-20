@@ -1,126 +1,526 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>VR PC Builder</title>
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    .info { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px; font-size: 14px; width: 250px; z-index: 10000; }
-  </style>
+    <meta charset="UTF-8">
+    <title>VR PC Builder</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
+    <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        .info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 250px;
+            z-index: 10000;
+        }
+        .progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            z-index: 10000;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #4CAF50;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .completion-message {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 10000;
+            display: none;
+        }
+        .platform-label {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 18px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 10000;
+        }
+    </style>
 </head>
 <body>
-  <a-scene>
-    <a-assets>
-      <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
-      <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
-      <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
-      <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
-      <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
-      <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
-      <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
-      <a-mixin id="interactive" hoverable grabbable draggable></a-mixin>
-    </a-assets>
+    <a-scene physics="gravity: -5">
+        <a-assets>
+            <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
+            <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
+            <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
+            <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
+            <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
+            <a-asset-item id="ram-model" src="models/ram.glb"></a-asset-item>
+            <a-asset-item id="gpu-model" src="models/gpu.glb"></a-asset-item>
+            <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
+            <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
+            
+            <a-mixin id="interactive"
+                     hoverable grabbable draggable respawnable>
+            </a-mixin>
 
-    <a-sky color="#ECECEC"></a-sky>
+            <a-mixin id="physics-hands"
+                     physics-collider phase-shift
+                     collision-filter="collisionForces: false"
+                     static-body="shape: sphere; sphereRadius: 0.02"
+                     super-hands="colliderEvent: collisions;
+                                  colliderEventProperty: els;
+                                  colliderEndEvent: collisions;
+                                  colliderEndEventProperty: clearedEls;">
+            </a-mixin>
+        </a-assets>
 
-    <!-- ПК корпус -->
-    <a-entity position="0 0.8 -1.5" pc-builder>
-      <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d"></a-box>
-      <a-entity id="pc-case">
-        <a-gltf-model src="#case-model" scale="0.2 0.2 0.2" position="0 0 0"></a-gltf-model>
-      </a-entity>
-
-      <!-- Компоненти -->
-      <a-entity id="components-container">
-        <a-entity id="motherboard" class="component" data-type="motherboard" position="0 0.1 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#motherboard-model"></a-gltf-model>
+        <a-sky src="#sky"></a-sky>
+        <a-plane id="ground-plane" src="#ground" rotation="-90 0 0" width="20" height="20" static-body></a-plane>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="completion-message" id="completion-message">PC successfully assembled!</div>
+        <div class="platform-label" id="platform-label">Assembly Platform</div>
+        
+        <a-entity id="pc-case-station" position="0 0.8 -1.5" pc-builder>
+            <!-- Base platform -->
+            <a-box position="0 0.05 0" width="0.6" height="0.01" depth="0.7" color="#4d4d4d" static-body></a-box>
+            
+            <!-- PC Case -->
+            <a-entity id="pc-case" static-body>
+                <a-gltf-model src="#case-model" scale="0.2 0.2 0.2" position="0 0 0"></a-gltf-model>
+            </a-entity>
+            
+            <!-- Components will be placed here automatically -->
+            <a-entity id="components-container">
+                <!-- Motherboard -->
+                <a-entity id="motherboard" class="component" data-type="motherboard" 
+                          position="0 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: Motherboard - main system board; offset: 0 0 0">
+                    <a-gltf-model src="#motherboard-model"></a-gltf-model>
+                </a-entity>
+                
+                <!-- CPU -->
+                <a-entity id="cpu" class="component" data-type="cpu" 
+                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: CPU - computer's brain; offset: 0 0 0">
+                    <a-gltf-model src="#cpu-model"></a-gltf-model>
+                </a-entity>
+                
+                <!-- RAM -->
+                <a-entity id="ram" class="component" data-type="ram" 
+                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: RAM - temporary memory; offset: 0 0 0">
+                    <a-gltf-model src="#ram-model"></a-gltf-model>
+                </a-entity>
+                
+                <!-- GPU -->
+                <a-entity id="gpu" class="component" data-type="gpu" 
+                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: GPU - graphics processing; offset: 0 0 0">
+                    <a-gltf-model src="#gpu-model"></a-gltf-model>
+                </a-entity>
+                
+                <!-- PSU -->
+                <a-entity id="psu" class="component" data-type="psu" 
+                          position="-0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: PSU - power supply; offset: 0 0 0">
+                    <a-gltf-model src="#psu-model"></a-gltf-model>
+                </a-entity>
+                
+                <!-- SSD -->
+                <a-entity id="ssd" class="component" data-type="ssd" 
+                          position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
+                          side-description="description: SSD - storage; offset: 0 0 0">
+                    <a-gltf-model src="#ssd-model"></a-gltf-model>
+                </a-entity>
+            </a-entity>
+            
+            <!-- Invisible platform -->
+            <a-box position="0 0.25 0" width="0.8" height="0.05" depth="0.8" static-body visible="false"></a-box>
+            
+            <!-- Light inside the case -->
+            <a-light type="point" color="#ffffff" intensity="0.7" position="0 0.3 0"></a-light>
         </a-entity>
-        <a-entity id="cpu" class="component" data-type="cpu" position="0 0 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#cpu-model"></a-gltf-model>
-        </a-entity>
-        <a-entity id="ram" class="component" data-type="ram" position="0 0 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#ram-model"></a-gltf-model>
-        </a-entity>
-        <a-entity id="gpu" class="component" data-type="gpu" position="0 0 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#gpu-model"></a-gltf-model>
-        </a-entity>
-        <a-entity id="psu" class="component" data-type="psu" position="0 0 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#psu-model"></a-gltf-model>
-        </a-entity>
-        <a-entity id="ssd" class="component" data-type="ssd" position="0 0 0" scale="0.3 0.3 0.3" mixin="interactive">
-          <a-gltf-model src="#ssd-model"></a-gltf-model>
-        </a-entity>
-      </a-entity>
-    </a-entity>
 
-    <!-- Камера та руки -->
-    <a-entity id="rig">
-      <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="fly: true">
-        <a-cursor></a-cursor>
-      </a-camera>
-      <a-entity hand-controls="hand: left" super-hands></a-entity>
-      <a-entity hand-controls="hand: right" super-hands></a-entity>
-    </a-entity>
+        <!-- Inspection Platform -->
+        <a-entity id="inspection-platform" position="1.5 0.8 0">
+            <a-box position="0 0.05 0" width="1.2" height="0.01" depth="0.8" color="#333333" static-body></a-box>
+            <a-text value="Inspection Platform" position="0 0.15 0" align="center" color="white" width="3"></a-text>
+            
+            <!-- Component display positions -->
+            <a-entity id="component-display">
+                <!-- Motherboard display -->
+                <a-entity id="motherboard-display" position="-0.4 0.1 0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="Motherboard" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+                
+                <!-- CPU display -->
+                <a-entity id="cpu-display" position="0 0.1 0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="CPU" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+                
+                <!-- RAM display -->
+                <a-entity id="ram-display" position="0.4 0.1 0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="RAM" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+                
+                <!-- GPU display -->
+                <a-entity id="gpu-display" position="-0.4 0.1 -0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="GPU" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+                
+                <!-- PSU display -->
+                <a-entity id="psu-display" position="0 0.1 -0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="PSU" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+                
+                <!-- SSD display -->
+                <a-entity id="ssd-display" position="0.4 0.1 -0.3" rotation="0 0 0" scale="0.3 0.3 0.3">
+                    <a-box position="0 0 0" width="0.1" height="0.01" depth="0.1" color="#555555"></a-box>
+                    <a-text value="SSD" position="0 0.05 0" align="center" color="white" width="1"></a-text>
+                </a-entity>
+            </a-entity>
+        </a-entity>
 
-    <script>
-      // Логіка встановлення компонентів
-      AFRAME.registerComponent('pc-builder', {
-        init: function () {
-          this.installed = new Set();
-          this.tick = AFRAME.utils.throttleTick(this.checkComponents, 200, this);
-        },
-        checkComponents: function () {
-          const comps = document.querySelectorAll('.component:not(.installed)');
-          comps.forEach(el => {
-            if (el.is('grabbed')) return;
-            const current = el.object3D.position;
-            const target = new THREE.Vector3();
-            el.object3D.parent.worldToLocal(target.copy(el.object3D.getWorldPosition(new THREE.Vector3())));
-            if (current.distanceTo(target) < 0.1) {
-              this.install(el);
-            }
-          });
-        },
-        install: function (el) {
-          el.classList.add('installed');
-          el.object3D.position.set(
-            el.getAttribute('position').x,
-            el.getAttribute('position').y,
-            el.getAttribute('position').z
-          );
-          el.object3D.rotation.set(0, 0, 0);
-        }
-      });
+        <!-- Lighting -->
+        <a-light type="ambient" color="#505050" intensity="0.6"></a-light>
+        <a-light type="directional" position="0 5 0" rotation="-90 0 0" intensity="0.8"></a-light>
+        <a-light type="directional" position="0 3 3" rotation="-60 0 0" intensity="0.5"></a-light>
+        <a-light type="point" color="#ffffff" intensity="0.6" position="0 2 0"></a-light>
+        <a-light type="point" color="#ffffff" intensity="0.8" position="1.5 1.5 0"></a-light>
 
-      // hover ефекти
-      AFRAME.registerComponent('hoverable', {
-        init: function () {
-          this.el.addEventListener('hover-start', () => {
-            this.el.querySelectorAll('a-gltf-model').forEach(m => m.setAttribute('material', 'color: #ffff00'));
-          });
-          this.el.addEventListener('hover-end', () => {
-            if (!this.el.is('grabbed')) {
-              this.el.querySelectorAll('a-gltf-model').forEach(m => m.removeAttribute('material'));
-            }
-          });
-          this.el.addEventListener('grab-start', () => {
-            this.el.querySelectorAll('a-gltf-model').forEach(m => m.setAttribute('material', 'color: #ff0000'));
-          });
-          this.el.addEventListener('grab-end', () => {
-            this.el.querySelectorAll('a-gltf-model').forEach(m => m.removeAttribute('material'));
-          });
-        }
-      });
-    </script>
-  </a-scene>
+        <a-entity id="rig">
+            <a-camera id="camera" position="0 1.6 0" look-controls wasd-controls="fly: true">
+                <a-cursor id="cursor" raycaster="objects: [mixin='interactive']"></a-cursor>
+            </a-camera>
+            <a-entity id="leftHand" 
+                      mixin="physics-hands" 
+                      hand-controls="hand: left"
+                      laser-controls="hand: left"
+                      teleport-controls="teleportOrigin: #camera; button: trigger; type: parabolic"
+                      oculus-thumbstick-controls="fly: true">
+            </a-entity>
+            <a-entity id="rightHand" 
+                      mixin="physics-hands" 
+                      hand-controls="hand: right"
+                      laser-controls="hand: right"
+                      teleport-controls="teleportOrigin: #camera; button: trigger; type: parabolic">
+            </a-entity>
+        </a-entity>
 
-  <div class="info">
-    <strong>VR Controls:</strong><br>
-    - Grab: Trigger<br>
-    - Move: WASD / Thumbstick<br>
-    - Place components inside the case to install them
-  </div>
+        <script>
+            // Progress tracking
+            const progressFill = document.getElementById('progress-fill');
+            const completionMessage = document.getElementById('completion-message');
+            const platformLabel = document.getElementById('platform-label');
+            let installedComponents = 0;
+            const totalComponents = 6;
+
+            // Make components interactive and movable
+            document.querySelector('a-scene').addEventListener('loaded', function() {
+                const components = document.querySelectorAll('.component');
+                components.forEach(comp => {
+                    comp.setAttribute('mixin', 'interactive');
+                    comp.setAttribute('dynamic-body', 'shape: box; mass: 1');
+                    
+                    // Create a clone for the inspection platform
+                    const clone = comp.cloneNode(true);
+                    clone.id = comp.id + '-clone';
+                    clone.setAttribute('position', '0 0.1 0');
+                    clone.setAttribute('visible', 'false');
+                    
+                    // Find the corresponding display position
+                    const displayPos = document.getElementById(comp.id + '-display');
+                    if (displayPos) {
+                        displayPos.appendChild(clone);
+                    }
+                });
+                
+                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
+                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
+            });
+
+            // Magnet attraction component
+            AFRAME.registerComponent('magnet-attraction', {
+                schema: {
+                    hand: {type: 'string', default: 'left'},
+                    strength: {type: 'number', default: 5},
+                    maxDistance: {type: 'number', default: 2}
+                },
+                
+                init: function () {
+                    this.attractedObjects = [];
+                    this.raycaster = new THREE.Raycaster();
+                    this.direction = new THREE.Vector3();
+                    this.triggerPressed = false;
+                    
+                    this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
+                    this.el.addEventListener('triggerup', () => {
+                        this.triggerPressed = false;
+                        this.attractedObjects = [];
+                    });
+                },
+                
+                tick: function () {
+                    if (!this.triggerPressed) return;
+                    
+                    const handPosition = new THREE.Vector3();
+                    this.el.object3D.getWorldPosition(handPosition);
+                    this.el.object3D.getWorldDirection(this.direction);
+                    this.raycaster.set(handPosition, this.direction);
+                    
+                    const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
+                    const interactiveObjects = interactiveEls.map(el => el.object3D);
+                    const intersects = this.raycaster.intersectObjects(interactiveObjects, true);
+                    
+                    if (intersects.length > 0) {
+                        const target = intersects[0].object.el;
+                        if (!this.attractedObjects.includes(target) && 
+                            target.components['dynamic-body'] && 
+                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
+                            
+                            this.attractedObjects.push(target);
+                        }
+                    }
+                    
+                    this.attractedObjects.forEach(target => {
+                        if (!target || !target.body || target.is('grabbed')) return;
+                        
+                        const targetPos = new THREE.Vector3();
+                        target.object3D.getWorldPosition(targetPos);
+                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
+                        
+                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
+                    });
+                }
+            });
+
+            // PC Builder component
+            AFRAME.registerComponent('pc-builder', {
+                init: function () {
+                    this.installedComponents = new Set();
+                    this.el.sceneEl.addEventListener('component-installed', this.updateProgress.bind(this));
+                    
+                    // Set up collision checking
+                    this.tick = AFRAME.utils.throttleTick(this.checkComponents, 100, this);
+                    
+                    // Add event listeners for component movement
+                    this.el.sceneEl.addEventListener('grab-start', (evt) => {
+                        if (evt.target.classList.contains('component')) {
+                            this.showComponentClone(evt.target);
+                            platformLabel.textContent = "Inspection Platform";
+                        }
+                    });
+                    
+                    this.el.sceneEl.addEventListener('grab-end', (evt) => {
+                        if (evt.target.classList.contains('component')) {
+                            this.hideComponentClone(evt.target);
+                            platformLabel.textContent = "Assembly Platform";
+                        }
+                    });
+                },
+
+                checkComponents: function() {
+                    const components = document.querySelectorAll('.component:not(.installed)');
+                    
+                    components.forEach(comp => {
+                        if (comp.is('grabbed')) return;
+                        
+                        // Check if component is near its original position (inside case)
+                        const currentPos = comp.object3D.position;
+                        const originalPos = new THREE.Vector3();
+                        comp.object3D.parent.worldToLocal(originalPos.copy(comp.object3D.getWorldPosition(new THREE.Vector3())));
+                        
+                        if (currentPos.distanceTo(originalPos) < 0.1) {
+                            this.installComponent(comp);
+                        }
+                    });
+                },
+                
+                installComponent: function(component) {
+                    component.classList.add('installed');
+                    component.removeAttribute('dynamic-body');
+                    component.setAttribute('static-body', '');
+                    
+                    // Reset to original position/rotation
+                    component.object3D.position.set(
+                        component.getAttribute('position').x,
+                        component.getAttribute('position').y,
+                        component.getAttribute('position').z
+                    );
+                    component.object3D.rotation.set(0, 0, 0);
+                    
+                    this.installedComponents.add(component.id);
+                    this.el.sceneEl.emit('component-installed');
+                    
+                    // Hide the clone when installed
+                    this.hideComponentClone(component);
+                },
+
+                updateProgress: function() {
+                    installedComponents = this.installedComponents.size;
+                    progressFill.style.width = `${(installedComponents / totalComponents) * 100}%`;
+
+                    if (installedComponents >= totalComponents) {
+                        setTimeout(() => {
+                            completionMessage.style.display = 'block';
+                        }, 1000);
+                    }
+                },
+                
+                showComponentClone: function(component) {
+                    const clone = document.getElementById(component.id + '-clone');
+                    if (clone) {
+                        clone.setAttribute('visible', 'true');
+                    }
+                },
+                
+                hideComponentClone: function(component) {
+                    const clone = document.getElementById(component.id + '-clone');
+                    if (clone) {
+                        clone.setAttribute('visible', 'false');
+                    }
+                }
+            });
+
+            // Component description display
+            AFRAME.registerComponent('side-description', {
+                schema: {
+                    description: {type: 'string'},
+                    offset: {type: 'vec3'}
+                },
+                init: function() {
+                    this.descriptionText = document.createElement('a-text');
+                    this.descriptionText.setAttribute('value', this.data.description);
+                    this.descriptionText.setAttribute('align', 'left');
+                    this.descriptionText.setAttribute('position', this.data.offset);
+                    this.descriptionText.setAttribute('width', '2');
+                    this.descriptionText.setAttribute('look-at', '#camera');
+                    this.descriptionText.setAttribute('visible', 'false');
+                    this.el.appendChild(this.descriptionText);
+
+                    this.el.addEventListener('grab-start', () => {
+                        this.descriptionText.setAttribute('visible', 'true');
+                    });
+                    this.el.addEventListener('grab-end', () => {
+                        this.descriptionText.setAttribute('visible', 'false');
+                    });
+                }
+            });
+
+            // Respawn components if they fall
+            AFRAME.registerComponent('respawnable', {
+                init: function() {
+                    this.originalPosition = new THREE.Vector3(
+                        this.el.getAttribute('position').x,
+                        this.el.getAttribute('position').y,
+                        this.el.getAttribute('position').z
+                    );
+                },
+                tick: function() {
+                    if (this.el.object3D.position.y < -5 && !this.el.is('grabbed')) {
+                        this.resetEntity();
+                    }
+                },
+                resetEntity: function() {
+                    const el = this.el;
+                    if (el.body) {
+                        el.body.position.copy(this.originalPosition);
+                        el.body.velocity.set(0, 0, 0);
+                        el.body.angularVelocity.set(0, 0, 0);
+                    } else {
+                        el.object3D.position.copy(this.originalPosition);
+                    }
+                }
+            });
+
+            // Phase shift for better grabbing
+            AFRAME.registerComponent('phase-shift', {
+                init: function() {
+                    this.el.addEventListener('grab-start', () => {
+                        this.el.setAttribute('collision-filter', {collisionForces: false});
+                    });
+                    this.el.addEventListener('grab-end', () => {
+                        this.el.setAttribute('collision-filter', {collisionForces: true});
+                    });
+                }
+            });
+            
+            // Hover effects
+            AFRAME.registerComponent('hoverable', {
+                init: function() {
+                    this.el.addEventListener('hover-start', (evt) => {
+                        evt.target.querySelectorAll('a-gltf-model').forEach(model => {
+                            model.setAttribute('material', 'color', '#ffff00');
+                        });
+                    });
+                    this.el.addEventListener('hover-end', (evt) => {
+                        if (!this.el.is('grabbed')) {
+                            evt.target.querySelectorAll('a-gltf-model').forEach(model => {
+                                model.removeAttribute('material');
+                            });
+                        }
+                    });
+                    this.el.addEventListener('grab-start', (evt) => {
+                        evt.target.querySelectorAll('a-gltf-model').forEach(model => {
+                            model.setAttribute('material', 'color', '#ff0000');
+                        });
+                    });
+                    this.el.addEventListener('grab-end', (evt) => {
+                        evt.target.querySelectorAll('a-gltf-model').forEach(model => {
+                            model.removeAttribute('material');
+                        });
+                    });
+                }
+            });
+        </script>
+    </a-scene>
+
+    <div class="info">
+        <strong>Controls:</strong><br>
+        PC case is in front of you. Components are placed inside it.<br><br>
+        <strong>VR:</strong><br>
+         - <strong>Grab:</strong> Extend hand and press Trigger/Grip.<br>
+         - <strong>Fly/Move:</strong> Left thumbstick for smooth movement.<br>
+         - <strong>Teleport:</strong> Press trigger on laser controller.<br>
+         - <strong>Attract:</strong> Press trigger while pointing at object.<br>
+         - <strong>Rotate:</strong> Right thumbstick.<br>
+         - <strong>Info:</strong> Description appears when holding component.<br><br>
+        <strong>Desktop:</strong> WASD to move, mouse to look.
+        <br><br>
+        <strong>Goal:</strong> Remove and reinstall PC components!<br>
+        <strong>Inspection Platform:</strong> On the right - shows component clones when grabbed.
+    </div>
 </body>
 </html>

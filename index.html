@@ -41,23 +41,37 @@
             border-radius: 10px;
             transition: width 0.3s;
         }
+        .debug-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #00ff00;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+        }
     </style>
 </head>
 <body>
     <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
     </div>
+    
+    <div class="debug-info" id="debug-info">
+        Grab Status: Ready
+    </div>
 
     <a-scene physics="driver: local; debug: false; gravity: -9.8">
         <a-assets>
-            <!-- Component mixins with physics -->
+            <!-- Component mixin WITHOUT stretchable to avoid conflicts -->
             <a-mixin id="pc-component"
                      hoverable 
                      grabbable
-                     stretchable
                      draggable
                      droppable
-                     dynamic-body="linearDamping: 0.4; angularDamping: 0.4"
+                     dynamic-body="linearDamping: 0.5; angularDamping: 0.5"
                      event-set__hoveron="_event: hover-start; material.emissive: #22ff22; material.emissiveIntensity: 0.2"
                      event-set__hoveroff="_event: hover-end; material.emissive: #000000; material.emissiveIntensity: 0">
             </a-mixin>
@@ -124,7 +138,6 @@
                     align="center" 
                     scale="0.25 0.25 0.25">
             </a-text>
-            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.1" height="0.07" depth="0.1"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -144,7 +157,6 @@
                     align="center" 
                     scale="0.3 0.3 0.3">
             </a-text>
-            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.32" height="0.17" depth="0.07"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -164,7 +176,6 @@
                     align="center" 
                     scale="0.25 0.25 0.25">
             </a-text>
-            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.27" height="0.06" depth="0.04"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -184,7 +195,6 @@
                     align="center" 
                     scale="0.25 0.25 0.25">
             </a-text>
-            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.22" height="0.22" depth="0.22"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -204,7 +214,6 @@
                     align="center" 
                     scale="0.25 0.25 0.25">
             </a-text>
-            <!-- Green outline box -->
             <a-box class="outline"
                    width="0.17" height="0.04" depth="0.12"
                    material="color: #00ff00; wireframe: true; opacity: 0.8"
@@ -245,11 +254,8 @@
         <a-light type="ambient" color="#404040" intensity="0.5"></a-light>
         <a-light type="directional" position="1 3 -0.5" color="#ffffff" intensity="0.6"></a-light>
 
-        <!-- Camera Rig with thumbstick movement -->
-        <a-entity id="rig" 
-                  position="0 0 1.5" 
-                  movement-controls="fly: false; constrainToNavMesh: false; speed: 0.3"
-                  thumbstick-movement>
+        <!-- Camera Rig -->
+        <a-entity id="rig" position="0 0 1.5" thumbstick-movement>
             <a-camera id="camera" 
                       position="0 1.6 0" 
                       look-controls 
@@ -258,58 +264,76 @@
                 <a-cursor position="0 0 -1"
                           geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                           material="color: white; shader: flat"
-                          raycaster="objects: [hoverable]"
-                          super-hands="colliderEvent: raycaster-intersection;
-                                       colliderEventProperty: els;
-                                       colliderEndEvent: raycaster-intersection-cleared;
-                                       colliderEndEventProperty: clearedEls">
+                          raycaster="objects: [hoverable]; showLine: true; lineColor: white; lineOpacity: 0.5"
+                          super-hands="
+                            colliderEvent: raycaster-intersection;
+                            colliderEventProperty: els;
+                            colliderEndEvent: raycaster-intersection-cleared;
+                            colliderEndEventProperty: clearedEls">
                 </a-cursor>
             </a-camera>
             
             <!-- Left Controller -->
             <a-entity id="leftHand"
                       hand-controls="hand: left"
-                      laser-controls="hand: left"
-                      raycaster="objects: [hoverable]; far: 10"
-                      sphere-collider="objects: [hoverable]; radius: 0.05"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls">
+                      sphere-collider="objects: [hoverable]; radius: 0.1"
+                      super-hands="
+                        colliderEvent: hit;
+                        colliderEventProperty: el;
+                        colliderEndEvent: hitEnd;
+                        colliderEndEventProperty: el">
+                <!-- Visual indicator -->
+                <a-sphere radius="0.05" 
+                          color="#00ff00" 
+                          opacity="0.3"
+                          visible="false"
+                          position="0 0 0"
+                          class="grab-indicator">
+                </a-sphere>
             </a-entity>
             
             <!-- Right Controller -->
             <a-entity id="rightHand"
                       hand-controls="hand: right"
-                      laser-controls="hand: right"
-                      raycaster="objects: [hoverable]; far: 10"
-                      sphere-collider="objects: [hoverable]; radius: 0.05"
-                      super-hands="colliderEvent: raycaster-intersection;
-                                   colliderEventProperty: els;
-                                   colliderEndEvent: raycaster-intersection-cleared;
-                                   colliderEndEventProperty: clearedEls">
+                      sphere-collider="objects: [hoverable]; radius: 0.1"
+                      super-hands="
+                        colliderEvent: hit;
+                        colliderEventProperty: el;
+                        colliderEndEvent: hitEnd;
+                        colliderEndEventProperty: el">
+                <!-- Visual indicator -->
+                <a-sphere radius="0.05" 
+                          color="#00ff00" 
+                          opacity="0.3"
+                          visible="false"
+                          position="0 0 0"
+                          class="grab-indicator">
+                </a-sphere>
             </a-entity>
         </a-entity>
 
         <script>
-            // Custom thumbstick movement component for Quest
+            // Debug info
+            const debugInfo = document.getElementById('debug-info');
+            
+            // Thumbstick movement component
             AFRAME.registerComponent('thumbstick-movement', {
                 init: function() {
                     this.velocity = new THREE.Vector3();
                     
-                    // Listen for thumbstick on both controllers
-                    this.el.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
+                    // Listen for thumbstick events
+                    document.addEventListener('thumbstickmoved', this.onThumbstickMoved.bind(this));
                 },
                 
                 onThumbstickMoved: function(evt) {
-                    // Right thumbstick for movement (Quest standard)
+                    // Right thumbstick for movement
                     if (evt.target.id === 'rightHand') {
                         const camera = this.el.querySelector('[camera]');
                         const rotation = camera.object3D.rotation.y;
                         
-                        // Calculate forward/backward and strafe
-                        const moveX = evt.detail.x * 0.1;
-                        const moveZ = evt.detail.y * 0.1;
+                        // Calculate movement
+                        const moveX = evt.detail.x * 0.05;
+                        const moveZ = evt.detail.y * 0.05;
                         
                         // Apply rotation to movement
                         this.velocity.x = moveX * Math.cos(rotation) + moveZ * Math.sin(rotation);
@@ -318,14 +342,12 @@
                 },
                 
                 tick: function() {
-                    if (Math.abs(this.velocity.x) > 0.01 || Math.abs(this.velocity.z) > 0.01) {
-                        this.el.object3D.position.add(this.velocity);
-                        this.velocity.multiplyScalar(0.9); // Damping
-                    }
+                    this.el.object3D.position.add(this.velocity);
+                    this.velocity.multiplyScalar(0.85); // Damping
                 }
             });
 
-            // PC Component tracking with outline
+            // PC Component with proper grab handling
             AFRAME.registerComponent('pc-component', {
                 schema: {
                     type: {type: 'string'}
@@ -335,31 +357,76 @@
                     this.initialPosition = this.el.object3D.position.clone();
                     this.isInstalled = false;
                     this.outline = this.el.querySelector('.outline');
+                    this.isGrabbed = false;
                     
-                    // Listen for grab events to show outline
+                    // Listen for grab events
                     this.el.addEventListener('grab-start', (evt) => {
+                        console.log('Grab started on', this.data.type);
+                        debugInfo.innerHTML = `Grabbing: ${this.data.type}`;
+                        this.isGrabbed = true;
+                        
+                        // Show outline
                         if (this.outline) {
                             this.outline.setAttribute('visible', true);
                         }
-                        // Also change the component's own emissive
+                        
+                        // Make component glow
                         this.el.setAttribute('material', 'emissive', '#00ff00');
                         this.el.setAttribute('material', 'emissiveIntensity', 0.3);
+                        
+                        // Show grab indicator on hand
+                        const hand = evt.detail.hand;
+                        if (hand) {
+                            const indicator = hand.querySelector('.grab-indicator');
+                            if (indicator) {
+                                indicator.setAttribute('visible', true);
+                            }
+                        }
                     });
                     
                     this.el.addEventListener('grab-end', (evt) => {
+                        console.log('Grab ended on', this.data.type);
+                        debugInfo.innerHTML = 'Grab Status: Ready';
+                        this.isGrabbed = false;
+                        
+                        // Hide outline
                         if (this.outline) {
                             this.outline.setAttribute('visible', false);
                         }
-                        // Reset emissive
+                        
+                        // Remove glow
                         this.el.setAttribute('material', 'emissive', '#000000');
                         this.el.setAttribute('material', 'emissiveIntensity', 0);
+                        
+                        // Hide grab indicator
+                        const hand = evt.detail.hand;
+                        if (hand) {
+                            const indicator = hand.querySelector('.grab-indicator');
+                            if (indicator) {
+                                indicator.setAttribute('visible', false);
+                            }
+                        }
                     });
                     
                     // Listen for drag-drop events
                     this.el.addEventListener('drag-drop', (evt) => {
+                        console.log('Drag-drop event', evt.detail);
                         const dropTarget = evt.detail.on;
                         if (dropTarget && dropTarget.components['drop-zone']) {
                             this.installComponent();
+                        }
+                    });
+                    
+                    // Hover feedback
+                    this.el.addEventListener('hover-start', () => {
+                        if (!this.isGrabbed) {
+                            debugInfo.innerHTML = `Hovering: ${this.data.type}`;
+                        }
+                    });
+                    
+                    this.el.addEventListener('hover-end', () => {
+                        if (!this.isGrabbed) {
+                            debugInfo.innerHTML = 'Grab Status: Ready';
                         }
                     });
                 },
@@ -405,7 +472,6 @@
             // Drop zone component
             AFRAME.registerComponent('drop-zone', {
                 init: function() {
-                    // Visual feedback
                     this.el.addEventListener('dragover-start', () => {
                         document.querySelector('#pc-case').setAttribute('material', 'emissive', '#00ff00');
                         document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', 0.2);
@@ -414,6 +480,10 @@
                     this.el.addEventListener('dragover-end', () => {
                         document.querySelector('#pc-case').setAttribute('material', 'emissive', '#000000');
                         document.querySelector('#pc-case').setAttribute('material', 'emissiveIntensity', 0);
+                    });
+                    
+                    this.el.addEventListener('drag-drop', (evt) => {
+                        console.log('Drop zone received:', evt.detail);
                     });
                 }
             });
@@ -428,7 +498,7 @@
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 
                 if (installedComponents.size === totalComponents) {
-                    // Victory animation
+                    debugInfo.innerHTML = '🎉 PC Complete! Press R to reset';
                     setTimeout(() => {
                         document.querySelector('#pc-case').setAttribute('animation__victory', {
                             property: 'rotation',
@@ -440,30 +510,35 @@
                 }
             }
 
+            // Reset function
+            function resetGame() {
+                installedComponents.clear();
+                document.getElementById('progress-fill').style.width = '0%';
+                debugInfo.innerHTML = 'Grab Status: Ready';
+                
+                document.querySelectorAll('[pc-component]').forEach(el => {
+                    el.setAttribute('visible', true);
+                    el.removeAttribute('animation');
+                    el.removeAttribute('animation__scale');
+                    el.setAttribute('scale', '1 1 1');
+                    el.components['pc-component'].isInstalled = false;
+                    el.object3D.position.copy(el.components['pc-component'].initialPosition);
+                    
+                    // Re-add interactivity
+                    el.setAttribute('hoverable', '');
+                    el.setAttribute('grabbable', '');
+                    el.setAttribute('draggable', '');
+                    el.setAttribute('droppable', '');
+                    el.setAttribute('dynamic-body', 'linearDamping: 0.5; angularDamping: 0.5');
+                });
+                
+                document.querySelector('#pc-case').removeAttribute('animation__victory');
+            }
+
             // Reset on R key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'r' || e.key === 'R') {
-                    installedComponents.clear();
-                    document.getElementById('progress-fill').style.width = '0%';
-                    
-                    document.querySelectorAll('[pc-component]').forEach(el => {
-                        el.setAttribute('visible', true);
-                        el.removeAttribute('animation');
-                        el.removeAttribute('animation__scale');
-                        el.setAttribute('scale', '1 1 1');
-                        el.components['pc-component'].isInstalled = false;
-                        el.object3D.position.copy(el.components['pc-component'].initialPosition);
-                        
-                        // Re-add interactivity
-                        el.setAttribute('hoverable', '');
-                        el.setAttribute('grabbable', '');
-                        el.setAttribute('draggable', '');
-                        el.setAttribute('droppable', '');
-                        el.setAttribute('dynamic-body', 'linearDamping: 0.4; angularDamping: 0.4');
-                    });
-                    
-                    // Remove victory animation
-                    document.querySelector('#pc-case').removeAttribute('animation__victory');
+                    resetGame();
                 }
             });
         </script>
@@ -473,12 +548,12 @@
         <strong>VR PC Builder - Quest Touch</strong><br><br>
         <strong>VR Controls:</strong><br>
         • Right thumbstick - Move around<br>
-        • Trigger - Grab/release objects<br>
-        • Point laser at objects to grab from distance<br>
+        • Grip button - Grab/release objects<br>
+        • Get close to objects to grab them<br>
         • Green outline shows when grabbed<br><br>
         <strong>Desktop:</strong><br>
         • WASD - Move, Mouse - Look<br>
-        • Click - Grab/release<br><br>
+        • Click cursor on objects to grab<br><br>
         Press 'R' to reset game
     </div>
 </body>

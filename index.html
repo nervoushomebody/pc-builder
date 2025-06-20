@@ -1,101 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-    <meta charset="utf-8" />
-    <title>VR Physics with Stick Movement</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.2.2/dist/aframe-physics-system.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@3.0.4/dist/aframe-super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-outline@1.3.0/build/aframe-outline.min.js"></script>
+  <meta charset="UTF-8">
+  <title>VR PC Builder - Super Hands Edition (A-Frame 1.6)</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script>
+    delete AFRAME.components["grabbable"];
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@7.5.x/dist/aframe-extras.min.js"></script>
+  <script src="https://unpkg.com/super-hands@^3.0.5/dist/super-hands.min.js"></script>
+  <script src="https://gftruj.github.io/webzamples/aframe/controls/oculus-thumbstick-controls.js"></script>
+  <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
 </head>
 <body>
-<a-scene physics="driver: cannon; gravity: -9.8; debug: false;">
+  <a-scene>
+    <a-assets></a-assets>
 
-    <a-entity light="type: ambient; color: #CCC; intensity: 0.9"></a-entity>
-    <a-entity light="type: directional; color: #FFF; intensity: 0.5; cast: true" position="-1 5 3"></a-entity>
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#7BC8A4"
-             static-body shadow="receive: true"></a-plane>
-    <a-sky color="#87CEEB"></a-sky>
+    <a-entity>
+      <a-camera position="0 1.6 0">
+        <a-entity cursor="rayOrigin: mouse"
+                  raycaster="objects: [hoverable]"
+                  super-hands="colliderEvent: raycaster-intersection;
+                               colliderEventProperty: els;
+                               colliderEndEvent: raycaster-intersection-cleared;
+                               colliderEndEventProperty: clearedEls">
+        </a-entity>
+      </a-camera>
 
-    <a-entity id="player" movement-controls="fly: true; speed: 0.15">
-        <a-entity id="camera" camera position="0 1.6 0" look-controls></a-entity>
-        
-        <a-entity id="leftHand"
-                  hand-controls="hand: left; handModelStyle: lowPoly; color: #1565C0"
-                  super-hands
-                  kinematic-body="shape: sphere; radius: 0.05;">
-        </a-entity>
-        
-        <a-entity id="rightHand"
-                  hand-controls="hand: right; handModelStyle: lowPoly; color: #1565C0"
-                  super-hands
-                  kinematic-body="shape: sphere; radius: 0.05;">
-            <a-entity id="info-panel" position="0 0.15 -0.4" rotation="-25 0 0" visible="false">
-                <a-plane color="#212121" width="0.6" height="0.4" opacity="0.95" rounded="radius: 0.02"></a-plane>
-                <a-text id="component-name" value="" color="white" position="0 0.15 0.01" align="center" width="1"></a-text>
-                <a-text id="component-description" value="" color="white" position="0 0 0.01" align="center" wrap-count="35" width="0.5"></a-text>
-            </a-entity>
-        </a-entity>
+      <a-entity hand-controls="hand: left"
+                sphere-collider="objects: [hoverable]; radius: 0.05"
+                super-hands>
+        <a-sphere radius="0.03" color="#44ff44" opacity="0.5"></a-sphere>
+      </a-entity>
+
+      <a-entity hand-controls="hand: right"
+                sphere-collider="objects: [hoverable]; radius: 0.05"
+                super-hands>
+        <a-sphere radius="0.03" color="#44ff44" opacity="0.5"></a-sphere>
+      </a-entity>
     </a-entity>
 
-    <a-box id="cpu" position="-1.5 0.5 -2" color="#FFC107" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 5"
-           outline="color: #24FF00; thickness: 0.015; opacity: 0.8; enabled: false"
-           event-set__hoveron="_event: hover-start; outline.enabled: true"
-           event-set__hoveroff="_event: hover-end; outline.enabled: false"
-           data-component="CPU" data-description="The brain of the computer.">
-    </a-box>
+    <!-- Ground -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#1a1a1a" static-body></a-plane>
 
-    <a-box id="gpu" position="-0.5 0.5 -2" color="#F44336" height="0.4" width="1.0" depth="0.6" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 15"
-           outline="color: #24FF00; thickness: 0.015; opacity: 0.8; enabled: false"
-           event-set__hoveron="_event: hover-start; outline.enabled: true"
-           event-set__hoveroff="_event: hover-end; outline.enabled: false"
-           data-component="GPU" data-description="Processes all visual output.">
-    </a-box>
+    <!-- Test Grabbable Box -->
+    <a-box position="0 1.5 -3" color="#0077ff" width="0.5" height="0.5" depth="0.5"
+           hoverable grabbable stretchable draggable droppable></a-box>
 
-    <a-cylinder id="ram" position="0.5 0.5 -2" color="#4CAF50" radius="0.1" height="0.8" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 2"
-           outline="color: #24FF00; thickness: 0.015; opacity: 0.8; enabled: false"
-           event-set__hoveron="_event: hover-start; outline.enabled: true"
-           event-set__hoveroff="_event: hover-end; outline.enabled: false"
-           data-component="RAM" data-description="Temporary data storage.">
-    </a-cylinder>
-
-    <a-sphere id="hdd" position="1.5 0.5 -2" color="#9E9E9E" radius="0.3" shadow="cast: true"
-           class="clickable" hoverable grabbable dynamic-body="mass: 10"
-           outline="color: #24FF00; thickness: 0.015; opacity: 0.8; enabled: false"
-           event-set__hoveron="_event: hover-start; outline.enabled: true"
-           event-set__hoveroff="_event: hover-end; outline.enabled: false"
-           data-component="HDD" data-description="Long-term data storage.">
-    </a-sphere>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const infoPanel = document.getElementById('info-panel');
-            const nameText = document.getElementById('component-name');
-            const descText = document.getElementById('component-description');
-
-            const showInfo = (evt) => {
-                const grabbedEl = evt.target;
-                nameText.setAttribute('value', grabbedEl.getAttribute('data-component'));
-                descText.setAttribute('value', grabbedEl.getAttribute('data-description'));
-                infoPanel.setAttribute('visible', true);
-            };
-
-            const hideInfo = (evt) => {
-                infoPanel.setAttribute('visible', false);
-            };
-            
-            const items = document.querySelectorAll('.clickable');
-            items.forEach(item => {
-                item.addEventListener('grab-start', showInfo);
-                item.addEventListener('grab-end', hideInfo);
-            });
-        });
-    </script>
-</a-scene>
+  </a-scene>
 </body>
 </html>

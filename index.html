@@ -59,7 +59,7 @@
     </style>
 </head>
 <body>
-    <a-scene physics="gravity: -5">
+    <a-scene physics="gravity: -1.5"> <!-- Зменшена гравітація -->
         <a-assets>
             <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
             <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
@@ -72,17 +72,17 @@
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
             <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable>
+                     hoverable grabbable draggable respawnable
+                     super-hands="colliderEvent: collisions;
+                                colliderEventProperty: els;
+                                colliderEndEvent: collisions;
+                                colliderEndEventProperty: clearedEls;">
             </a-mixin>
 
             <a-mixin id="physics-hands"
                      physics-collider phase-shift
                      collision-filter="collisionForces: false"
-                     static-body="shape: sphere; sphereRadius: 0.02"
-                     super-hands="colliderEvent: collisions;
-                                  colliderEventProperty: els;
-                                  colliderEndEvent: collisions;
-                                  colliderEndEventProperty: clearedEls;">
+                     static-body="shape: sphere; sphereRadius: 0.02">
             </a-mixin>
         </a-assets>
 
@@ -108,42 +108,48 @@
                 <!-- Motherboard -->
                 <a-entity id="motherboard" class="component" data-type="motherboard" 
                           position="0 0.1 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: Motherboard - main system board">
+                          side-description="description: Материнська плата - основна плата системи"
+                          snap-zone="snapTo: 0 0.1 0; snapDistance: 0.15">
                     <a-gltf-model src="#motherboard-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- CPU -->
                 <a-entity id="cpu" class="component" data-type="cpu" 
                           position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: CPU - computer's brain">
+                          side-description="description: Процесор - мозок комп'ютера"
+                          snap-zone="snapTo: 0 0.15 0; snapDistance: 0.1">
                     <a-gltf-model src="#cpu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- RAM -->
                 <a-entity id="ram" class="component" data-type="ram" 
                           position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: RAM - temporary memory">
+                          side-description="description: Оперативна пам'ять - тимчасова пам'ять"
+                          snap-zone="snapTo: 0 0.15 0.05; snapDistance: 0.1">
                     <a-gltf-model src="#ram-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- GPU -->
                 <a-entity id="gpu" class="component" data-type="gpu" 
                           position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: GPU - graphics processing">
+                          side-description="description: Відеокарта - обробка графіки"
+                          snap-zone="snapTo: 0 0.1 -0.1; snapDistance: 0.15">
                     <a-gltf-model src="#gpu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- PSU -->
                 <a-entity id="psu" class="component" data-type="psu" 
                           position="-0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: PSU - power supply">
+                          side-description="description: Блок живлення - джерело енергії"
+                          snap-zone="snapTo: -0.2 0.1 0; snapDistance: 0.15">
                     <a-gltf-model src="#psu-model"></a-gltf-model>
                 </a-entity>
                 
                 <!-- SSD -->
                 <a-entity id="ssd" class="component" data-type="ssd" 
                           position="0 0 0" rotation="0 0 0" scale="0.3 0.3 0.3"
-                          side-description="description: SSD - storage">
+                          side-description="description: SSD - сховище даних"
+                          snap-zone="snapTo: 0.15 0.1 0; snapDistance: 0.1">
                     <a-gltf-model src="#ssd-model"></a-gltf-model>
                 </a-entity>
             </a-entity>
@@ -192,65 +198,34 @@
                 const components = document.querySelectorAll('.component');
                 components.forEach(comp => {
                     comp.setAttribute('mixin', 'interactive');
-                    comp.setAttribute('dynamic-body', 'shape: box; mass: 1');
+                    comp.setAttribute('dynamic-body', 'shape: box; mass: 0.5; linearDamping: 0.5; angularDamping: 0.7');
                 });
-                
-                document.querySelector('#leftHand').setAttribute('magnet-attraction', '');
-                document.querySelector('#rightHand').setAttribute('magnet-attraction', '');
             });
 
-            // Magnet attraction component
-            AFRAME.registerComponent('magnet-attraction', {
+            // Snap zone component for easy placement
+            AFRAME.registerComponent('snap-zone', {
                 schema: {
-                    hand: {type: 'string', default: 'left'},
-                    strength: {type: 'number', default: 5},
-                    maxDistance: {type: 'number', default: 2}
+                    snapTo: {type: 'vec3', default: {x: 0, y: 0, z: 0}},
+                    snapDistance: {type: 'number', default: 0.2}
                 },
-                
-                init: function () {
-                    this.attractedObjects = [];
-                    this.raycaster = new THREE.Raycaster();
-                    this.direction = new THREE.Vector3();
-                    this.triggerPressed = false;
-                    
-                    this.el.addEventListener('triggerdown', () => this.triggerPressed = true);
-                    this.el.addEventListener('triggerup', () => {
-                        this.triggerPressed = false;
-                        this.attractedObjects = [];
-                    });
+                init: function() {
+                    this.originalPos = new THREE.Vector3(
+                        this.el.getAttribute('position').x,
+                        this.el.getAttribute('position').y,
+                        this.el.getAttribute('position').z
+                    );
                 },
-                
-                tick: function () {
-                    if (!this.triggerPressed) return;
+                tick: function() {
+                    if (this.el.is('grabbed') || this.el.classList.contains('installed')) return;
                     
-                    const handPosition = new THREE.Vector3();
-                    this.el.object3D.getWorldPosition(handPosition);
-                    this.el.object3D.getWorldDirection(this.direction);
-                    this.raycaster.set(handPosition, this.direction);
+                    const currentPos = this.el.object3D.position;
+                    const distance = currentPos.distanceTo(this.originalPos);
                     
-                    const interactiveEls = Array.from(document.querySelectorAll('[mixin="interactive"]'));
-                    const interactiveObjects = interactiveEls.map(el => el.object3D);
-                    const intersects = this.raycaster.intersectObjects(interactiveObjects, true);
-                    
-                    if (intersects.length > 0) {
-                        const target = intersects[0].object.el;
-                        if (!this.attractedObjects.includes(target) && 
-                            target.components['dynamic-body'] && 
-                            target.object3D.position.distanceTo(handPosition) < this.data.maxDistance) {
-                            
-                            this.attractedObjects.push(target);
-                        }
+                    if (distance < this.data.snapDistance) {
+                        this.el.setAttribute('position', this.data.snapTo);
+                        this.el.body.velocity.set(0, 0, 0);
+                        this.el.body.angularVelocity.set(0, 0, 0);
                     }
-                    
-                    this.attractedObjects.forEach(target => {
-                        if (!target || !target.body || target.is('grabbed')) return;
-                        
-                        const targetPos = new THREE.Vector3();
-                        target.object3D.getWorldPosition(targetPos);
-                        const forceDirection = new THREE.Vector3().subVectors(handPosition, targetPos).normalize().multiplyScalar(this.data.strength);
-                        
-                        target.body.velocity.set(forceDirection.x, forceDirection.y, forceDirection.z);
-                    });
                 }
             });
 
@@ -275,7 +250,7 @@
                         const originalPos = new THREE.Vector3();
                         comp.object3D.parent.worldToLocal(originalPos.copy(comp.object3D.getWorldPosition(new THREE.Vector3())));
                         
-                        if (currentPos.distanceTo(originalPos) < 0.1) {
+                        if (currentPos.distanceTo(originalPos) < 0.15) {
                             this.installComponent(comp);
                         }
                     });
@@ -366,9 +341,11 @@
                 init: function() {
                     this.el.addEventListener('grab-start', () => {
                         this.el.setAttribute('collision-filter', {collisionForces: false});
+                        this.el.setAttribute('dynamic-body', 'mass: 0.1'); // Легше рухати при триманні
                     });
                     this.el.addEventListener('grab-end', () => {
                         this.el.setAttribute('collision-filter', {collisionForces: true});
+                        this.el.setAttribute('dynamic-body', 'mass: 0.5');
                     });
                 }
             });
@@ -404,18 +381,17 @@
     </a-scene>
 
     <div class="info">
-        <strong>Controls:</strong><br>
-        PC case is in front of you. Components are placed inside it.<br><br>
+        <strong>Керування:</strong><br>
+        Корпус ПК перед вами. Компоненти розміщені всередині.<br><br>
         <strong>VR:</strong><br>
-         - <strong>Grab:</strong> Extend hand and press Trigger/Grip.<br>
-         - <strong>Fly/Move:</strong> Left thumbstick for smooth movement.<br>
-         - <strong>Teleport:</strong> Press trigger on laser controller.<br>
-         - <strong>Attract:</strong> Press trigger while pointing at object.<br>
-         - <strong>Rotate:</strong> Right thumbstick.<br>
-         - <strong>Info:</strong> Description appears when holding component.<br><br>
-        <strong>Desktop:</strong> WASD to move, mouse to look.
+         - <strong>Брати:</strong> Протягніть руку та натисніть Trigger/Grip.<br>
+         - <strong>Літати/Рухатись:</strong> Лівий джойстик для плавного руху.<br>
+         - <strong>Телепортація:</strong> Натисніть trigger на контролері.<br>
+         - <strong>Обертання:</strong> Правий джойстик.<br>
+         - <strong>Інформація:</strong> Опис з'являється при триманні компонента.<br><br>
+        <strong>Десктоп:</strong> WASD для руху, миша для огляду.
         <br><br>
-        <strong>Goal:</strong> Remove and reinstall PC components!
+        <strong>Мета:</strong> Виймайте та встановлюйте компоненти ПК назад!
     </div>
 </body>
 </html>

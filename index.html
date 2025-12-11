@@ -5,7 +5,7 @@
     <title>VR PC Builder</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands@3.0.4/dist/super-hands.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <!-- ВАЖЛИВО: БІЛЬШЕ НЕ ПІДКЛЮЧАЄМО aframe-extras, тільки physics-system -->
     <script src="https://unpkg.com/aframe-event-set-component@^4.1.1/dist/aframe-event-set-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.1.0/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
@@ -71,13 +71,14 @@
             <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
-            <!-- interactive mixin: залишаємо hoverable з super-hands + додаємо наш hover-visuals -->
+            <!-- interactive: super-hands hoverable + наш hover-visuals -->
             <a-mixin id="interactive"
                      hoverable hover-visuals grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
-                     physics-collider phase-shift
+                     physics-collider
+                     phase-shift
                      collision-filter="collisionForces: false"
                      static-body="shape: sphere; sphereRadius: 0.02"
                      super-hands="colliderEvent: collisions;
@@ -100,7 +101,7 @@
             <!-- Base platform -->
             <a-box position="0 0.05 0" width="1" height="0.01" depth="0.8" color="#4d4d4d" static-body></a-box>
             
-            <!-- Case WITHOUT static-body to avoid physics error -->
+            <!-- Case БЕЗ static-body -->
             <a-entity id="pc-case">
                 <a-gltf-model src="#case-model" scale="0.5 0.5 0.5" position="0 0 0"></a-gltf-model>
             </a-entity>
@@ -122,32 +123,50 @@
         </a-entity>
 
         <!-- Components with English labels -->
-        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0" dynamic-body="shape: box; mass: 2" side-description="description: Motherboard - the foundation of the system; offset: 0 0.1 -0.25" data-type="motherboard">
+        <a-entity id="motherboard" mixin="interactive" position="0.4 1.2 0"
+                  dynamic-body="shape: box; mass: 2"
+                  side-description="description: Motherboard - the foundation of the system; offset: 0 0.1 -0.25"
+                  data-type="motherboard">
             <a-gltf-model src="#motherboard-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="Motherboard" position="0 0.15 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
         
-        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333" dynamic-body="shape: box; mass: 1" side-description="description: CPU - the brain of the computer; offset: 0.15 0 0" data-type="cpu">
+        <a-entity id="cpu" mixin="interactive" position="-0.267 1.2 -0.333"
+                  dynamic-body="shape: box; mass: 1"
+                  side-description="description: CPU - the brain of the computer; offset: 0.15 0 0"
+                  data-type="cpu">
             <a-gltf-model src="#cpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="CPU" position="0 0.1 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
         
-        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: RAM - temporary memory; offset: 0.16 0 0" data-type="ram">
+        <a-entity id="ram" mixin="interactive" position="-0.267 1.2 0.267"
+                  dynamic-body="shape: box; mass: 1"
+                  side-description="description: RAM - temporary memory; offset: 0.16 0 0"
+                  data-type="ram">
             <a-gltf-model src="#ram-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="RAM" position="0 0.15 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
         
-        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0" dynamic-body="shape: box; mass: 3" side-description="description: GPU - graphics processing unit; offset: 0 0.05 0.2" data-type="gpu">
+        <a-entity id="gpu" mixin="interactive" position="-0.4 1.2 0"
+                  dynamic-body="shape: box; mass: 3"
+                  side-description="description: GPU - graphics processing unit; offset: 0 0.05 0.2"
+                  data-type="gpu">
             <a-gltf-model src="#gpu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="GPU" position="0 0.2 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
         
-        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333" dynamic-body="shape: box; mass: 2" side-description="description: Power Supply Unit; offset: 0.18 0.05 0" data-type="psu">
+        <a-entity id="psu" mixin="interactive" position="0.267 1.2 -0.333"
+                  dynamic-body="shape: box; mass: 2"
+                  side-description="description: Power Supply Unit; offset: 0.18 0.05 0"
+                  data-type="psu">
             <a-gltf-model src="#psu-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="PSU" position="0 0.25 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
         
-        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267" dynamic-body="shape: box; mass: 1" side-description="description: SSD - solid state drive; offset: 0.15 0 0" data-type="ssd">
+        <a-entity id="ssd" mixin="interactive" position="0.267 1.2 0.267"
+                  dynamic-body="shape: box; mass: 1"
+                  side-description="description: SSD - solid state drive; offset: 0.15 0 0"
+                  data-type="ssd">
             <a-gltf-model src="#ssd-model" rotation="0 0 0" scale="0.25 0.25 0.25"></a-gltf-model>
             <a-text value="SSD" position="0 0.15 0" align="center" color="black" width="1.5" scale="0.5 0.5 0.5" look-at="#camera"></a-text>
         </a-entity>
@@ -331,7 +350,7 @@
                 }
             });
             
-            // Наш новий компонент: hover-visuals (замість hoverable)
+            // Новий компонент: hover-visuals
             AFRAME.registerComponent('hover-visuals', {
               init: function () {
                 this.el.addEventListener('hover-start', (evt) => {

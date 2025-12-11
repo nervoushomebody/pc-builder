@@ -61,8 +61,8 @@
 <body>
     <a-scene physics="gravity: -5">
         <a-assets>
-            <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg">
-            <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg">
+            <img id="ground" src="https://cdn.aframe.io/a-painter/images/floor.jpg" crossorigin="anonymous">
+            <img id="sky" src="https://cdn.aframe.io/a-painter/images/sky.jpg" crossorigin="anonymous">
             <a-asset-item id="case-model" src="models/case.glb"></a-asset-item>
             <a-asset-item id="motherboard-model" src="models/motherboard.glb"></a-asset-item>
             <a-asset-item id="cpu-model" src="models/cpu.glb"></a-asset-item>
@@ -71,8 +71,9 @@
             <a-asset-item id="psu-model" src="models/psu.glb"></a-asset-item>
             <a-asset-item id="ssd-model" src="models/ssd.glb"></a-asset-item>
             
+            <!-- interactive mixin: залишаємо hoverable з super-hands + додаємо наш hover-visuals -->
             <a-mixin id="interactive"
-                     hoverable grabbable draggable respawnable>
+                     hoverable hover-visuals grabbable draggable respawnable>
             </a-mixin>
 
             <a-mixin id="physics-hands"
@@ -99,8 +100,8 @@
             <!-- Base platform -->
             <a-box position="0 0.05 0" width="1" height="0.01" depth="0.8" color="#4d4d4d" static-body></a-box>
             
-            <!-- Case with static body -->
-            <a-entity id="pc-case" static-body>
+            <!-- Case WITHOUT static-body to avoid physics error -->
+            <a-entity id="pc-case">
                 <a-gltf-model src="#case-model" scale="0.5 0.5 0.5" position="0 0 0"></a-gltf-model>
             </a-entity>
             
@@ -330,7 +331,8 @@
                 }
             });
             
-            AFRAME.registerComponent('hoverable', {
+            // Наш новий компонент: hover-visuals (замість hoverable)
+            AFRAME.registerComponent('hover-visuals', {
               init: function () {
                 this.el.addEventListener('hover-start', (evt) => {
                   evt.target.querySelectorAll('a-gltf-model').forEach(model => model.setAttribute('material', {color: '#ffff00'}));
